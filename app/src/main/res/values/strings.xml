@@ -8,31 +8,31 @@
     <string name="format_kbps">%1$s kbps</string>
     <string name="format_ms">%1$s ms</string>
 
-    <string name="format_go_to_artist">More from %1$s</string>
+    <string name="format_go_to_artist">Mehr von %1$s</string>
     <string name="format_top_playlist">Top %1$s</string>
-    <string name="format_my_top_playlist">My top %1$s</string>
-    <string name="format_view_top_of_header">View top %1$s of …</string>
+    <string name="format_my_top_playlist">Meine Top %1$s</string>
+    <string name="format_view_top_of_header">Ansicht Top %1$s of …</string>
     <string name="format_speed_multiplier">%1$sx</string>
-    <string name="format_opening_url">Opening url %1$s</string>
+    <string name="format_opening_url">Öffne url %1$s</string>
 
-    <string name="past_24_hours">Past 24 hours</string>
-    <string name="past_week">Past week</string>
-    <string name="past_month">Past month</string>
-    <string name="past_year">Past year</string>
-    <string name="all_time">All time</string>
+    <string name="past_24_hours">Letzten 24 Stunden</string>
+    <string name="past_week">Letzte Woche</string>
+    <string name="past_month">Letzten Monat</string>
+    <string name="past_year">Letztes Jahr</string>
+    <string name="all_time">Gesamter Zeitraum</string>
 
     <string name="songs">Songs</string>
-    <string name="playlists">Playlists</string>
-    <string name="albums">Albums</string>
-    <string name="artists">Artists</string>
-    <string name="singles">Singles</string>
+    <string name="playlists">Wiedergabelisten</string>
+    <string name="albums">Alben</string>
+    <string name="artists">Künstler</string>
+    <string name="singles">Singles/string>
 
     <string name="favorites">Favorites</string>
     <string name="offline">Offline</string>
-    <string name="overview">Overview</string>
-    <string name="library">Library</string>
-    <string name="discover">Discover</string>
-    <string name="local">Local</string>
+    <string name="overview">Übersicht</string>
+    <string name="library">Bibliothek</string>
+    <string name="discover">Entdecken</string>
+    <string name="local">Lokal</string>
     <string name="quick_picks">Quick picks</string>
     <string name="mood">Mood</string>
     <string name="online">Online</string>
