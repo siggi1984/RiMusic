@@ -11,7 +11,7 @@
     <string name="format_go_to_artist">Mehr von %1$s</string>
     <string name="format_top_playlist">Top %1$s</string>
     <string name="format_my_top_playlist">Meine Top %1$s</string>
-    <string name="format_view_top_of_header">View top %1$s of …</string>
+    <string name="format_view_top_of_header">Ansicht top %1$s of …</string>
     <string name="format_speed_multiplier">%1$sx</string>
     <string name="format_opening_url">Opening url %1$s</string>
 
