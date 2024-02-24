@@ -94,7 +94,7 @@
         <service
             android:name=".service.PlayerService"
             android:exported="false"
-            android:foregroundServiceType="mediaPlayback"></service>
+            android:foregroundServiceType="mediaPlayback" />
 
         <service
             android:name=".service.PlayerMediaBrowserService"
