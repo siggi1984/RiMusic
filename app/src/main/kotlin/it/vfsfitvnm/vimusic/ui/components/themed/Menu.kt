@@ -30,7 +30,11 @@ inline fun Menu(
             modifier = modifier
                 .verticalScroll(rememberScrollState())
                 .fillMaxWidth()
-                .padding(WindowInsets.systemBars.asPaddingValues()),
+                .padding(
+                    bottom = WindowInsets.systemBars
+                        .asPaddingValues()
+                        .calculateBottomPadding()
+                ),
             content = content
         )
     }
