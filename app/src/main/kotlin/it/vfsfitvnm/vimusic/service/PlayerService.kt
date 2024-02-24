@@ -12,7 +12,6 @@ import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.database.SQLException
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.media.AudioDeviceCallback
 import android.media.AudioDeviceInfo
@@ -247,7 +246,6 @@ class PlayerService : InvincibleService(), Player.Listener, PlaybackStatsListene
         maybeRestorePlayerQueue()
 
         mediaSession = MediaSession(baseContext, "PlayerService")
-        mediaSession.setFlags(MediaSession.FLAG_HANDLES_MEDIA_BUTTONS or MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS)
         mediaSession.setCallback(SessionCallback(player))
         mediaSession.setPlaybackState(stateBuilder.build())
         mediaSession.isActive = true
@@ -853,7 +851,7 @@ class PlayerService : InvincibleService(), Player.Listener, PlaybackStatsListene
     }
 
     private fun createRendersFactory(): RenderersFactory {
-        val audioSink = DefaultAudioSink.Builder()
+        val audioSink = DefaultAudioSink.Builder(applicationContext)
             .setEnableFloatOutput(false)
             .setEnableAudioTrackPlaybackParams(false)
             .setAudioOffloadSupportProvider(DefaultAudioOffloadSupportProvider(applicationContext))
@@ -896,10 +894,6 @@ class PlayerService : InvincibleService(), Player.Listener, PlaybackStatsListene
 
         var isLoadingRadio by mutableStateOf(false)
             private set
-
-        fun setBitmapListener(listener: ((Bitmap?) -> Unit)?) {
-            bitmapProvider.listener = listener
-        }
 
         fun startSleepTimer(delayMillis: Long) {
             timerJob?.cancel()
