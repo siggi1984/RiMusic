@@ -109,4 +109,5 @@
     <string name="delete_playlist_dialog">¿Borrar esta lista?</string>
     <string name="no_items_found">No se han encontrado elementos</string>
     <string name="no_results_found">No se han encontrado resultados. Intenta una búsqueda o categoría distinta</string>
+    <string name="open_queue">Abrir la cola</string>
 </resources>
