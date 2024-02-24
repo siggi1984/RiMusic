@@ -2,20 +2,16 @@ package it.vfsfitvnm.vimusic.ui.screens.home
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,8 +22,12 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,8 +35,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import it.vfsfitvnm.compose.persist.persist
 import it.vfsfitvnm.innertube.Innertube
@@ -44,15 +46,12 @@ import it.vfsfitvnm.innertube.models.NavigationEndpoint
 import it.vfsfitvnm.innertube.models.bodies.NextBody
 import it.vfsfitvnm.innertube.requests.relatedPage
 import it.vfsfitvnm.vimusic.Database
-import it.vfsfitvnm.vimusic.LocalPlayerAwareWindowInsets
 import it.vfsfitvnm.vimusic.LocalPlayerServiceBinder
 import it.vfsfitvnm.vimusic.R
+import it.vfsfitvnm.vimusic.models.LocalMenuState
 import it.vfsfitvnm.vimusic.models.Song
 import it.vfsfitvnm.vimusic.query
-import it.vfsfitvnm.vimusic.ui.components.LocalMenuState
 import it.vfsfitvnm.vimusic.ui.components.ShimmerHost
-import it.vfsfitvnm.vimusic.ui.components.themed.FloatingActionsContainerWithScrollToTop
-import it.vfsfitvnm.vimusic.ui.components.themed.Header
 import it.vfsfitvnm.vimusic.ui.components.themed.NonQueuedMediaItemMenu
 import it.vfsfitvnm.vimusic.ui.components.themed.TextPlaceholder
 import it.vfsfitvnm.vimusic.ui.items.AlbumItem
@@ -64,15 +63,11 @@ import it.vfsfitvnm.vimusic.ui.items.PlaylistItemPlaceholder
 import it.vfsfitvnm.vimusic.ui.items.SongItem
 import it.vfsfitvnm.vimusic.ui.items.SongItemPlaceholder
 import it.vfsfitvnm.vimusic.ui.styling.Dimensions
-import it.vfsfitvnm.vimusic.ui.styling.LocalAppearance
 import it.vfsfitvnm.vimusic.ui.styling.px
 import it.vfsfitvnm.vimusic.utils.SnapLayoutInfoProvider
 import it.vfsfitvnm.vimusic.utils.asMediaItem
-import it.vfsfitvnm.vimusic.utils.center
 import it.vfsfitvnm.vimusic.utils.forcePlay
 import it.vfsfitvnm.vimusic.utils.isLandscape
-import it.vfsfitvnm.vimusic.utils.secondary
-import it.vfsfitvnm.vimusic.utils.semiBold
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 @ExperimentalFoundationApi
@@ -81,13 +76,10 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 fun QuickPicks(
     onAlbumClick: (String) -> Unit,
     onArtistClick: (String) -> Unit,
-    onPlaylistClick: (String) -> Unit,
-    onSearchClick: () -> Unit,
+    onPlaylistClick: (String) -> Unit
 ) {
-    val (colorPalette, typography) = LocalAppearance.current
     val binder = LocalPlayerServiceBinder.current
     val menuState = LocalMenuState.current
-    val windowInsets = LocalPlayerAwareWindowInsets.current
 
     var trending by persist<Song?>("home/trending")
 
@@ -115,12 +107,9 @@ fun QuickPicks(
     val scrollState = rememberScrollState()
     val quickPicksLazyGridState = rememberLazyGridState()
 
-    val endPaddingValues = windowInsets.only(WindowInsetsSides.End).asPaddingValues()
-
     val sectionTextModifier = Modifier
         .padding(horizontal = 16.dp)
-        .padding(top = 24.dp, bottom = 8.dp)
-        .padding(endPaddingValues)
+        .padding(bottom = 8.dp)
 
     BoxWithConstraints {
         val quickPicksLazyGridItemWidthFactor = if (isLandscape && maxWidth * 0.475f >= 320.dp) {
@@ -129,40 +118,38 @@ fun QuickPicks(
             0.9f
         }
 
+        val density = LocalDensity.current
+
         val snapLayoutInfoProvider = remember(quickPicksLazyGridState) {
-            SnapLayoutInfoProvider(
-                lazyGridState = quickPicksLazyGridState,
-                positionInLayout = { layoutSize, itemSize ->
-                    (layoutSize * quickPicksLazyGridItemWidthFactor / 2f - itemSize / 2f)
-                }
-            )
+            with(density) {
+                SnapLayoutInfoProvider(
+                    lazyGridState = quickPicksLazyGridState,
+                    positionInLayout = { layoutSize, itemSize ->
+                        (layoutSize * quickPicksLazyGridItemWidthFactor / 2f - itemSize / 2f)
+                    }
+                )
+            }
         }
 
         val itemInHorizontalGridWidth = maxWidth * quickPicksLazyGridItemWidthFactor
 
         Column(
             modifier = Modifier
-                .background(colorPalette.background0)
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(
-                    windowInsets
-                        .only(WindowInsetsSides.Vertical)
-                        .asPaddingValues()
-                )
+                .padding(top = 4.dp, bottom = 16.dp)
         ) {
-            Header(
-                title = "Quick picks",
-                modifier = Modifier
-                    .padding(endPaddingValues)
-            )
-
             relatedPageResult?.getOrNull()?.let { related ->
+                Text(
+                    text = stringResource(id = R.string.quick_picks),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = sectionTextModifier
+                )
+
                 LazyHorizontalGrid(
                     state = quickPicksLazyGridState,
-                    rows = GridCells.Fixed(4),
+                    rows = GridCells.Fixed(count = 4),
                     flingBehavior = rememberSnapFlingBehavior(snapLayoutInfoProvider),
-                    contentPadding = endPaddingValues,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height((songThumbnailSizeDp + Dimensions.itemsVerticalPadding * 2) * 4)
@@ -172,16 +159,6 @@ fun QuickPicks(
                             SongItem(
                                 song = song,
                                 thumbnailSizePx = songThumbnailSizePx,
-                                thumbnailSizeDp = songThumbnailSizeDp,
-                                trailingContent = {
-                                    Image(
-                                        painter = painterResource(R.drawable.star),
-                                        contentDescription = null,
-                                        colorFilter = ColorFilter.tint(colorPalette.accent),
-                                        modifier = Modifier
-                                            .size(16.dp)
-                                    )
-                                },
                                 modifier = Modifier
                                     .combinedClickable(
                                         onLongClick = {
@@ -208,7 +185,14 @@ fun QuickPicks(
                                     )
                                     .animateItemPlacement()
                                     .width(itemInHorizontalGridWidth)
-                            )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Star,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         }
                     }
 
@@ -220,7 +204,6 @@ fun QuickPicks(
                         SongItem(
                             song = song,
                             thumbnailSizePx = songThumbnailSizePx,
-                            thumbnailSizeDp = songThumbnailSizeDp,
                             modifier = Modifier
                                 .combinedClickable(
                                     onLongClick = {
@@ -247,13 +230,15 @@ fun QuickPicks(
                 }
 
                 related.albums?.let { albums ->
-                    BasicText(
-                        text = "Related albums",
-                        style = typography.m.semiBold,
+                    Spacer(modifier = Modifier.height(Dimensions.spacer))
+
+                    Text(
+                        text = stringResource(id = R.string.related_albums),
+                        style = MaterialTheme.typography.titleMedium,
                         modifier = sectionTextModifier
                     )
 
-                    LazyRow(contentPadding = endPaddingValues) {
+                    LazyRow {
                         items(
                             items = albums,
                             key = Innertube.AlbumItem::key
@@ -271,13 +256,15 @@ fun QuickPicks(
                 }
 
                 related.artists?.let { artists ->
-                    BasicText(
-                        text = "Similar artists",
-                        style = typography.m.semiBold,
+                    Spacer(modifier = Modifier.height(Dimensions.spacer))
+
+                    Text(
+                        text = stringResource(id = R.string.similar_artists),
+                        style = MaterialTheme.typography.titleMedium,
                         modifier = sectionTextModifier
                     )
 
-                    LazyRow(contentPadding = endPaddingValues) {
+                    LazyRow {
                         items(
                             items = artists,
                             key = Innertube.ArtistItem::key,
@@ -295,15 +282,15 @@ fun QuickPicks(
                 }
 
                 related.playlists?.let { playlists ->
-                    BasicText(
-                        text = "Playlists you might like",
-                        style = typography.m.semiBold,
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .padding(top = 24.dp, bottom = 8.dp)
+                    Spacer(modifier = Modifier.height(Dimensions.spacer))
+
+                    Text(
+                        text = stringResource(id = R.string.recommended_playlists),
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = sectionTextModifier
                     )
 
-                    LazyRow(contentPadding = endPaddingValues) {
+                    LazyRow {
                         items(
                             items = playlists,
                             key = Innertube.PlaylistItem::key,
@@ -322,19 +309,25 @@ fun QuickPicks(
 
                 Unit
             } ?: relatedPageResult?.exceptionOrNull()?.let {
-                BasicText(
+                Text(
                     text = "An error has occurred",
-                    style = typography.s.secondary.center,
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center,
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(all = 16.dp)
+                        .alpha(Dimensions.mediumOpacity)
                 )
             } ?: ShimmerHost {
+                TextPlaceholder(modifier = sectionTextModifier)
+
                 repeat(4) {
                     SongItemPlaceholder(
                         thumbnailSizeDp = songThumbnailSizeDp,
                     )
                 }
+
+                Spacer(modifier = Modifier.height(Dimensions.spacer))
 
                 TextPlaceholder(modifier = sectionTextModifier)
 
@@ -347,6 +340,8 @@ fun QuickPicks(
                     }
                 }
 
+                Spacer(modifier = Modifier.height(Dimensions.spacer))
+
                 TextPlaceholder(modifier = sectionTextModifier)
 
                 Row {
@@ -357,6 +352,8 @@ fun QuickPicks(
                         )
                     }
                 }
+
+                Spacer(modifier = Modifier.height(Dimensions.spacer))
 
                 TextPlaceholder(modifier = sectionTextModifier)
 
@@ -370,11 +367,5 @@ fun QuickPicks(
                 }
             }
         }
-
-        FloatingActionsContainerWithScrollToTop(
-            scrollState = scrollState,
-            iconId = R.drawable.search,
-            onClick = onSearchClick
-        )
     }
 }

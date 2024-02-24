@@ -1,76 +1,61 @@
 package it.vfsfitvnm.vimusic.ui.screens.settings
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
-import it.vfsfitvnm.vimusic.BuildConfig
-import it.vfsfitvnm.vimusic.LocalPlayerAwareWindowInsets
-import it.vfsfitvnm.vimusic.ui.components.themed.Header
-import it.vfsfitvnm.vimusic.ui.styling.LocalAppearance
-import it.vfsfitvnm.vimusic.utils.secondary
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import it.vfsfitvnm.vimusic.R
+import it.vfsfitvnm.vimusic.ui.styling.Dimensions
 
 @ExperimentalAnimationApi
 @Composable
 fun About() {
-    val (colorPalette, typography) = LocalAppearance.current
     val uriHandler = LocalUriHandler.current
 
     Column(
         modifier = Modifier
-            .background(colorPalette.background0)
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(
-                LocalPlayerAwareWindowInsets.current
-                    .only(WindowInsetsSides.Vertical + WindowInsetsSides.End)
-                    .asPaddingValues()
-            )
+            .padding(vertical = 16.dp)
     ) {
-        Header(title = "About") {
-            BasicText(
-                text = "v${BuildConfig.VERSION_NAME} by vfsfitvnm",
-                style = typography.s.secondary
-            )
-        }
-
-        SettingsEntryGroupText(title = "SOCIAL")
-
-        SettingsEntry(
-            title = "GitHub",
-            text = "View the source code",
-            onClick = {
-                uriHandler.openUri("https://github.com/vfsfitvnm/ViMusic")
-            }
-        )
-
-        SettingsGroupSpacer()
-
-        SettingsEntryGroupText(title = "TROUBLESHOOTING")
-
-        SettingsEntry(
-            title = "Report an issue",
-            text = "You will be redirected to GitHub",
-            onClick = {
-                uriHandler.openUri("https://github.com/vfsfitvnm/ViMusic/issues/new?assignees=&labels=bug&template=bug_report.yaml")
-            }
+        Text(
+            text = stringResource(id = R.string.social),
+            modifier = Modifier.padding(horizontal = 16.dp),
+            style = MaterialTheme.typography.titleMedium
         )
 
         SettingsEntry(
-            title = "Request a feature or suggest an idea",
-            text = "You will be redirected to GitHub",
+            title = stringResource(id = R.string.github),
+            text = stringResource(id = R.string.view_source_code),
             onClick = {
-                uriHandler.openUri("https://github.com/vfsfitvnm/ViMusic/issues/new?assignees=&labels=enhancement&template=feature_request.yaml")
+                uriHandler.openUri("https://github.com/DanielSevillano/music-you")
+            }
+        )
+
+        Spacer(modifier = Modifier.height(Dimensions.spacer))
+
+        Text(
+            text = stringResource(id = R.string.troubleshooting),
+            modifier = Modifier.padding(horizontal = 16.dp),
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        SettingsEntry(
+            title = stringResource(id = R.string.create_issue),
+            text = stringResource(id = R.string.redirected_to_github),
+            onClick = {
+                uriHandler.openUri("https://github.com/DanielSevillano/music-you/issues/new/choose")
             }
         )
     }

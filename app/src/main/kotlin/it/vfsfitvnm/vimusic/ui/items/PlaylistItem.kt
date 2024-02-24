@@ -1,7 +1,5 @@
 package it.vfsfitvnm.vimusic.ui.items
 
-import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -10,44 +8,39 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import it.vfsfitvnm.innertube.Innertube
 import it.vfsfitvnm.vimusic.Database
 import it.vfsfitvnm.vimusic.models.PlaylistPreview
 import it.vfsfitvnm.vimusic.ui.components.themed.TextPlaceholder
-import it.vfsfitvnm.vimusic.ui.styling.LocalAppearance
+import it.vfsfitvnm.vimusic.ui.styling.Dimensions
 import it.vfsfitvnm.vimusic.ui.styling.onOverlay
-import it.vfsfitvnm.vimusic.ui.styling.overlay
 import it.vfsfitvnm.vimusic.ui.styling.shimmer
-import it.vfsfitvnm.vimusic.utils.color
-import it.vfsfitvnm.vimusic.utils.medium
-import it.vfsfitvnm.vimusic.utils.secondary
-import it.vfsfitvnm.vimusic.utils.semiBold
 import it.vfsfitvnm.vimusic.utils.thumbnail
-import it.vfsfitvnm.innertube.Innertube
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
 @Composable
 fun PlaylistItem(
-    @DrawableRes icon: Int,
-    colorTint: Color,
+    icon: ImageVector,
     name: String?,
     songCount: Int?,
     thumbnailSizeDp: Dp,
@@ -56,10 +49,10 @@ fun PlaylistItem(
 ) {
     PlaylistItem(
         thumbnailContent = {
-            Image(
-                painter = painterResource(icon),
+            Icon(
+                imageVector = icon,
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(colorTint),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
                     .align(Alignment.Center)
                     .size(24.dp)
@@ -190,8 +183,6 @@ fun PlaylistItem(
     modifier: Modifier = Modifier,
     alternative: Boolean = false,
 ) {
-    val (colorPalette, typography, thumbnailShape) = LocalAppearance.current
-
     ItemContainer(
         alternative = alternative,
         thumbnailSizeDp = thumbnailSizeDp,
@@ -199,24 +190,27 @@ fun PlaylistItem(
     ) { centeredModifier ->
         Box(
             modifier = centeredModifier
-                .clip(thumbnailShape)
-                .background(color = colorPalette.background1)
+                .clip(MaterialTheme.shapes.large)
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .requiredSize(thumbnailSizeDp)
         ) {
             thumbnailContent(
-                modifier = Modifier
-                    .fillMaxSize()
+                Modifier.fillMaxSize()
             )
 
             songCount?.let {
-                BasicText(
+                Text(
                     text = "$songCount",
-                    style = typography.xxs.medium.color(colorPalette.onOverlay),
+                    color = MaterialTheme.colorScheme.onOverlay,
+                    style = MaterialTheme.typography.labelMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                         .padding(all = 4.dp)
-                        .background(color = colorPalette.overlay, shape = RoundedCornerShape(2.dp))
+                        .background(
+                            color = Color.Black.copy(alpha = Dimensions.mediumOpacity),
+                            shape = MaterialTheme.shapes.medium
+                        )
                         .padding(horizontal = 4.dp, vertical = 2.dp)
                         .align(Alignment.BottomEnd)
                 )
@@ -224,21 +218,24 @@ fun PlaylistItem(
         }
 
         ItemInfoContainer(
-            horizontalAlignment = if (alternative && channelName == null) Alignment.CenterHorizontally else Alignment.Start,
+            horizontalAlignment = if (alternative && channelName == null) Alignment.CenterHorizontally else Alignment.Start
         ) {
-            BasicText(
+            Text(
                 text = name ?: "",
-                style = typography.xs.semiBold,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
 
             channelName?.let {
-                BasicText(
+                Text(
                     text = channelName,
-                    style = typography.xs.semiBold.secondary,
-                    maxLines = 2,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .padding(top = 2.dp)
+                        .alpha(Dimensions.mediumOpacity)
                 )
             }
         }
@@ -251,8 +248,6 @@ fun PlaylistItemPlaceholder(
     modifier: Modifier = Modifier,
     alternative: Boolean = false,
 ) {
-    val (colorPalette, _, thumbnailShape) = LocalAppearance.current
-
     ItemContainer(
         alternative = alternative,
         thumbnailSizeDp = thumbnailSizeDp,
@@ -260,7 +255,10 @@ fun PlaylistItemPlaceholder(
     ) {
         Spacer(
             modifier = Modifier
-                .background(color = colorPalette.shimmer, shape = thumbnailShape)
+                .background(
+                    color = MaterialTheme.colorScheme.shimmer,
+                    shape = Dimensions.thumbnailShape
+                )
                 .size(thumbnailSizeDp)
         )
 

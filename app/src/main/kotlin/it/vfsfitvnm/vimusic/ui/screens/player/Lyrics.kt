@@ -8,25 +8,29 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Download
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.MoreHoriz
+import androidx.compose.material.icons.outlined.Schedule
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -38,12 +42,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
@@ -56,22 +60,17 @@ import it.vfsfitvnm.kugou.KuGou
 import it.vfsfitvnm.vimusic.Database
 import it.vfsfitvnm.vimusic.LocalPlayerServiceBinder
 import it.vfsfitvnm.vimusic.R
+import it.vfsfitvnm.vimusic.models.LocalMenuState
 import it.vfsfitvnm.vimusic.models.Lyrics
 import it.vfsfitvnm.vimusic.query
-import it.vfsfitvnm.vimusic.ui.components.LocalMenuState
 import it.vfsfitvnm.vimusic.ui.components.themed.Menu
 import it.vfsfitvnm.vimusic.ui.components.themed.MenuEntry
 import it.vfsfitvnm.vimusic.ui.components.themed.TextFieldDialog
 import it.vfsfitvnm.vimusic.ui.components.themed.TextPlaceholder
-import it.vfsfitvnm.vimusic.ui.styling.DefaultDarkColorPalette
-import it.vfsfitvnm.vimusic.ui.styling.LocalAppearance
-import it.vfsfitvnm.vimusic.ui.styling.PureBlackColorPalette
-import it.vfsfitvnm.vimusic.ui.styling.onOverlayShimmer
+import it.vfsfitvnm.vimusic.ui.styling.Dimensions
+import it.vfsfitvnm.vimusic.ui.styling.onOverlay
 import it.vfsfitvnm.vimusic.utils.SynchronizedLyrics
-import it.vfsfitvnm.vimusic.utils.center
-import it.vfsfitvnm.vimusic.utils.color
 import it.vfsfitvnm.vimusic.utils.isShowingSynchronizedLyricsKey
-import it.vfsfitvnm.vimusic.utils.medium
 import it.vfsfitvnm.vimusic.utils.rememberPreference
 import it.vfsfitvnm.vimusic.utils.toast
 import it.vfsfitvnm.vimusic.utils.verticalFadingEdge
@@ -96,7 +95,6 @@ fun Lyrics(
         enter = fadeIn(),
         exit = fadeOut(),
     ) {
-        val (colorPalette, typography) = LocalAppearance.current
         val context = LocalContext.current
         val menuState = LocalMenuState.current
         val currentView = LocalView.current
@@ -217,9 +215,11 @@ fun Lyrics(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
             ) {
-                BasicText(
+                Text(
                     text = "An error has occurred while fetching the ${if (isShowingSynchronizedLyrics) "synchronized " else ""}lyrics",
-                    style = typography.xs.center.medium.color(PureBlackColorPalette.text),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
                     modifier = Modifier
                         .background(Color.Black.copy(0.4f))
                         .padding(all = 8.dp)
@@ -234,9 +234,11 @@ fun Lyrics(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
             ) {
-                BasicText(
+                Text(
                     text = "${if (isShowingSynchronizedLyrics) "Synchronized l" else "L"}yrics are not available for this song",
-                    style = typography.xs.center.medium.color(PureBlackColorPalette.text),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
                     modifier = Modifier
                         .background(Color.Black.copy(0.4f))
                         .padding(all = 8.dp)
@@ -283,18 +285,23 @@ fun Lyrics(
                             .verticalFadingEdge()
                     ) {
                         itemsIndexed(items = synchronizedLyrics.sentences) { index, sentence ->
-                            BasicText(
+                            Text(
                                 text = sentence.second,
-                                style = typography.xs.center.medium.color(if (index == synchronizedLyrics.index) PureBlackColorPalette.text else PureBlackColorPalette.textDisabled),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.White,
+                                textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .padding(vertical = 4.dp, horizontal = 32.dp)
+                                    .alpha(if (index == synchronizedLyrics.index) 1F else Dimensions.mediumOpacity)
                             )
                         }
                     }
                 } else {
-                    BasicText(
+                    Text(
                         text = text,
-                        style = typography.xs.center.medium.color(PureBlackColorPalette.text),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White,
+                        textAlign = TextAlign.Center,
                         modifier = Modifier
                             .verticalFadingEdge()
                             .verticalScroll(rememberScrollState())
@@ -312,93 +319,90 @@ fun Lyrics(
                 ) {
                     repeat(4) {
                         TextPlaceholder(
-                            color = colorPalette.onOverlayShimmer,
-                            modifier = Modifier
-                                .alpha(1f - it * 0.2f)
+                            modifier = Modifier.alpha(1f - it * 0.2f)
                         )
                     }
                 }
             }
 
-            Image(
-                painter = painterResource(R.drawable.ellipsis_horizontal),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(DefaultDarkColorPalette.text),
-                modifier = Modifier
-                    .padding(all = 4.dp)
-                    .clickable(
-                        indication = rememberRipple(bounded = false),
-                        interactionSource = remember { MutableInteractionSource() },
-                        onClick = {
-                            menuState.display {
-                                Menu {
-                                    MenuEntry(
-                                        icon = R.drawable.time,
-                                        text = "Show ${if (isShowingSynchronizedLyrics) "un" else ""}synchronized lyrics",
-                                        secondaryText = if (isShowingSynchronizedLyrics) null else "Provided by kugou.com",
-                                        onClick = {
-                                            menuState.hide()
-                                            isShowingSynchronizedLyrics =
-                                                !isShowingSynchronizedLyrics
-                                        }
-                                    )
-
-                                    MenuEntry(
-                                        icon = R.drawable.pencil,
-                                        text = "Edit lyrics",
-                                        onClick = {
-                                            menuState.hide()
-                                            isEditing = true
-                                        }
-                                    )
-
-                                    MenuEntry(
-                                        icon = R.drawable.search,
-                                        text = "Search lyrics online",
-                                        onClick = {
-                                            menuState.hide()
-                                            val mediaMetadata = mediaMetadataProvider()
-
-                                            try {
-                                                context.startActivity(
-                                                    Intent(Intent.ACTION_WEB_SEARCH).apply {
-                                                        putExtra(
-                                                            SearchManager.QUERY,
-                                                            "${mediaMetadata.title} ${mediaMetadata.artist} lyrics"
-                                                        )
-                                                    }
-                                                )
-                                            } catch (e: ActivityNotFoundException) {
-                                                context.toast("Couldn't find an application to browse the Internet")
-                                            }
-                                        }
-                                    )
-
-                                    MenuEntry(
-                                        icon = R.drawable.download,
-                                        text = "Fetch lyrics again",
-                                        enabled = lyrics != null,
-                                        onClick = {
-                                            menuState.hide()
-                                            query {
-                                                Database.upsert(
-                                                    Lyrics(
-                                                        songId = mediaId,
-                                                        fixed = if (isShowingSynchronizedLyrics) lyrics?.fixed else null,
-                                                        synced = if (isShowingSynchronizedLyrics) null else lyrics?.synced,
-                                                    )
-                                                )
-                                            }
-                                        }
-                                    )
+            IconButton(
+                onClick = {
+                    menuState.display {
+                        Menu {
+                            MenuEntry(
+                                icon = Icons.Outlined.Schedule,
+                                text = if (isShowingSynchronizedLyrics) stringResource(id = R.string.show_unsynchronized_lyrics) else stringResource(
+                                    id = R.string.show_synchronized_lyrics
+                                ),
+                                secondaryText = if (isShowingSynchronizedLyrics) null else stringResource(
+                                    id = R.string.provided_by_kugou
+                                ),
+                                onClick = {
+                                    menuState.hide()
+                                    isShowingSynchronizedLyrics =
+                                        !isShowingSynchronizedLyrics
                                 }
-                            }
+                            )
+
+                            MenuEntry(
+                                icon = Icons.Outlined.Edit,
+                                text = stringResource(id = R.string.edit_lyrics),
+                                onClick = {
+                                    menuState.hide()
+                                    isEditing = true
+                                }
+                            )
+
+                            MenuEntry(
+                                icon = Icons.Outlined.Search,
+                                text = stringResource(id = R.string.search_lyrics_online),
+                                onClick = {
+                                    menuState.hide()
+                                    val mediaMetadata = mediaMetadataProvider()
+
+                                    try {
+                                        context.startActivity(
+                                            Intent(Intent.ACTION_WEB_SEARCH).apply {
+                                                putExtra(
+                                                    SearchManager.QUERY,
+                                                    "${mediaMetadata.title} ${mediaMetadata.artist} lyrics"
+                                                )
+                                            }
+                                        )
+                                    } catch (e: ActivityNotFoundException) {
+                                        context.toast("Couldn't find an application to browse the Internet")
+                                    }
+                                }
+                            )
+
+                            MenuEntry(
+                                icon = Icons.Outlined.Download,
+                                text = "Fetch lyrics again",
+                                enabled = lyrics != null,
+                                onClick = {
+                                    menuState.hide()
+                                    query {
+                                        Database.upsert(
+                                            Lyrics(
+                                                songId = mediaId,
+                                                fixed = if (isShowingSynchronizedLyrics) lyrics?.fixed else null,
+                                                synced = if (isShowingSynchronizedLyrics) null else lyrics?.synced,
+                                            )
+                                        )
+                                    }
+                                }
+                            )
                         }
-                    )
-                    .padding(all = 8.dp)
-                    .size(20.dp)
-                    .align(Alignment.BottomEnd)
-            )
+                    }
+                },
+                modifier = Modifier.align(Alignment.BottomEnd)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.MoreHoriz,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onOverlay
+                )
+            }
         }
     }
 }

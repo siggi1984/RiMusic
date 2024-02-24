@@ -1,11 +1,11 @@
 package it.vfsfitvnm.vimusic.utils
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 
 class SynchronizedLyrics(val sentences: List<Pair<Long, String>>, private val positionProvider: () -> Long) {
-    var index by mutableStateOf(currentIndex)
+    var index by mutableIntStateOf(currentIndex)
         private set
 
     private val currentIndex: Int

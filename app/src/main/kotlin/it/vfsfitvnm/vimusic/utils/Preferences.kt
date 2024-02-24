@@ -10,14 +10,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.edit
 
-const val colorPaletteNameKey = "colorPaletteName"
-const val colorPaletteModeKey = "colorPaletteMode"
-const val thumbnailRoundnessKey = "thumbnailRoundness"
 const val coilDiskCacheMaxSizeKey = "coilDiskCacheMaxSize"
 const val exoPlayerDiskCacheMaxSizeKey = "exoPlayerDiskCacheMaxSize"
 const val isInvincibilityEnabledKey = "isInvincibilityEnabled"
-const val useSystemFontKey = "useSystemFont"
-const val applyFontPaddingKey = "applyFontPadding"
 const val songSortOrderKey = "songSortOrder"
 const val songSortByKey = "songSortBy"
 const val playlistSortOrderKey = "playlistSortOrder"

@@ -5,8 +5,17 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.outlined.Album
+import androidx.compose.material.icons.outlined.BookmarkAdd
+import androidx.compose.material.icons.outlined.LibraryMusic
+import androidx.compose.material.icons.outlined.MusicNote
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -15,28 +24,26 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.valentinilk.shimmer.shimmer
 import it.vfsfitvnm.compose.persist.PersistMapCleanup
 import it.vfsfitvnm.compose.persist.persist
+import it.vfsfitvnm.compose.routing.RouteHandler
 import it.vfsfitvnm.innertube.Innertube
 import it.vfsfitvnm.innertube.models.bodies.BrowseBody
 import it.vfsfitvnm.innertube.models.bodies.ContinuationBody
 import it.vfsfitvnm.innertube.requests.artistPage
 import it.vfsfitvnm.innertube.requests.itemsPage
 import it.vfsfitvnm.innertube.utils.from
-import it.vfsfitvnm.compose.routing.RouteHandler
 import it.vfsfitvnm.vimusic.Database
 import it.vfsfitvnm.vimusic.LocalPlayerServiceBinder
 import it.vfsfitvnm.vimusic.R
 import it.vfsfitvnm.vimusic.models.Artist
+import it.vfsfitvnm.vimusic.models.LocalMenuState
+import it.vfsfitvnm.vimusic.models.Section
 import it.vfsfitvnm.vimusic.query
-import it.vfsfitvnm.vimusic.ui.components.LocalMenuState
-import it.vfsfitvnm.vimusic.ui.components.themed.Header
-import it.vfsfitvnm.vimusic.ui.components.themed.HeaderIconButton
-import it.vfsfitvnm.vimusic.ui.components.themed.HeaderPlaceholder
+import it.vfsfitvnm.vimusic.ui.components.TabScaffold
 import it.vfsfitvnm.vimusic.ui.components.themed.NonQueuedMediaItemMenu
-import it.vfsfitvnm.vimusic.ui.components.themed.Scaffold
 import it.vfsfitvnm.vimusic.ui.components.themed.adaptiveThumbnailContent
 import it.vfsfitvnm.vimusic.ui.items.AlbumItem
 import it.vfsfitvnm.vimusic.ui.items.AlbumItemPlaceholder
@@ -44,9 +51,8 @@ import it.vfsfitvnm.vimusic.ui.items.SongItem
 import it.vfsfitvnm.vimusic.ui.items.SongItemPlaceholder
 import it.vfsfitvnm.vimusic.ui.screens.albumRoute
 import it.vfsfitvnm.vimusic.ui.screens.globalRoutes
-import it.vfsfitvnm.vimusic.ui.screens.searchresult.ItemsPage
+import it.vfsfitvnm.vimusic.ui.screens.search.ItemsPage
 import it.vfsfitvnm.vimusic.ui.styling.Dimensions
-import it.vfsfitvnm.vimusic.ui.styling.LocalAppearance
 import it.vfsfitvnm.vimusic.ui.styling.px
 import it.vfsfitvnm.vimusic.utils.artistScreenTabIndexKey
 import it.vfsfitvnm.vimusic.utils.asMediaItem
@@ -108,87 +114,69 @@ fun ArtistScreen(browseId: String) {
             val thumbnailContent =
                 adaptiveThumbnailContent(
                     artist?.timestamp == null,
-                    artist?.thumbnailUrl,
-                    CircleShape
+                    artist?.thumbnailUrl
                 )
 
-            val headerContent: @Composable (textButton: (@Composable () -> Unit)?) -> Unit =
-                { textButton ->
-                    if (artist?.timestamp == null) {
-                        HeaderPlaceholder(
-                            modifier = Modifier
-                                .shimmer()
-                        )
-                    } else {
-                        val (colorPalette) = LocalAppearance.current
-                        val context = LocalContext.current
-
-                        Header(title = artist?.name ?: "Unknown") {
-                            textButton?.invoke()
-
-                            Spacer(
-                                modifier = Modifier
-                                    .weight(1f)
-                            )
-
-                            HeaderIconButton(
-                                icon = if (artist?.bookmarkedAt == null) {
-                                    R.drawable.bookmark_outline
-                                } else {
-                                    R.drawable.bookmark
-                                },
-                                color = colorPalette.accent,
-                                onClick = {
-                                    val bookmarkedAt =
-                                        if (artist?.bookmarkedAt == null) System.currentTimeMillis() else null
-
-                                    query {
-                                        artist
-                                            ?.copy(bookmarkedAt = bookmarkedAt)
-                                            ?.let(Database::update)
-                                    }
-                                }
-                            )
-
-                            HeaderIconButton(
-                                icon = R.drawable.share_social,
-                                color = colorPalette.text,
-                                onClick = {
-                                    val sendIntent = Intent().apply {
-                                        action = Intent.ACTION_SEND
-                                        type = "text/plain"
-                                        putExtra(
-                                            Intent.EXTRA_TEXT,
-                                            "https://music.youtube.com/channel/$browseId"
-                                        )
-                                    }
-
-                                    context.startActivity(Intent.createChooser(sendIntent, null))
-                                }
-                            )
-                        }
-                    }
-                }
-
-            Scaffold(
-                topIconButtonId = R.drawable.chevron_back,
+            TabScaffold(
+                topIconButtonId = Icons.AutoMirrored.Outlined.ArrowBack,
                 onTopIconButtonClick = pop,
+                sectionTitle = artist?.name ?: "",
+                appBarActions = {
+                    val context = LocalContext.current
+
+                    IconButton(
+                        onClick = {
+                            val bookmarkedAt =
+                                if (artist?.bookmarkedAt == null) System.currentTimeMillis() else null
+
+                            query {
+                                artist
+                                    ?.copy(bookmarkedAt = bookmarkedAt)
+                                    ?.let(Database::update)
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = if (artist?.bookmarkedAt == null) Icons.Outlined.BookmarkAdd else Icons.Filled.Bookmark,
+                            contentDescription = null
+                        )
+                    }
+
+                    IconButton(
+                        onClick = {
+                            val sendIntent = Intent().apply {
+                                action = Intent.ACTION_SEND
+                                type = "text/plain"
+                                putExtra(
+                                    Intent.EXTRA_TEXT,
+                                    "https://music.youtube.com/channel/$browseId"
+                                )
+                            }
+
+                            context.startActivity(Intent.createChooser(sendIntent, null))
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Share,
+                            contentDescription = null
+                        )
+                    }
+                },
                 tabIndex = tabIndex,
                 onTabChanged = { tabIndex = it },
-                tabColumnContent = { Item ->
-                    Item(0, "Overview", R.drawable.sparkles)
-                    Item(1, "Songs", R.drawable.musical_notes)
-                    Item(2, "Albums", R.drawable.disc)
-                    Item(3, "Singles", R.drawable.disc)
-                    Item(4, "Library", R.drawable.library)
-                },
+                tabColumnContent = listOf(
+                    Section(stringResource(id = R.string.overview), Icons.Outlined.Person),
+                    Section(stringResource(id = R.string.songs), Icons.Outlined.MusicNote),
+                    Section(stringResource(id = R.string.albums), Icons.Outlined.Album),
+                    Section(stringResource(id = R.string.singles), Icons.Outlined.Album),
+                    Section(stringResource(id = R.string.library), Icons.Outlined.LibraryMusic)
+                )
             ) { currentTabIndex ->
                 saveableStateHolder.SaveableStateProvider(key = currentTabIndex) {
                     when (currentTabIndex) {
                         0 -> ArtistOverview(
                             youtubeArtistPage = artistPage,
                             thumbnailContent = thumbnailContent,
-                            headerContent = headerContent,
                             onAlbumClick = { albumRoute(it) },
                             onViewAllSongsClick = { tabIndex = 1 },
                             onViewAllAlbumsClick = { tabIndex = 2 },
@@ -203,7 +191,6 @@ fun ArtistScreen(browseId: String) {
 
                             ItemsPage(
                                 tag = "artist/$browseId/songs",
-                                headerContent = headerContent,
                                 itemsPageProvider = artistPage?.let {
                                     ({ continuation ->
                                         continuation?.let {
@@ -234,7 +221,6 @@ fun ArtistScreen(browseId: String) {
                                 itemContent = { song ->
                                     SongItem(
                                         song = song,
-                                        thumbnailSizeDp = thumbnailSizeDp,
                                         thumbnailSizePx = thumbnailSizePx,
                                         modifier = Modifier
                                             .combinedClickable(
@@ -266,7 +252,6 @@ fun ArtistScreen(browseId: String) {
 
                             ItemsPage(
                                 tag = "artist/$browseId/albums",
-                                headerContent = headerContent,
                                 emptyItemsText = "This artist didn't release any album",
                                 itemsPageProvider = artistPage?.let {
                                     ({ continuation ->
@@ -316,7 +301,6 @@ fun ArtistScreen(browseId: String) {
 
                             ItemsPage(
                                 tag = "artist/$browseId/singles",
-                                headerContent = headerContent,
                                 emptyItemsText = "This artist didn't release any single",
                                 itemsPageProvider = artistPage?.let {
                                     ({ continuation ->
@@ -362,7 +346,6 @@ fun ArtistScreen(browseId: String) {
 
                         4 -> ArtistLocalSongs(
                             browseId = browseId,
-                            headerContent = headerContent,
                             thumbnailContent = thumbnailContent,
                         )
                     }

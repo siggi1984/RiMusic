@@ -6,23 +6,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.BasicText
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import it.vfsfitvnm.innertube.Innertube
 import it.vfsfitvnm.vimusic.models.Artist
 import it.vfsfitvnm.vimusic.ui.components.themed.TextPlaceholder
-import it.vfsfitvnm.vimusic.ui.styling.LocalAppearance
+import it.vfsfitvnm.vimusic.ui.styling.Dimensions
 import it.vfsfitvnm.vimusic.ui.styling.shimmer
-import it.vfsfitvnm.vimusic.utils.secondary
-import it.vfsfitvnm.vimusic.utils.semiBold
 import it.vfsfitvnm.vimusic.utils.thumbnail
-import it.vfsfitvnm.innertube.Innertube
 
 @Composable
 fun ArtistItem(
@@ -72,8 +72,6 @@ fun ArtistItem(
     modifier: Modifier = Modifier,
     alternative: Boolean = false,
 ) {
-    val (_, typography) = LocalAppearance.current
-
     ItemContainer(
         alternative = alternative,
         thumbnailSizeDp = thumbnailSizeDp,
@@ -91,21 +89,22 @@ fun ArtistItem(
         ItemInfoContainer(
             horizontalAlignment = if (alternative) Alignment.CenterHorizontally else Alignment.Start,
         ) {
-            BasicText(
+            Text(
                 text = name ?: "",
-                style = typography.xs.semiBold,
+                style = MaterialTheme.typography.bodyMedium,
                 maxLines = if (alternative) 1 else 2,
                 overflow = TextOverflow.Ellipsis
             )
 
             subscribersCount?.let {
-                BasicText(
+                Text(
                     text = subscribersCount,
-                    style = typography.xxs.semiBold.secondary,
+                    style = MaterialTheme.typography.bodySmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
-                        .padding(top = 4.dp)
+                        .padding(top = 2.dp)
+                        .alpha(Dimensions.mediumOpacity)
                 )
             }
         }
@@ -118,8 +117,6 @@ fun ArtistItemPlaceholder(
     modifier: Modifier = Modifier,
     alternative: Boolean = false,
 ) {
-    val (colorPalette) = LocalAppearance.current
-
     ItemContainer(
         alternative = alternative,
         thumbnailSizeDp = thumbnailSizeDp,
@@ -128,7 +125,10 @@ fun ArtistItemPlaceholder(
     ) {
         Spacer(
             modifier = Modifier
-                .background(color = colorPalette.shimmer, shape = CircleShape)
+                .background(
+                    color = MaterialTheme.colorScheme.shimmer,
+                    shape = CircleShape
+                )
                 .size(thumbnailSizeDp)
         )
 

@@ -1,7 +1,7 @@
 package it.vfsfitvnm.vimusic.ui.screens.player
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.SizeTransform
@@ -37,10 +37,9 @@ import it.vfsfitvnm.vimusic.service.PlayableFormatNotFoundException
 import it.vfsfitvnm.vimusic.service.UnplayableException
 import it.vfsfitvnm.vimusic.service.VideoIdMismatchException
 import it.vfsfitvnm.vimusic.ui.styling.Dimensions
-import it.vfsfitvnm.vimusic.ui.styling.LocalAppearance
 import it.vfsfitvnm.vimusic.ui.styling.px
-import it.vfsfitvnm.vimusic.utils.currentWindow
 import it.vfsfitvnm.vimusic.utils.DisposableListener
+import it.vfsfitvnm.vimusic.utils.currentWindow
 import it.vfsfitvnm.vimusic.utils.thumbnail
 import java.net.UnknownHostException
 import java.nio.channels.UnresolvedAddressException
@@ -92,7 +91,7 @@ fun Thumbnail(
         transitionSpec = {
             val duration = 500
             val slideDirection =
-                if (targetState.firstPeriodIndex > initialState.firstPeriodIndex) AnimatedContentScope.SlideDirection.Left else AnimatedContentScope.SlideDirection.Right
+                if (targetState.firstPeriodIndex > initialState.firstPeriodIndex) AnimatedContentTransitionScope.SlideDirection.Left else AnimatedContentTransitionScope.SlideDirection.Right
 
             ContentTransform(
                 targetContentEnter = slideIntoContainer(
@@ -116,12 +115,13 @@ fun Thumbnail(
                 sizeTransform = SizeTransform(clip = false)
             )
         },
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
+        label = ""
     ) {currentWindow ->
         Box(
             modifier = modifier
                 .aspectRatio(1f)
-                .clip(LocalAppearance.current.thumbnailShape)
+                .clip(Dimensions.thumbnailShape)
                 .size(thumbnailSizeDp)
         ) {
             AsyncImage(

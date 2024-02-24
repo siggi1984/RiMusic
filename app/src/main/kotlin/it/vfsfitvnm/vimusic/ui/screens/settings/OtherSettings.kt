@@ -10,15 +10,15 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SnapshotMutationPolicy
 import androidx.compose.runtime.collectAsState
@@ -28,12 +28,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import it.vfsfitvnm.vimusic.Database
-import it.vfsfitvnm.vimusic.LocalPlayerAwareWindowInsets
+import it.vfsfitvnm.vimusic.R
 import it.vfsfitvnm.vimusic.query
 import it.vfsfitvnm.vimusic.service.PlayerMediaBrowserService
-import it.vfsfitvnm.vimusic.ui.components.themed.Header
-import it.vfsfitvnm.vimusic.ui.styling.LocalAppearance
+import it.vfsfitvnm.vimusic.ui.styling.Dimensions
 import it.vfsfitvnm.vimusic.utils.isAtLeastAndroid12
 import it.vfsfitvnm.vimusic.utils.isAtLeastAndroid6
 import it.vfsfitvnm.vimusic.utils.isIgnoringBatteryOptimizations
@@ -48,7 +49,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @Composable
 fun OtherSettings() {
     val context = LocalContext.current
-    val (colorPalette) = LocalAppearance.current
 
     var isAndroidAutoEnabled by remember {
         val component = ComponentName(context, PlayerMediaBrowserService::class.java)
@@ -89,63 +89,61 @@ fun OtherSettings() {
 
     Column(
         modifier = Modifier
-            .background(colorPalette.background0)
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(
-                LocalPlayerAwareWindowInsets.current
-                    .only(WindowInsetsSides.Vertical + WindowInsetsSides.End)
-                    .asPaddingValues()
-            )
+            .padding(vertical = 16.dp)
     ) {
-        Header(title = "Other")
-
-        SettingsEntryGroupText(title = "ANDROID AUTO")
-
-        SettingsDescription(text = "Remember to enable \"Unknown sources\" in the Developer Settings of Android Auto.")
+        Text(
+            text = stringResource(id = R.string.android_auto),
+            modifier = Modifier.padding(horizontal = 16.dp),
+            style = MaterialTheme.typography.titleMedium
+        )
 
         SwitchSettingEntry(
-            title = "Android Auto",
-            text = "Enable Android Auto support",
+            title = stringResource(id = R.string.android_auto),
+            text = stringResource(id = R.string.android_auto_description),
             isChecked = isAndroidAutoEnabled,
             onCheckedChange = { isAndroidAutoEnabled = it }
         )
 
-        SettingsGroupSpacer()
+        SettingsInformation(text = stringResource(id = R.string.android_auto_information))
 
-        SettingsEntryGroupText(title = "SEARCH HISTORY")
+        Spacer(modifier = Modifier.height(Dimensions.spacer))
+
+        Text(
+            text = stringResource(id = R.string.search_history),
+            modifier = Modifier.padding(horizontal = 16.dp),
+            style = MaterialTheme.typography.titleMedium
+        )
 
         SwitchSettingEntry(
-            title = "Pause search history",
-            text = "Neither save new searched queries nor show history",
+            title = stringResource(id = R.string.pause_search_history),
+            text = stringResource(id = R.string.pause_search_history_description),
             isChecked = pauseSearchHistory,
             onCheckedChange = { pauseSearchHistory = it }
         )
 
         SettingsEntry(
-            title = "Clear search history",
+            title = stringResource(id = R.string.clear_search_history),
             text = if (queriesCount > 0) {
                 "Delete $queriesCount search queries"
             } else {
                 "History is empty"
             },
-            isEnabled = queriesCount > 0,
-            onClick = { query(Database::clearQueries) }
+            onClick = { query(Database::clearQueries) },
+            isEnabled = queriesCount > 0
         )
 
-        SettingsGroupSpacer()
+        Spacer(modifier = Modifier.height(Dimensions.spacer))
 
-        SettingsEntryGroupText(title = "SERVICE LIFETIME")
-
-        ImportantSettingsDescription(text = "If battery optimizations are applied, the playback notification can suddenly disappear when paused.")
-
-        if (isAtLeastAndroid12) {
-            SettingsDescription(text = "Since Android 12, disabling battery optimizations is required for the \"Invincible service\" option to take effect.")
-        }
+        Text(
+            text = stringResource(id = R.string.service_lifetime),
+            modifier = Modifier.padding(horizontal = 16.dp),
+            style = MaterialTheme.typography.titleMedium
+        )
 
         SettingsEntry(
-            title = "Ignore battery optimizations",
-            isEnabled = !isIgnoringBatteryOptimizations,
+            title = stringResource(id = R.string.ignore_battery_optimizations),
             text = if (isIgnoringBatteryOptimizations) {
                 "Already unrestricted"
             } else {
@@ -169,14 +167,20 @@ fun OtherSettings() {
                         context.toast("Couldn't find battery optimization settings, please whitelist ViMusic manually")
                     }
                 }
-            }
+            },
+            isEnabled = !isIgnoringBatteryOptimizations
         )
 
         SwitchSettingEntry(
-            title = "Invincible service",
-            text = "When turning off battery optimizations is not enough",
+            title = stringResource(id = R.string.service_lifetime),
+            text = stringResource(id = R.string.service_lifetime_description),
             isChecked = isInvincibilityEnabled,
             onCheckedChange = { isInvincibilityEnabled = it }
+        )
+
+        SettingsInformation(
+            text = stringResource(id = R.string.service_lifetime_information) +
+                    if (isAtLeastAndroid12) "\n" + stringResource(id = R.string.service_lifetime_information_plus) else ""
         )
     }
 }

@@ -8,7 +8,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 
 fun Modifier.verticalFadingEdge() =
-    graphicsLayer(alpha = 0.99f)
+    this
+        .graphicsLayer(alpha = 0.99f)
         .drawWithContent {
             drawContent()
             drawRect(

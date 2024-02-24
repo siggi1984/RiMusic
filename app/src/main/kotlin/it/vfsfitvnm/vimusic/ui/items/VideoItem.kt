@@ -6,26 +6,24 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import it.vfsfitvnm.innertube.Innertube
 import it.vfsfitvnm.vimusic.ui.components.themed.TextPlaceholder
-import it.vfsfitvnm.vimusic.ui.styling.LocalAppearance
+import it.vfsfitvnm.vimusic.ui.styling.Dimensions
 import it.vfsfitvnm.vimusic.ui.styling.onOverlay
 import it.vfsfitvnm.vimusic.ui.styling.overlay
 import it.vfsfitvnm.vimusic.ui.styling.shimmer
-import it.vfsfitvnm.vimusic.utils.color
-import it.vfsfitvnm.vimusic.utils.medium
-import it.vfsfitvnm.vimusic.utils.secondary
-import it.vfsfitvnm.vimusic.utils.semiBold
-import it.vfsfitvnm.innertube.Innertube
 
 @Composable
 fun VideoItem(
@@ -57,8 +55,6 @@ fun VideoItem(
     thumbnailWidthDp: Dp,
     modifier: Modifier = Modifier
 ) {
-    val (colorPalette, typography, thumbnailShape) = LocalAppearance.current
-
     ItemContainer(
         alternative = false,
         thumbnailSizeDp = 0.dp,
@@ -70,19 +66,23 @@ fun VideoItem(
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .clip(thumbnailShape)
+                    .clip(Dimensions.thumbnailShape)
                     .size(width = thumbnailWidthDp, height = thumbnailHeightDp)
             )
 
             duration?.let {
-                BasicText(
+                Text(
                     text = duration,
-                    style = typography.xxs.medium.color(colorPalette.onOverlay),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onOverlay,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                         .padding(all = 4.dp)
-                        .background(color = colorPalette.overlay, shape = RoundedCornerShape(2.dp))
+                        .background(
+                            color = MaterialTheme.colorScheme.overlay,
+                            shape = RoundedCornerShape(2.dp)
+                        )
                         .padding(horizontal = 4.dp, vertical = 2.dp)
                         .align(Alignment.BottomEnd)
                 )
@@ -90,28 +90,32 @@ fun VideoItem(
         }
 
         ItemInfoContainer {
-            BasicText(
+            Text(
                 text = title ?: "",
-                style = typography.xs.semiBold,
+                style = MaterialTheme.typography.bodyMedium,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
 
-            BasicText(
+            Text(
                 text = uploader ?: "",
-                style = typography.xs.semiBold.secondary,
+                style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .padding(top = 2.dp)
+                    .alpha(Dimensions.mediumOpacity)
             )
 
             views?.let {
-                BasicText(
+                Text(
                     text = views,
-                    style = typography.xxs.medium.secondary,
+                    style = MaterialTheme.typography.bodySmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                         .padding(top = 4.dp)
+                        .alpha(Dimensions.mediumOpacity)
                 )
             }
         }
@@ -124,8 +128,6 @@ fun VideoItemPlaceholder(
     thumbnailWidthDp: Dp,
     modifier: Modifier = Modifier
 ) {
-    val (colorPalette, _, thumbnailShape) = LocalAppearance.current
-
     ItemContainer(
         alternative = false,
         thumbnailSizeDp = 0.dp,
@@ -133,7 +135,10 @@ fun VideoItemPlaceholder(
     ) {
         Spacer(
             modifier = Modifier
-                .background(color = colorPalette.shimmer, shape = thumbnailShape)
+                .background(
+                    color = MaterialTheme.colorScheme.shimmer,
+                    shape = Dimensions.thumbnailShape
+                )
                 .size(width = thumbnailWidthDp, height = thumbnailHeightDp)
         )
 

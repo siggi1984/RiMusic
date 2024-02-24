@@ -12,11 +12,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.BasicText
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -24,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.CacheSpan
@@ -33,18 +36,16 @@ import it.vfsfitvnm.innertube.requests.player
 import it.vfsfitvnm.vimusic.Database
 import it.vfsfitvnm.vimusic.LocalPlayerServiceBinder
 import it.vfsfitvnm.vimusic.models.Format
-import it.vfsfitvnm.vimusic.ui.styling.LocalAppearance
 import it.vfsfitvnm.vimusic.ui.styling.onOverlay
 import it.vfsfitvnm.vimusic.ui.styling.overlay
-import it.vfsfitvnm.vimusic.utils.color
-import it.vfsfitvnm.vimusic.utils.medium
-import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.withContext
+import kotlin.math.roundToInt
 
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 @Composable
 fun StatsForNerds(
     mediaId: String,
@@ -52,7 +53,6 @@ fun StatsForNerds(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val (colorPalette, typography) = LocalAppearance.current
     val context = LocalContext.current
     val binder = LocalPlayerServiceBinder.current ?: return
 
@@ -62,7 +62,7 @@ fun StatsForNerds(
         exit = fadeOut(),
     ) {
         var cachedBytes by remember(mediaId) {
-            mutableStateOf(binder.cache.getCachedBytes(mediaId, 0, -1))
+            mutableLongStateOf(binder.cache.getCachedBytes(mediaId, 0, -1))
         }
 
         var format by remember {
@@ -129,7 +129,7 @@ fun StatsForNerds(
                         }
                     )
                 }
-                .background(colorPalette.overlay)
+                .background(MaterialTheme.colorScheme.overlay)
                 .fillMaxSize()
         ) {
             Row(
@@ -139,55 +139,75 @@ fun StatsForNerds(
                     .padding(all = 16.dp)
             ) {
                 Column(horizontalAlignment = Alignment.End) {
-                    BasicText(
+                    Text(
                         text = "Id",
-                        style = typography.xs.medium.color(colorPalette.onOverlay)
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onOverlay,
+                        textAlign = TextAlign.Center
                     )
-                    BasicText(
+                    Text(
                         text = "Itag",
-                        style = typography.xs.medium.color(colorPalette.onOverlay)
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onOverlay,
+                        textAlign = TextAlign.Center
                     )
-                    BasicText(
+                    Text(
                         text = "Bitrate",
-                        style = typography.xs.medium.color(colorPalette.onOverlay)
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onOverlay,
+                        textAlign = TextAlign.Center
                     )
-                    BasicText(
+                    Text(
                         text = "Size",
-                        style = typography.xs.medium.color(colorPalette.onOverlay)
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onOverlay,
+                        textAlign = TextAlign.Center
                     )
-                    BasicText(
+                    Text(
                         text = "Cached",
-                        style = typography.xs.medium.color(colorPalette.onOverlay)
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onOverlay,
+                        textAlign = TextAlign.Center
                     )
-                    BasicText(
+                    Text(
                         text = "Loudness",
-                        style = typography.xs.medium.color(colorPalette.onOverlay)
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onOverlay,
+                        textAlign = TextAlign.Center
                     )
                 }
 
                 Column {
-                    BasicText(
+                    Text(
                         text = mediaId,
                         maxLines = 1,
-                        style = typography.xs.medium.color(colorPalette.onOverlay)
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onOverlay,
+                        textAlign = TextAlign.Center
                     )
-                    BasicText(
+                    Text(
                         text = format?.itag?.toString() ?: "Unknown",
                         maxLines = 1,
-                        style = typography.xs.medium.color(colorPalette.onOverlay)
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onOverlay,
+                        textAlign = TextAlign.Center
                     )
-                    BasicText(
+                    Text(
                         text = format?.bitrate?.let { "${it / 1000} kbps" } ?: "Unknown",
                         maxLines = 1,
-                        style = typography.xs.medium.color(colorPalette.onOverlay)
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onOverlay,
+                        textAlign = TextAlign.Center
                     )
-                    BasicText(
+                    Text(
                         text = format?.contentLength
                             ?.let { Formatter.formatShortFileSize(context, it) } ?: "Unknown",
                         maxLines = 1,
-                        style = typography.xs.medium.color(colorPalette.onOverlay)
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onOverlay,
+                        textAlign = TextAlign.Center
                     )
-                    BasicText(
+                    Text(
                         text = buildString {
                             append(Formatter.formatShortFileSize(context, cachedBytes))
 
@@ -196,12 +216,16 @@ fun StatsForNerds(
                             }
                         },
                         maxLines = 1,
-                        style = typography.xs.medium.color(colorPalette.onOverlay)
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onOverlay,
+                        textAlign = TextAlign.Center
                     )
-                    BasicText(
+                    Text(
                         text = format?.loudnessDb?.let { "%.2f dB".format(it) } ?: "Unknown",
                         maxLines = 1,
-                        style = typography.xs.medium.color(colorPalette.onOverlay)
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onOverlay,
+                        textAlign = TextAlign.Center
                     )
                 }
             }

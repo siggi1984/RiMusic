@@ -1,18 +1,19 @@
 plugins {
-    id("com.android.application")
-    kotlin("android")
-    kotlin("kapt")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin)
+    alias(libs.plugins.kotlin.ksp)
 }
 
 android {
-    compileSdk = 33
+    namespace = "it.vfsfitvnm.vimusic"
+    compileSdk = 34
 
     defaultConfig {
-        applicationId = "it.vfsfitvnm.vimusic"
+        applicationId = "com.github.musicyou"
         minSdk = 21
-        targetSdk = 33
-        versionCode = 20
-        versionName = "0.5.4"
+        targetSdk = 34
+        versionCode = 1
+        versionName = "0.1"
     }
 
     splits {
@@ -22,20 +23,14 @@ android {
         }
     }
 
-    namespace = "it.vfsfitvnm.vimusic"
-
     buildTypes {
-        debug {
-            applicationIdSuffix = ".debug"
-            manifestPlaceholders["appName"] = "Debug"
-        }
-
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            manifestPlaceholders["appName"] = "ViMusic"
-            signingConfig = signingConfigs.getByName("debug")
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 
@@ -49,8 +44,8 @@ android {
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     composeOptions {
@@ -59,38 +54,33 @@ android {
 
     kotlinOptions {
         freeCompilerArgs += "-Xcontext-receivers"
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 }
 
-kapt {
-    arguments {
-        arg("room.schemaLocation", "$projectDir/schemas")
-    }
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 dependencies {
     implementation(projects.composePersist)
     implementation(projects.composeRouting)
     implementation(projects.composeReordering)
-
+    implementation(platform(libs.compose.bom))
     implementation(libs.compose.activity)
-    implementation(libs.compose.foundation)
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.util)
     implementation(libs.compose.ripple)
     implementation(libs.compose.shimmer)
     implementation(libs.compose.coil)
-
+    implementation(libs.compose.material.icons)
+    implementation(libs.compose.material3)
+    implementation(libs.core.splashscreen)
     implementation(libs.palette)
-
     implementation(libs.exoplayer)
-
     implementation(libs.room)
-    kapt(libs.room.compiler)
-
+    ksp(libs.room.compiler)
     implementation(projects.innertube)
     implementation(projects.kugou)
-
     coreLibraryDesugaring(libs.desugaring)
 }

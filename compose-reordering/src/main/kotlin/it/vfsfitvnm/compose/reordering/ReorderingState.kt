@@ -1,29 +1,26 @@
-@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
-
 package it.vfsfitvnm.compose.reordering
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.lazy.LazyListBeyondBoundsInfo
 import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.PointerInputChange
-import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.roundToInt
 
 @Stable
 class ReorderingState(
@@ -34,15 +31,13 @@ class ReorderingState(
     internal val onDragEnd: (Int, Int) -> Unit,
     private val extraItemCount: Int
 ) {
-    private lateinit var lazyListBeyondBoundsInfoInterval: LazyListBeyondBoundsInfo.Interval
-    internal val lazyListBeyondBoundsInfo = LazyListBeyondBoundsInfo()
     internal val offset = Animatable(0, Int.VectorConverter)
 
-    internal var draggingIndex by mutableStateOf(-1)
-    internal var reachedIndex by mutableStateOf(-1)
-    internal var draggingItemSize by mutableStateOf(0)
+    internal var draggingIndex by mutableIntStateOf(-1)
+    internal var reachedIndex by mutableIntStateOf(-1)
+    internal var draggingItemSize by mutableIntStateOf(0)
 
-    lateinit var itemInfo: LazyListItemInfo
+    private lateinit var itemInfo: LazyListItemInfo
 
     private var previousItemSize = 0
     private var nextItemSize = 0
@@ -52,7 +47,7 @@ class ReorderingState(
     internal var indexesToAnimate = mutableStateMapOf<Int, Animatable<Int, AnimationVector1D>>()
     private var animatablesPool: AnimatablesPool<Int, AnimationVector1D>? = null
 
-    val isDragging: Boolean
+    private val isDragging: Boolean
         get() = draggingIndex != -1
 
     fun onDragStart(index: Int) {
@@ -72,9 +67,6 @@ class ReorderingState(
             lowerBound = -index * draggingItemSize,
             upperBound = (lastIndex - index) * draggingItemSize
         )
-
-        lazyListBeyondBoundsInfoInterval =
-            lazyListBeyondBoundsInfo.addInterval(index + extraItemCount, index + extraItemCount)
 
         val size =
             lazyListState.layoutInfo.viewportEndOffset - lazyListState.layoutInfo.viewportStartOffset
@@ -180,7 +172,6 @@ class ReorderingState(
                 offset.snapTo(0)
             }
 
-            lazyListBeyondBoundsInfo.removeInterval(lazyListBeyondBoundsInfoInterval)
             animatablesPool = null
         }
     }

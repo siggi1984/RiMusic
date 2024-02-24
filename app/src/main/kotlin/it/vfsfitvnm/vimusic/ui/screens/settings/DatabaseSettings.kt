@@ -5,43 +5,43 @@ import android.content.ActivityNotFoundException
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import it.vfsfitvnm.vimusic.Database
-import it.vfsfitvnm.vimusic.LocalPlayerAwareWindowInsets
+import it.vfsfitvnm.vimusic.R
 import it.vfsfitvnm.vimusic.internal
 import it.vfsfitvnm.vimusic.path
 import it.vfsfitvnm.vimusic.query
 import it.vfsfitvnm.vimusic.service.PlayerService
-import it.vfsfitvnm.vimusic.ui.components.themed.Header
-import it.vfsfitvnm.vimusic.ui.styling.LocalAppearance
+import it.vfsfitvnm.vimusic.ui.styling.Dimensions
 import it.vfsfitvnm.vimusic.utils.intent
 import it.vfsfitvnm.vimusic.utils.toast
+import kotlinx.coroutines.flow.distinctUntilChanged
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import kotlin.system.exitProcess
-import kotlinx.coroutines.flow.distinctUntilChanged
 
 @ExperimentalAnimationApi
 @Composable
 fun DatabaseSettings() {
     val context = LocalContext.current
-    val (colorPalette) = LocalAppearance.current
 
     val eventsCount by remember {
         Database.eventsCount().distinctUntilChanged()
@@ -56,7 +56,7 @@ fun DatabaseSettings() {
 
                 context.applicationContext.contentResolver.openOutputStream(uri)
                     ?.use { outputStream ->
-                        FileInputStream(Database.internal.path).use { inputStream ->
+                        FileInputStream(internal.path).use { inputStream ->
                             inputStream.copyTo(outputStream)
                         }
                     }
@@ -69,11 +69,11 @@ fun DatabaseSettings() {
 
             query {
                 Database.checkpoint()
-                Database.internal.close()
+                internal.close()
 
                 context.applicationContext.contentResolver.openInputStream(uri)
                     ?.use { inputStream ->
-                        FileOutputStream(Database.internal.path).use { outputStream ->
+                        FileOutputStream(internal.path).use { outputStream ->
                             inputStream.copyTo(outputStream)
                         }
                     }
@@ -85,60 +85,63 @@ fun DatabaseSettings() {
 
     Column(
         modifier = Modifier
-            .background(colorPalette.background0)
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(
-                LocalPlayerAwareWindowInsets.current
-                    .only(WindowInsetsSides.Vertical + WindowInsetsSides.End)
-                    .asPaddingValues()
-            )
+            .padding(vertical = 16.dp)
     ) {
-        Header(title = "Database")
-
-        SettingsEntryGroupText(title = "CLEANUP")
+        Text(
+            text = stringResource(id = R.string.cleanup),
+            modifier = Modifier.padding(horizontal = 16.dp),
+            style = MaterialTheme.typography.titleMedium
+        )
 
         SettingsEntry(
-            title = "Reset quick picks",
+            title = stringResource(id = R.string.reset_quick_picks),
             text = if (eventsCount > 0) {
                 "Delete $eventsCount playback events"
             } else {
                 "Quick picks are cleared"
             },
-            isEnabled = eventsCount > 0,
-            onClick = { query(Database::clearEvents) }
+            onClick = { query(Database::clearEvents) },
+            isEnabled = eventsCount > 0
         )
 
-        SettingsGroupSpacer()
+        Spacer(modifier = Modifier.height(Dimensions.spacer))
 
-        SettingsEntryGroupText(title = "BACKUP")
-
-        SettingsDescription(text = "Personal preferences (i.e. the theme mode) and the cache are excluded.")
+        Text(
+            text = stringResource(id = R.string.backup),
+            modifier = Modifier.padding(horizontal = 16.dp),
+            style = MaterialTheme.typography.titleMedium
+        )
 
         SettingsEntry(
-            title = "Backup",
-            text = "Export the database to the external storage",
+            title = stringResource(id = R.string.backup),
+            text = stringResource(id = R.string.backup_description),
             onClick = {
                 @SuppressLint("SimpleDateFormat")
                 val dateFormat = SimpleDateFormat("yyyyMMddHHmmss")
 
                 try {
-                    backupLauncher.launch("vimusic_${dateFormat.format(Date())}.db")
+                    backupLauncher.launch("musicyou_${dateFormat.format(Date())}.db")
                 } catch (e: ActivityNotFoundException) {
                     context.toast("Couldn't find an application to create documents")
                 }
             }
         )
 
-        SettingsGroupSpacer()
+        SettingsInformation(text = stringResource(id = R.string.backup_information))
 
-        SettingsEntryGroupText(title = "RESTORE")
+        Spacer(modifier = Modifier.height(Dimensions.spacer))
 
-        ImportantSettingsDescription(text = "Existing data will be overwritten.\n${context.applicationInfo.nonLocalizedLabel} will automatically close itself after restoring the database.")
+        Text(
+            text = stringResource(id = R.string.restore),
+            modifier = Modifier.padding(horizontal = 16.dp),
+            style = MaterialTheme.typography.titleMedium
+        )
 
         SettingsEntry(
-            title = "Restore",
-            text = "Import the database from the external storage",
+            title = stringResource(id = R.string.restore),
+            text = stringResource(id = R.string.restore_description),
             onClick = {
                 try {
                     restoreLauncher.launch(
@@ -153,5 +156,7 @@ fun DatabaseSettings() {
                 }
             }
         )
+
+        SettingsInformation(text = stringResource(id = R.string.restore_information))
     }
 }

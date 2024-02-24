@@ -14,6 +14,7 @@ import it.vfsfitvnm.innertube.utils.plus
 import it.vfsfitvnm.vimusic.models.Song
 
 val Innertube.SongItem.asMediaItem: MediaItem
+    @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     get() = MediaItem.Builder()
         .setMediaId(key)
         .setUri(key)
@@ -37,6 +38,7 @@ val Innertube.SongItem.asMediaItem: MediaItem
         .build()
 
 val Innertube.VideoItem.asMediaItem: MediaItem
+    @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     get() = MediaItem.Builder()
         .setMediaId(key)
         .setUri(key)
@@ -58,6 +60,7 @@ val Innertube.VideoItem.asMediaItem: MediaItem
         .build()
 
 val Song.asMediaItem: MediaItem
+    @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     get() = MediaItem.Builder()
         .setMediaMetadata(
             MediaMetadata.Builder()

@@ -1,5 +1,6 @@
 package it.vfsfitvnm.vimusic.ui.styling
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -9,11 +10,11 @@ import androidx.compose.ui.unit.dp
 @Suppress("ClassName")
 object Dimensions {
     val itemsVerticalPadding = 8.dp
-
-    val navigationRailWidth = 64.dp
-    val navigationRailWidthLandscape = 128.dp
-    val navigationRailIconOffset = 6.dp
-    val headerHeight = 140.dp
+    const val mediumOpacity = 0.75F
+    const val lowOpacity = 0.5F
+    val spacer = 16.dp
+    private val thumbnailSize = 8.dp
+    val thumbnailShape = RoundedCornerShape(thumbnailSize)
 
     object thumbnails {
         val album = 128.dp
@@ -29,8 +30,6 @@ object Dimensions {
                 }.dp
         }
     }
-
-    val collapsedPlayer = 64.dp
 }
 
 inline val Dp.px: Int
