@@ -113,4 +113,10 @@
     <string name="rename_playlist">Renombrar la lista</string>
     <string name="import_playlist">Importar la lista</string>
     <string name="enter_lyrics">Introduce la letra</string>
+    <string name="network_error">Ha ocurrido un error de conexión</string>
+    <string name="playable_format_not_found_error">No se pudo encontrar un formato de audio compatible</string>
+    <string name="video_source_deleted_error">La fuente de vídeo original de está canción ha sido borrada</string>
+    <string name="server_restrictions_error">Esta canción no puede ser reproducida debido a restricciones del servidor</string>
+    <string name="id_mismatch_error">El identificador del vídeo no se corresponde con el que se solicitó</string>
+    <string name="unknown_playback_error">Ha ocurrido un error de reproducción desconocido</string>
 </resources>

@@ -116,4 +116,10 @@
     <string name="rename_playlist">Rename playlist</string>
     <string name="import_playlist">Import playlist</string>
     <string name="enter_lyrics">Enter the lyrics</string>
+    <string name="network_error">A network error has occurred</string>
+    <string name="playable_format_not_found_error">Couldn\'t find a playable audio format</string>
+    <string name="video_source_deleted_error">The original video source of this song has been deleted</string>
+    <string name="server_restrictions_error">This song cannot be played due to server restrictions</string>
+    <string name="id_mismatch_error">The returned video id doesn\'t match the requested one</string>
+    <string name="unknown_playback_error">An unknown playback error has occurred</string>
 </resources>
