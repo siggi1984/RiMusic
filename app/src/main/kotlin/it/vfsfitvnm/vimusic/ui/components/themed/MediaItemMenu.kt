@@ -401,7 +401,9 @@ fun MediaItemMenu(
                         MenuEntry(
                             icon = Icons.AutoMirrored.Outlined.QueueMusic,
                             text = playlistPreview.playlist.name,
-                            secondaryText = "${playlistPreview.songCount} " + stringResource(id = R.string.song_count).lowercase(),
+                            secondaryText =
+                            if (playlistPreview.songCount == 1) "1 ${stringResource(id = R.string.song).lowercase()}"
+                            else "${playlistPreview.songCount} ${stringResource(id = R.string.songs).lowercase()}",
                             onClick = {
                                 onDismiss()
                                 onAddToPlaylist(playlistPreview.playlist, playlistPreview.songCount)
