@@ -150,6 +150,7 @@ fun PlaylistScreen(browseId: String) {
 
                     if (isImportingPlaylist) {
                         TextFieldDialog(
+                            title = stringResource(id = R.string.import_playlist),
                             hintText = stringResource(id = R.string.playlist_name_hint),
                             initialTextInput = playlistPage?.title ?: "",
                             onDismiss = { isImportingPlaylist = false },

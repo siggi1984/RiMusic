@@ -163,6 +163,7 @@ fun LocalPlaylistScreen(playlistId: Long) {
 
                     if (isRenaming) {
                         TextFieldDialog(
+                            title = stringResource(id = R.string.rename_playlist),
                             hintText = stringResource(id = R.string.playlist_name_hint),
                             initialTextInput = playlistWithSongs?.playlist?.name ?: "",
                             onDismiss = { isRenaming = false },

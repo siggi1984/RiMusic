@@ -350,6 +350,7 @@ fun MediaItemMenu(
 
             if (isCreatingNewPlaylist && onAddToPlaylist != null) {
                 TextFieldDialog(
+                    title = stringResource(id = R.string.new_playlist),
                     hintText = stringResource(id = R.string.playlist_name_hint),
                     onDismiss = { isCreatingNewPlaylist = false },
                     onDone = { text ->

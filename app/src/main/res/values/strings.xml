@@ -113,4 +113,7 @@
     <string name="no_items_found">No items found</string>
     <string name="no_results_found">No results found. Please try a different query or category</string>
     <string name="open_queue">Open queue</string>
+    <string name="rename_playlist">Rename playlist</string>
+    <string name="import_playlist">Import playlist</string>
+    <string name="enter_lyrics">Enter the lyrics</string>
 </resources>

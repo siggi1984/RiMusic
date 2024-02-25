@@ -33,6 +33,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun TextFieldDialog(
+    title: String,
     hintText: String,
     onDismiss: () -> Unit,
     onDone: (String) -> Unit,
@@ -77,6 +78,9 @@ fun TextFieldDialog(
             TextButton(onClick = onCancel) {
                 Text(text = cancelText)
             }
+        },
+        title = {
+            Text(text = title)
         },
         text = {
             Column {

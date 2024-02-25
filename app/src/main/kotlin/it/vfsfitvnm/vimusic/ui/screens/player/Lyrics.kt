@@ -167,7 +167,8 @@ fun Lyrics(
 
         if (isEditing) {
             TextFieldDialog(
-                hintText = "Enter the lyrics",
+                title = stringResource(id = R.string.edit_lyrics),
+                hintText = stringResource(id = R.string.enter_lyrics),
                 initialTextInput = text ?: "",
                 singleLine = false,
                 maxLines = 10,

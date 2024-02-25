@@ -69,6 +69,7 @@ fun HomePlaylists(
 
     if (isCreatingANewPlaylist) {
         TextFieldDialog(
+            title = stringResource(id = R.string.new_playlist),
             hintText = stringResource(id = R.string.playlist_name_hint),
             onDismiss = {
                 isCreatingANewPlaylist = false
