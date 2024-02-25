@@ -12,7 +12,6 @@ import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -223,10 +222,10 @@ fun Player() {
             Text(
                 text = nextSongTitle,
                 style = MaterialTheme.typography.labelLarge,
-                overflow = TextOverflow.Ellipsis
+                modifier = Modifier.weight(1F),
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1
             )
-
-            Spacer(modifier = Modifier.weight(1F))
 
             IconButton(
                 onClick = {
