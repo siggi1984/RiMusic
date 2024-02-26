@@ -3,11 +3,8 @@ package it.vfsfitvnm.vimusic.ui.components.themed
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
@@ -30,11 +27,7 @@ inline fun Menu(
             modifier = modifier
                 .verticalScroll(rememberScrollState())
                 .fillMaxWidth()
-                .padding(
-                    bottom = WindowInsets.systemBars
-                        .asPaddingValues()
-                        .calculateBottomPadding()
-                ),
+                .navigationBarsPadding(),
             content = content
         )
     }
