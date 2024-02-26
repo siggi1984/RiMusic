@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.neverEqualPolicy
 import androidx.compose.runtime.remember
@@ -118,12 +120,26 @@ fun Player() {
     }
 
     val thumbnailContent: @Composable (modifier: Modifier) -> Unit = { modifier ->
+        var drag by remember {
+            mutableFloatStateOf(0F)
+        }
+
         Thumbnail(
             isShowingLyrics = isShowingLyrics,
             onShowLyrics = { isShowingLyrics = it },
             isShowingStatsForNerds = isShowingStatsForNerds,
             onShowStatsForNerds = { isShowingStatsForNerds = it },
-            modifier = modifier
+            modifier = modifier.pointerInput(Unit) {
+                detectHorizontalDragGestures(
+                    onHorizontalDrag = { _, dragAmount ->
+                        drag = dragAmount
+                    },
+                    onDragEnd = {
+                        if (drag > 0) binder.player.seekToPreviousMediaItem()
+                        else binder.player.seekToNextMediaItem()
+                    }
+                )
+            }
         )
     }
 
