@@ -192,9 +192,7 @@ fun Controls(
                         }
                     }
                 },
-                modifier = Modifier
-                    .weight(1f)
-                    .size(24.dp)
+                modifier = Modifier.weight(1F)
             ) {
                 Icon(
                     imageVector = if (likedAt == null) Icons.Outlined.FavoriteBorder else Icons.Filled.Favorite,
@@ -205,9 +203,7 @@ fun Controls(
 
             IconButton(
                 onClick = binder.player::forceSeekToPrevious,
-                modifier = Modifier
-                    .weight(1f)
-                    .size(24.dp)
+                modifier = Modifier.weight(1F)
             ) {
                 Icon(
                     imageVector = Icons.Outlined.SkipPrevious,
@@ -246,9 +242,7 @@ fun Controls(
 
             IconButton(
                 onClick = binder.player::forceSeekToNext,
-                modifier = Modifier
-                    .weight(1f)
-                    .size(24.dp)
+                modifier = Modifier.weight(1F)
             ) {
                 Icon(
                     imageVector = Icons.Outlined.SkipNext,
@@ -258,9 +252,7 @@ fun Controls(
 
             IconButton(
                 onClick = { trackLoopEnabled = !trackLoopEnabled },
-                modifier = Modifier
-                    .weight(1f)
-                    .size(24.dp)
+                modifier = Modifier.weight(1F)
             ) {
                 Icon(
                     imageVector = Icons.Outlined.RepeatOne,
@@ -271,8 +263,7 @@ fun Controls(
         }
 
         Spacer(
-            modifier = Modifier
-                .weight(1f)
+            modifier = Modifier.weight(1f)
         )
     }
 }
