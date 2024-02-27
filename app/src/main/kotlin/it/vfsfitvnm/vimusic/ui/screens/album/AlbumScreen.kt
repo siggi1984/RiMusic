@@ -192,7 +192,7 @@ fun AlbumScreen(browseId: String) {
                                 tag = "album/$browseId/alternatives",
                                 initialPlaceholderCount = 1,
                                 continuationPlaceholderCount = 1,
-                                emptyItemsText = "This album doesn't have any alternative version",
+                                emptyItemsText = stringResource(id = R.string.no_alternative_versions),
                                 itemsPageProvider = albumPage?.let {
                                     ({
                                         Result.success(

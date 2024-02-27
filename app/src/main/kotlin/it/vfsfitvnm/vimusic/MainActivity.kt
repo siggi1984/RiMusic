@@ -214,7 +214,7 @@ class MainActivity : ComponentActivity(), PersistMapOwner {
         intent?.data = null
         this.intent = null
 
-        Toast.makeText(this, "Opening url...", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.opening_url), Toast.LENGTH_SHORT).show()
 
         lifecycleScope.launch(Dispatchers.IO) {
             when (val path = uri.pathSegments.firstOrNull()) {
