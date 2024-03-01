@@ -217,7 +217,11 @@ fun Lyrics(
                     .align(Alignment.TopCenter)
             ) {
                 Text(
-                    text = "An error has occurred while fetching the ${if (isShowingSynchronizedLyrics) "synchronized " else ""}lyrics",
+                    text = if (isShowingSynchronizedLyrics) {
+                        stringResource(id = R.string.error_fetching_synchronized_lyrics)
+                    } else {
+                        stringResource(id = R.string.error_fetching_lyrics)
+                    },
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.White,
                     textAlign = TextAlign.Center,
@@ -236,7 +240,11 @@ fun Lyrics(
                     .align(Alignment.TopCenter)
             ) {
                 Text(
-                    text = "${if (isShowingSynchronizedLyrics) "Synchronized l" else "L"}yrics are not available for this song",
+                    text = if (isShowingSynchronizedLyrics) {
+                        stringResource(id = R.string.synchronized_lyrics_not_available)
+                    } else {
+                        stringResource(id = R.string.lyrics_not_available)
+                    },
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.White,
                     textAlign = TextAlign.Center,
@@ -332,12 +340,14 @@ fun Lyrics(
                         Menu {
                             MenuEntry(
                                 icon = Icons.Outlined.Schedule,
-                                text = if (isShowingSynchronizedLyrics) stringResource(id = R.string.show_unsynchronized_lyrics) else stringResource(
-                                    id = R.string.show_synchronized_lyrics
-                                ),
-                                secondaryText = if (isShowingSynchronizedLyrics) null else stringResource(
-                                    id = R.string.provided_by_kugou
-                                ),
+                                text = if (isShowingSynchronizedLyrics) {
+                                    stringResource(id = R.string.show_unsynchronized_lyrics)
+                                } else {
+                                    stringResource(id = R.string.show_synchronized_lyrics)
+                                },
+                                secondaryText = if (isShowingSynchronizedLyrics) null else {
+                                    stringResource(id = R.string.provided_by_kugou)
+                                },
                                 onClick = {
                                     menuState.hide()
                                     isShowingSynchronizedLyrics =
@@ -378,7 +388,7 @@ fun Lyrics(
 
                             MenuEntry(
                                 icon = Icons.Outlined.Download,
-                                text = "Fetch lyrics again",
+                                text = stringResource(id = R.string.fetch_lyrics_again),
                                 enabled = lyrics != null,
                                 onClick = {
                                     menuState.hide()

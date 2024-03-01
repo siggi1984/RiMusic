@@ -98,9 +98,9 @@ fun DatabaseSettings() {
         SettingsEntry(
             title = stringResource(id = R.string.reset_quick_picks),
             text = if (eventsCount > 0) {
-                "Delete $eventsCount playback events"
+                stringResource(id = R.string.delete_playback_events, eventsCount)
             } else {
-                "Quick picks are cleared"
+                stringResource(id = R.string.quick_picks_cleared)
             },
             onClick = { query(Database::clearEvents) },
             isEnabled = eventsCount > 0

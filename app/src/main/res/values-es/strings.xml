@@ -121,4 +121,15 @@
     <string name="unknown_playback_error">Ha ocurrido un error de reproducción desconocido</string>
     <string name="opening_url">Abriendo el enlace</string>
     <string name="no_alternative_versions">Este álbum no tiene ninguna versión alternativa</string>
+    <string name="fetch_lyrics_again">Cargar las letras de nuevo</string>
+    <string name="lyrics_not_available">La letra no está disponible para esta canción</string>
+    <string name="synchronized_lyrics_not_available">La letra sincronizada no está disponible para esta canción</string>
+    <string name="error_fetching_lyrics">Ha ocurrido un error al cargar la letra</string>
+    <string name="error_fetching_synchronized_lyrics">Ha ocurrido un error al cargar la letra no sincronizada</string>
+    <string name="delete_playback_events">Eliminar %d eventos de reproducción</string>
+    <string name="quick_picks_cleared">Las selecciones rápidas están eliminadas</string>
+    <string name="delete_search_queries">Eliminar %d entradas de búsqueda</string>
+    <string name="history_is_empty">El historial está vacío</string>
+    <string name="already_unrestricted">Ya sin restricciones</string>
+    <string name="disable_background_restrictions">Desactivar las restricciones en segundo plano</string>
 </resources>

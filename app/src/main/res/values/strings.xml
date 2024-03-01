@@ -124,4 +124,15 @@
     <string name="unknown_playback_error">An unknown playback error has occurred</string>
     <string name="opening_url">Opening url</string>
     <string name="no_alternative_versions">This album doesn\'t have any alternative versions</string>
+    <string name="fetch_lyrics_again">Fetch lyrics again</string>
+    <string name="lyrics_not_available">Lyrics are not available for this song</string>
+    <string name="synchronized_lyrics_not_available">Synchronized lyrics are not available for this song</string>
+    <string name="error_fetching_lyrics">An error has occurred while fetching the lyrics</string>
+    <string name="error_fetching_synchronized_lyrics">An error has occurred while fetching the synchronized lyrics</string>
+    <string name="delete_playback_events">Delete %d playback events</string>
+    <string name="quick_picks_cleared">Quick picks are cleared</string>
+    <string name="delete_search_queries">Delete %d search queries</string>
+    <string name="history_is_empty">History is empty</string>
+    <string name="already_unrestricted">Already unrestricted</string>
+    <string name="disable_background_restrictions">Disable background restrictions</string>
 </resources>

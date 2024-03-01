@@ -126,9 +126,9 @@ fun OtherSettings() {
         SettingsEntry(
             title = stringResource(id = R.string.clear_search_history),
             text = if (queriesCount > 0) {
-                "Delete $queriesCount search queries"
+                stringResource(id = R.string.delete_search_queries, queriesCount)
             } else {
-                "History is empty"
+                stringResource(id = R.string.history_is_empty)
             },
             onClick = { query(Database::clearQueries) },
             isEnabled = queriesCount > 0
@@ -145,9 +145,9 @@ fun OtherSettings() {
         SettingsEntry(
             title = stringResource(id = R.string.ignore_battery_optimizations),
             text = if (isIgnoringBatteryOptimizations) {
-                "Already unrestricted"
+                stringResource(id = R.string.already_unrestricted)
             } else {
-                "Disable background restrictions"
+                stringResource(id = R.string.disable_background_restrictions)
             },
             onClick = {
                 if (!isAtLeastAndroid6) return@SettingsEntry
