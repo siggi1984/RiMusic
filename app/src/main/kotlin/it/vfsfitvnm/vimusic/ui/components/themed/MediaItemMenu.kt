@@ -25,7 +25,6 @@ import androidx.compose.material.icons.outlined.Alarm
 import androidx.compose.material.icons.outlined.Album
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Equalizer
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.PlaylistRemove
@@ -162,8 +161,9 @@ fun NonQueuedMediaItemMenu(
     val binder = LocalPlayerServiceBinder.current
 
     BaseMediaItemMenu(
-        mediaItem = mediaItem,
         onDismiss = onDismiss,
+        mediaItem = mediaItem,
+        modifier = modifier,
         onStartRadio = {
             binder?.stopRadio()
             binder?.player?.forcePlay(mediaItem)
@@ -178,8 +178,7 @@ fun NonQueuedMediaItemMenu(
         onEnqueue = { binder?.player?.enqueue(mediaItem) },
         onRemoveFromPlaylist = onRemoveFromPlaylist,
         onHideFromDatabase = onHideFromDatabase,
-        onRemoveFromQuickPicks = onRemoveFromQuickPicks,
-        modifier = modifier
+        onRemoveFromQuickPicks = onRemoveFromQuickPicks
     )
 }
 
@@ -194,12 +193,12 @@ fun QueuedMediaItemMenu(
     val binder = LocalPlayerServiceBinder.current
 
     BaseMediaItemMenu(
-        mediaItem = mediaItem,
         onDismiss = onDismiss,
+        mediaItem = mediaItem,
+        modifier = modifier,
         onRemoveFromQueue = if (indexInQueue != null) ({
             binder?.player?.removeMediaItem(indexInQueue)
-        }) else null,
-        modifier = modifier
+        }) else null
     )
 }
 
@@ -209,7 +208,6 @@ fun BaseMediaItemMenu(
     onDismiss: () -> Unit,
     mediaItem: MediaItem,
     modifier: Modifier = Modifier,
-    onGoToEqualizer: (() -> Unit)? = null,
     onShowSleepTimer: (() -> Unit)? = null,
     onStartRadio: (() -> Unit)? = null,
     onPlayNext: (() -> Unit)? = null,
@@ -222,13 +220,16 @@ fun BaseMediaItemMenu(
     val context = LocalContext.current
 
     MediaItemMenu(
-        mediaItem = mediaItem,
         onDismiss = onDismiss,
-        onGoToEqualizer = onGoToEqualizer,
+        mediaItem = mediaItem,
+        modifier = modifier,
         onShowSleepTimer = onShowSleepTimer,
         onStartRadio = onStartRadio,
         onPlayNext = onPlayNext,
         onEnqueue = onEnqueue,
+        onHideFromDatabase = onHideFromDatabase,
+        onRemoveFromQueue = onRemoveFromQueue,
+        onRemoveFromPlaylist = onRemoveFromPlaylist,
         onAddToPlaylist = { playlist, position ->
             transaction {
                 Database.insert(mediaItem)
@@ -241,26 +242,21 @@ fun BaseMediaItemMenu(
                 )
             }
         },
-        onHideFromDatabase = onHideFromDatabase,
-        onRemoveFromPlaylist = onRemoveFromPlaylist,
-        onRemoveFromQueue = onRemoveFromQueue,
         onGoToAlbum = albumRoute::global,
         onGoToArtist = artistRoute::global,
-        onShare = {
-            val sendIntent = Intent().apply {
-                action = Intent.ACTION_SEND
-                type = "text/plain"
-                putExtra(
-                    Intent.EXTRA_TEXT,
-                    "https://music.youtube.com/watch?v=${mediaItem.mediaId}"
-                )
-            }
+        onRemoveFromQuickPicks = onRemoveFromQuickPicks
+    ) {
+        val sendIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            type = "text/plain"
+            putExtra(
+                Intent.EXTRA_TEXT,
+                "https://music.youtube.com/watch?v=${mediaItem.mediaId}"
+            )
+        }
 
-            context.startActivity(Intent.createChooser(sendIntent, null))
-        },
-        onRemoveFromQuickPicks = onRemoveFromQuickPicks,
-        modifier = modifier
-    )
+        context.startActivity(Intent.createChooser(sendIntent, null))
+    }
 }
 
 @ExperimentalAnimationApi
@@ -269,7 +265,6 @@ fun MediaItemMenu(
     onDismiss: () -> Unit,
     mediaItem: MediaItem,
     modifier: Modifier = Modifier,
-    onGoToEqualizer: (() -> Unit)? = null,
     onShowSleepTimer: (() -> Unit)? = null,
     onStartRadio: (() -> Unit)? = null,
     onPlayNext: (() -> Unit)? = null,
@@ -491,17 +486,6 @@ fun MediaItemMenu(
                         onClick = {
                             onDismiss()
                             onEnqueue()
-                        }
-                    )
-                }
-
-                onGoToEqualizer?.let { onGoToEqualizer ->
-                    MenuEntry(
-                        icon = Icons.Outlined.Equalizer,
-                        text = stringResource(id = R.string.equalizer),
-                        onClick = {
-                            onDismiss()
-                            onGoToEqualizer()
                         }
                     )
                 }

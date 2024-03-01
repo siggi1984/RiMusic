@@ -1,10 +1,5 @@
 package it.vfsfitvnm.vimusic.ui.screens.player
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.media.audiofx.AudioEffect
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,7 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -60,7 +54,6 @@ import it.vfsfitvnm.vimusic.utils.isLandscape
 import it.vfsfitvnm.vimusic.utils.positionAndDurationState
 import it.vfsfitvnm.vimusic.utils.seamlessPlay
 import it.vfsfitvnm.vimusic.utils.shouldBePlaying
-import it.vfsfitvnm.vimusic.utils.toast
 
 @OptIn(
     ExperimentalAnimationApi::class,
@@ -293,32 +286,14 @@ private fun PlayerMenu(
     mediaItem: MediaItem,
     onDismiss: () -> Unit
 ) {
-    val context = LocalContext.current
-
-    val activityResultLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
-
     BaseMediaItemMenu(
+        onDismiss = onDismiss,
         mediaItem = mediaItem,
+        onShowSleepTimer = {},
         onStartRadio = {
             binder.stopRadio()
             binder.player.seamlessPlay(mediaItem)
             binder.setupRadio(NavigationEndpoint.Endpoint.Watch(videoId = mediaItem.mediaId))
-        },
-        onGoToEqualizer = {
-            try {
-                activityResultLauncher.launch(
-                    Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL).apply {
-                        putExtra(AudioEffect.EXTRA_AUDIO_SESSION, binder.player.audioSessionId)
-                        putExtra(AudioEffect.EXTRA_PACKAGE_NAME, context.packageName)
-                        putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
-                    }
-                )
-            } catch (e: ActivityNotFoundException) {
-                context.toast("Couldn't find an application to equalize audio")
-            }
-        },
-        onShowSleepTimer = {},
-        onDismiss = onDismiss
+        }
     )
 }
