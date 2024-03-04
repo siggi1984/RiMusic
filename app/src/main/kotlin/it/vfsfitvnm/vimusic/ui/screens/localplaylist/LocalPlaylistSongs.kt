@@ -2,7 +2,6 @@ package it.vfsfitvnm.vimusic.ui.screens.localplaylist
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -40,9 +39,7 @@ import it.vfsfitvnm.vimusic.models.Song
 import it.vfsfitvnm.vimusic.query
 import it.vfsfitvnm.vimusic.ui.components.PlaylistThumbnail
 import it.vfsfitvnm.vimusic.ui.components.themed.InPlaylistMediaItemMenu
-import it.vfsfitvnm.vimusic.ui.items.SongItem
-import it.vfsfitvnm.vimusic.ui.styling.Dimensions
-import it.vfsfitvnm.vimusic.ui.styling.px
+import it.vfsfitvnm.vimusic.ui.items.LocalSongItem
 import it.vfsfitvnm.vimusic.utils.asMediaItem
 import it.vfsfitvnm.vimusic.utils.enqueue
 import it.vfsfitvnm.vimusic.utils.forcePlayAtIndex
@@ -71,9 +68,6 @@ fun LocalPlaylistSongs(
         },
         extraItemCount = 1
     )
-
-    val thumbnailSizeDp = Dimensions.thumbnails.song
-    val thumbnailSizePx = thumbnailSizeDp.px
 
     LazyColumn(
         state = reorderingState.lazyListState,
@@ -136,53 +130,51 @@ fun LocalPlaylistSongs(
             key = { _, song -> song.id },
             contentType = { _, song -> song },
         ) { index, song ->
-            SongItem(
-                song = song,
-                thumbnailSizePx = thumbnailSizePx,
+            LocalSongItem(
                 modifier = Modifier
-                    .combinedClickable(
-                        onLongClick = {
-                            menuState.display {
-                                InPlaylistMediaItemMenu(
-                                    playlistId = playlistId,
-                                    positionInPlaylist = index,
-                                    song = song,
-                                    onDismiss = menuState::hide
-                                )
-                            }
-                        },
-                        onClick = {
-                            playlistWithSongs?.songs
-                                ?.map(Song::asMediaItem)
-                                ?.let { mediaItems ->
-                                    binder?.stopRadio()
-                                    binder?.player?.forcePlayAtIndex(
-                                        mediaItems,
-                                        index
-                                    )
-                                }
-                        }
-                    )
                     .draggedItem(
                         reorderingState = reorderingState,
                         index = index
-                    )
-            ) {
-                IconButton(
-                    onClick = {},
-                    modifier = Modifier
-                        .reorder(
-                            reorderingState = reorderingState,
-                            index = index
+                    ),
+                song = song,
+                onClick = {
+                    playlistWithSongs?.songs
+                        ?.map(Song::asMediaItem)
+                        ?.let { mediaItems ->
+                            binder?.stopRadio()
+                            binder?.player?.forcePlayAtIndex(
+                                mediaItems,
+                                index
+                            )
+                        }
+                },
+                onLongClick = {
+                    menuState.display {
+                        InPlaylistMediaItemMenu(
+                            playlistId = playlistId,
+                            positionInPlaylist = index,
+                            song = song,
+                            onDismiss = menuState::hide
                         )
-                        .size(18.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Reorder,
-                        contentDescription = null,
-                    )
+                    }
+                },
+                trailingContent = {
+                    IconButton(
+                        onClick = {},
+                        modifier = Modifier
+                            .reorder(
+                                reorderingState = reorderingState,
+                                index = index
+                            )
+                            .size(18.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Reorder,
+                            contentDescription = null,
+                        )
+                    }
                 }
-            }
+            )
         }
     }
 }

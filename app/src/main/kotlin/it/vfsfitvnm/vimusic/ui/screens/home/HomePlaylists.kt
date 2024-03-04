@@ -3,7 +3,6 @@ package it.vfsfitvnm.vimusic.ui.screens.home
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -49,9 +48,8 @@ import it.vfsfitvnm.vimusic.models.Playlist
 import it.vfsfitvnm.vimusic.models.PlaylistPreview
 import it.vfsfitvnm.vimusic.query
 import it.vfsfitvnm.vimusic.ui.components.themed.TextFieldDialog
-import it.vfsfitvnm.vimusic.ui.items.PlaylistItem
-import it.vfsfitvnm.vimusic.ui.styling.Dimensions
-import it.vfsfitvnm.vimusic.ui.styling.px
+import it.vfsfitvnm.vimusic.ui.items.BuiltInPlaylistItem
+import it.vfsfitvnm.vimusic.ui.items.LocalPlaylistItem
 import it.vfsfitvnm.vimusic.utils.playlistSortByKey
 import it.vfsfitvnm.vimusic.utils.playlistSortOrderKey
 import it.vfsfitvnm.vimusic.utils.rememberPreference
@@ -91,9 +89,6 @@ fun HomePlaylists(
         Database.playlistPreviews(sortBy, sortOrder).collect { items = it }
     }
 
-    val thumbnailSizeDp = 108.dp
-    val thumbnailSizePx = thumbnailSizeDp.px
-
     val sortOrderIconRotation by animateFloatAsState(
         targetValue = if (sortOrder == SortOrder.Ascending) 0f else 180f,
         label = "rotation"
@@ -104,13 +99,9 @@ fun HomePlaylists(
     }
 
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(Dimensions.thumbnails.song * 2 + Dimensions.itemsVerticalPadding * 2),
-        contentPadding = PaddingValues(bottom = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(Dimensions.itemsVerticalPadding * 2),
-        horizontalArrangement = Arrangement.spacedBy(
-            space = Dimensions.itemsVerticalPadding * 2,
-            alignment = Alignment.CenterHorizontally
-        ),
+        columns = GridCells.Adaptive(minSize = 150.dp),
+        contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.fillMaxSize()
     ) {
         item(
@@ -118,7 +109,7 @@ fun HomePlaylists(
             span = { GridItemSpan(maxLineSpan) }
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(horizontal = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 TextButton(
@@ -192,47 +183,34 @@ fun HomePlaylists(
         }
 
         item(key = "favorites") {
-            PlaylistItem(
+            BuiltInPlaylistItem(
                 icon = Icons.Default.Favorite,
                 name = stringResource(id = R.string.favorites),
-                songCount = null,
-                thumbnailSizeDp = thumbnailSizeDp,
-                modifier = Modifier.clickable(onClick = { onBuiltInPlaylist(BuiltInPlaylist.Favorites) }),
-                alternative = true
+                onClick = { onBuiltInPlaylist(BuiltInPlaylist.Favorites) }
             )
         }
 
         item(key = "offline") {
-            PlaylistItem(
+            BuiltInPlaylistItem(
                 icon = Icons.Default.DownloadForOffline,
                 name = stringResource(id = R.string.offline),
-                songCount = null,
-                thumbnailSizeDp = thumbnailSizeDp,
-                modifier = Modifier.clickable(onClick = { onBuiltInPlaylist(BuiltInPlaylist.Offline) }),
-                alternative = true
+                onClick = { onBuiltInPlaylist(BuiltInPlaylist.Offline) }
             )
         }
 
         item(key = "new") {
-            PlaylistItem(
+            BuiltInPlaylistItem(
                 icon = Icons.Default.Add,
                 name = stringResource(id = R.string.new_playlist),
-                songCount = null,
-                thumbnailSizeDp = thumbnailSizeDp,
-                modifier = Modifier.clickable(onClick = { isCreatingANewPlaylist = true }),
-                alternative = true
+                onClick = { isCreatingANewPlaylist = true }
             )
         }
 
         items(items = items, key = { it.playlist.id }) { playlistPreview ->
-            PlaylistItem(
+            LocalPlaylistItem(
+                modifier = Modifier.animateItemPlacement(),
                 playlist = playlistPreview,
-                thumbnailSizeDp = thumbnailSizeDp,
-                thumbnailSizePx = thumbnailSizePx,
-                alternative = true,
-                modifier = Modifier
-                    .clickable(onClick = { onPlaylistClick(playlistPreview.playlist) })
-                    .animateItemPlacement()
+                onClick = { onPlaylistClick(playlistPreview.playlist) }
             )
         }
     }

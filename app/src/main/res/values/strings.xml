@@ -135,4 +135,6 @@
     <string name="history_is_empty">History is empty</string>
     <string name="already_unrestricted">Already unrestricted</string>
     <string name="disable_background_restrictions">Disable background restrictions</string>
+    <string name="subscribers">Subscribers</string>
+    <string name="home_error">An error has occurred</string>
 </resources>

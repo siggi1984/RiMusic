@@ -2,13 +2,12 @@ package it.vfsfitvnm.vimusic.ui.screens.album
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -41,8 +40,8 @@ import it.vfsfitvnm.vimusic.models.LocalMenuState
 import it.vfsfitvnm.vimusic.models.Song
 import it.vfsfitvnm.vimusic.ui.components.ShimmerHost
 import it.vfsfitvnm.vimusic.ui.components.themed.NonQueuedMediaItemMenu
-import it.vfsfitvnm.vimusic.ui.items.SongItem
-import it.vfsfitvnm.vimusic.ui.items.SongItemPlaceholder
+import it.vfsfitvnm.vimusic.ui.items.ListItemPlaceholder
+import it.vfsfitvnm.vimusic.ui.items.LocalSongItem
 import it.vfsfitvnm.vimusic.ui.styling.Dimensions
 import it.vfsfitvnm.vimusic.utils.asMediaItem
 import it.vfsfitvnm.vimusic.utils.enqueue
@@ -64,8 +63,6 @@ fun AlbumSongs(
     LaunchedEffect(Unit) {
         Database.albumSongs(browseId).collect { songs = it }
     }
-
-    val thumbnailSizeDp = Dimensions.thumbnails.song
 
     val lazyListState = rememberLazyListState()
 
@@ -123,51 +120,45 @@ fun AlbumSongs(
             items = songs,
             key = { _, song -> song.id }
         ) { index, song ->
-            SongItem(
+            LocalSongItem(
+                song = song,
+                onClick = {
+                    binder?.stopRadio()
+                    binder?.player?.forcePlayAtIndex(
+                        songs.map(Song::asMediaItem),
+                        index
+                    )
+                },
+                onLongClick = {
+                    menuState.display {
+                        NonQueuedMediaItemMenu(
+                            onDismiss = menuState::hide,
+                            mediaItem = song.asMediaItem,
+                        )
+                    }
+                },
                 thumbnailContent = {
                     Text(
                         text = "${index + 1}",
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.titleMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
-                            .width(thumbnailSizeDp)
+                            .fillMaxWidth()
                             .alpha(Dimensions.mediumOpacity)
                     )
-                },
-                title = song.title,
-                authors = song.artistsText,
-                duration = song.durationText,
-                modifier = Modifier
-                    .combinedClickable(
-                        onLongClick = {
-                            menuState.display {
-                                NonQueuedMediaItemMenu(
-                                    onDismiss = menuState::hide,
-                                    mediaItem = song.asMediaItem,
-                                )
-                            }
-                        },
-                        onClick = {
-                            binder?.stopRadio()
-                            binder?.player?.forcePlayAtIndex(
-                                songs.map(Song::asMediaItem),
-                                index
-                            )
-                        }
-                    )
+                }
             )
         }
 
         if (songs.isEmpty()) {
             item(key = "loading") {
                 ShimmerHost(
-                    modifier = Modifier
-                        .fillParentMaxSize()
+                    modifier = Modifier.fillParentMaxSize()
                 ) {
                     repeat(4) {
-                        SongItemPlaceholder(thumbnailSizeDp = Dimensions.thumbnails.song)
+                        ListItemPlaceholder()
                     }
                 }
             }

@@ -3,7 +3,6 @@ package it.vfsfitvnm.vimusic.ui.screens.album
 import android.content.Intent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
@@ -21,10 +20,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import it.vfsfitvnm.compose.persist.PersistMapCleanup
 import it.vfsfitvnm.compose.persist.persist
 import it.vfsfitvnm.compose.routing.RouteHandler
@@ -40,11 +37,10 @@ import it.vfsfitvnm.vimusic.query
 import it.vfsfitvnm.vimusic.ui.components.TabScaffold
 import it.vfsfitvnm.vimusic.ui.components.themed.adaptiveThumbnailContent
 import it.vfsfitvnm.vimusic.ui.items.AlbumItem
-import it.vfsfitvnm.vimusic.ui.items.AlbumItemPlaceholder
+import it.vfsfitvnm.vimusic.ui.items.ItemPlaceholder
 import it.vfsfitvnm.vimusic.ui.screens.albumRoute
 import it.vfsfitvnm.vimusic.ui.screens.globalRoutes
 import it.vfsfitvnm.vimusic.ui.screens.search.ItemsPage
-import it.vfsfitvnm.vimusic.ui.styling.px
 import it.vfsfitvnm.vimusic.utils.asMediaItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
@@ -185,9 +181,6 @@ fun AlbumScreen(browseId: String) {
                         )
 
                         1 -> {
-                            val thumbnailSizeDp = 108.dp
-                            val thumbnailSizePx = thumbnailSizeDp.px
-
                             ItemsPage(
                                 tag = "album/$browseId/alternatives",
                                 initialPlaceholderCount = 1,
@@ -206,14 +199,11 @@ fun AlbumScreen(browseId: String) {
                                 itemContent = { album ->
                                     AlbumItem(
                                         album = album,
-                                        thumbnailSizePx = thumbnailSizePx,
-                                        thumbnailSizeDp = thumbnailSizeDp,
-                                        modifier = Modifier
-                                            .clickable { albumRoute(album.key) }
+                                        onClick = { albumRoute(album.key) }
                                     )
                                 },
                                 itemPlaceholderContent = {
-                                    AlbumItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp)
+                                    ItemPlaceholder()
                                 }
                             )
                         }

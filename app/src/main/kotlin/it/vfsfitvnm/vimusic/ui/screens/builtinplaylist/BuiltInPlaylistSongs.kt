@@ -2,7 +2,6 @@ package it.vfsfitvnm.vimusic.ui.screens.builtinplaylist
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -37,9 +36,7 @@ import it.vfsfitvnm.vimusic.models.Song
 import it.vfsfitvnm.vimusic.models.SongWithContentLength
 import it.vfsfitvnm.vimusic.ui.components.themed.InHistoryMediaItemMenu
 import it.vfsfitvnm.vimusic.ui.components.themed.NonQueuedMediaItemMenu
-import it.vfsfitvnm.vimusic.ui.items.SongItem
-import it.vfsfitvnm.vimusic.ui.styling.Dimensions
-import it.vfsfitvnm.vimusic.ui.styling.px
+import it.vfsfitvnm.vimusic.ui.items.LocalSongItem
 import it.vfsfitvnm.vimusic.utils.asMediaItem
 import it.vfsfitvnm.vimusic.utils.enqueue
 import it.vfsfitvnm.vimusic.utils.forcePlayAtIndex
@@ -75,9 +72,6 @@ fun BuiltInPlaylistSongs(builtInPlaylist: BuiltInPlaylist) {
                 }
         }.collect { songs = it }
     }
-
-    val thumbnailSizeDp = Dimensions.thumbnails.song
-    val thumbnailSize = thumbnailSizeDp.px
 
     LazyColumn(
         contentPadding = PaddingValues(vertical = 16.dp),
@@ -131,35 +125,31 @@ fun BuiltInPlaylistSongs(builtInPlaylist: BuiltInPlaylist) {
             key = { _, song -> song.id },
             contentType = { _, song -> song },
         ) { index, song ->
-            SongItem(
+            LocalSongItem(
+                modifier = Modifier.animateItemPlacement(),
                 song = song,
-                thumbnailSizePx = thumbnailSize,
-                modifier = Modifier
-                    .combinedClickable(
-                        onLongClick = {
-                            menuState.display {
-                                when (builtInPlaylist) {
-                                    BuiltInPlaylist.Favorites -> NonQueuedMediaItemMenu(
-                                        mediaItem = song.asMediaItem,
-                                        onDismiss = menuState::hide
-                                    )
+                onClick = {
+                    binder?.stopRadio()
+                    binder?.player?.forcePlayAtIndex(
+                        songs.map(Song::asMediaItem),
+                        index
+                    )
+                },
+                onLongClick = {
+                    menuState.display {
+                        when (builtInPlaylist) {
+                            BuiltInPlaylist.Favorites -> NonQueuedMediaItemMenu(
+                                mediaItem = song.asMediaItem,
+                                onDismiss = menuState::hide
+                            )
 
-                                    BuiltInPlaylist.Offline -> InHistoryMediaItemMenu(
-                                        song = song,
-                                        onDismiss = menuState::hide
-                                    )
-                                }
-                            }
-                        },
-                        onClick = {
-                            binder?.stopRadio()
-                            binder?.player?.forcePlayAtIndex(
-                                songs.map(Song::asMediaItem),
-                                index
+                            BuiltInPlaylist.Offline -> InHistoryMediaItemMenu(
+                                song = song,
+                                onDismiss = menuState::hide
                             )
                         }
-                    )
-                    .animateItemPlacement()
+                    }
+                }
             )
         }
     }

@@ -2,7 +2,6 @@ package it.vfsfitvnm.vimusic.ui.screens.artist
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -36,10 +35,8 @@ import it.vfsfitvnm.vimusic.models.LocalMenuState
 import it.vfsfitvnm.vimusic.models.Song
 import it.vfsfitvnm.vimusic.ui.components.ShimmerHost
 import it.vfsfitvnm.vimusic.ui.components.themed.NonQueuedMediaItemMenu
-import it.vfsfitvnm.vimusic.ui.items.SongItem
-import it.vfsfitvnm.vimusic.ui.items.SongItemPlaceholder
-import it.vfsfitvnm.vimusic.ui.styling.Dimensions
-import it.vfsfitvnm.vimusic.ui.styling.px
+import it.vfsfitvnm.vimusic.ui.items.ListItemPlaceholder
+import it.vfsfitvnm.vimusic.ui.items.LocalSongItem
 import it.vfsfitvnm.vimusic.utils.asMediaItem
 import it.vfsfitvnm.vimusic.utils.enqueue
 import it.vfsfitvnm.vimusic.utils.forcePlayAtIndex
@@ -60,9 +57,6 @@ fun ArtistLocalSongs(
     LaunchedEffect(Unit) {
         Database.artistSongs(browseId).collect { songs = it }
     }
-
-    val songThumbnailSizeDp = Dimensions.thumbnails.song
-    val songThumbnailSizePx = songThumbnailSizeDp.px
 
     val lazyListState = rememberLazyListState()
 
@@ -123,33 +117,29 @@ fun ArtistLocalSongs(
                 items = songs,
                 key = { _, song -> song.id }
             ) { index, song ->
-                SongItem(
+                LocalSongItem(
                     song = song,
-                    thumbnailSizePx = songThumbnailSizePx,
-                    modifier = Modifier
-                        .combinedClickable(
-                            onLongClick = {
-                                menuState.display {
-                                    NonQueuedMediaItemMenu(
-                                        onDismiss = menuState::hide,
-                                        mediaItem = song.asMediaItem,
-                                    )
-                                }
-                            },
-                            onClick = {
-                                binder?.stopRadio()
-                                binder?.player?.forcePlayAtIndex(
-                                    songs.map(Song::asMediaItem),
-                                    index
-                                )
-                            }
+                    onClick = {
+                        binder?.stopRadio()
+                        binder?.player?.forcePlayAtIndex(
+                            songs.map(Song::asMediaItem),
+                            index
                         )
+                    },
+                    onLongClick = {
+                        menuState.display {
+                            NonQueuedMediaItemMenu(
+                                onDismiss = menuState::hide,
+                                mediaItem = song.asMediaItem,
+                            )
+                        }
+                    }
                 )
             }
         } ?: item(key = "loading") {
             ShimmerHost {
                 repeat(4) {
-                    SongItemPlaceholder(thumbnailSizeDp = Dimensions.thumbnails.song)
+                    ListItemPlaceholder()
                 }
             }
         }

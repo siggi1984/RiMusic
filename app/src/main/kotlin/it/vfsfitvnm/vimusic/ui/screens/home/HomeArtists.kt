@@ -3,7 +3,6 @@ package it.vfsfitvnm.vimusic.ui.screens.home
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -42,9 +41,7 @@ import it.vfsfitvnm.vimusic.R
 import it.vfsfitvnm.vimusic.enums.ArtistSortBy
 import it.vfsfitvnm.vimusic.enums.SortOrder
 import it.vfsfitvnm.vimusic.models.Artist
-import it.vfsfitvnm.vimusic.ui.items.ArtistItem
-import it.vfsfitvnm.vimusic.ui.styling.Dimensions
-import it.vfsfitvnm.vimusic.ui.styling.px
+import it.vfsfitvnm.vimusic.ui.items.LocalArtistItem
 import it.vfsfitvnm.vimusic.utils.artistSortByKey
 import it.vfsfitvnm.vimusic.utils.artistSortOrderKey
 import it.vfsfitvnm.vimusic.utils.rememberPreference
@@ -64,9 +61,6 @@ fun HomeArtistList(
         Database.artists(sortBy, sortOrder).collect { items = it }
     }
 
-    val thumbnailSizeDp = Dimensions.thumbnails.song * 2
-    val thumbnailSizePx = thumbnailSizeDp.px
-
     val sortOrderIconRotation by animateFloatAsState(
         targetValue = if (sortOrder == SortOrder.Ascending) 0f else 180f,
         label = "rotation"
@@ -77,13 +71,9 @@ fun HomeArtistList(
     }
 
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(Dimensions.thumbnails.song * 2 + Dimensions.itemsVerticalPadding * 2),
-        contentPadding = PaddingValues(bottom = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(Dimensions.itemsVerticalPadding * 2),
-        horizontalArrangement = Arrangement.spacedBy(
-            space = Dimensions.itemsVerticalPadding * 2,
-            alignment = Alignment.CenterHorizontally
-        ),
+        columns = GridCells.Adaptive(minSize = 150.dp),
+        contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.fillMaxSize()
     ) {
         item(
@@ -91,7 +81,7 @@ fun HomeArtistList(
             span = { GridItemSpan(maxLineSpan) }
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(horizontal = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 TextButton(
@@ -163,14 +153,10 @@ fun HomeArtistList(
         }
 
         items(items = items, key = Artist::id) { artist ->
-            ArtistItem(
+            LocalArtistItem(
+                modifier = Modifier.animateItemPlacement(),
                 artist = artist,
-                thumbnailSizePx = thumbnailSizePx,
-                thumbnailSizeDp = thumbnailSizeDp,
-                alternative = true,
-                modifier = Modifier
-                    .clickable(onClick = { onArtistClick(artist) })
-                    .animateItemPlacement()
+                onClick = { onArtistClick(artist) }
             )
         }
     }

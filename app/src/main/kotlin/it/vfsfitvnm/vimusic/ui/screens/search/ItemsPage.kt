@@ -1,18 +1,22 @@
 package it.vfsfitvnm.vimusic.ui.screens.search
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridItemScope
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -28,30 +32,30 @@ import it.vfsfitvnm.vimusic.R
 import it.vfsfitvnm.vimusic.ui.components.ShimmerHost
 import it.vfsfitvnm.vimusic.ui.styling.Dimensions
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @ExperimentalAnimationApi
 @Composable
 inline fun <T : Innertube.Item> ItemsPage(
     tag: String,
-    crossinline itemContent: @Composable LazyItemScope.(T) -> Unit,
+    crossinline itemContent: @Composable LazyGridItemScope.(T) -> Unit,
     noinline itemPlaceholderContent: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    initialPlaceholderCount: Int = 8,
-    continuationPlaceholderCount: Int = 3,
+    initialPlaceholderCount: Int = 16,
+    continuationPlaceholderCount: Int = 6,
     emptyItemsText: String = stringResource(id = R.string.no_items_found),
     noinline itemsPageProvider: (suspend (String?) -> Result<Innertube.ItemsPage<T>?>?)? = null,
 ) {
     val updatedItemsPageProvider by rememberUpdatedState(itemsPageProvider)
-
-    val lazyListState = rememberLazyListState()
-
+    val lazyGridState = rememberLazyGridState()
+    val coroutineScope = rememberCoroutineScope()
     var itemsPage by persist<Innertube.ItemsPage<T>?>(tag)
 
-    LaunchedEffect(lazyListState, updatedItemsPageProvider) {
+    LaunchedEffect(lazyGridState, updatedItemsPageProvider) {
         val currentItemsPageProvider = updatedItemsPageProvider ?: return@LaunchedEffect
 
-        snapshotFlow { lazyListState.layoutInfo.visibleItemsInfo.any { it.key == "loading" } }
+        snapshotFlow { lazyGridState.layoutInfo.visibleItemsInfo.any { it.key == "loading0" } }
             .collect { shouldLoadMore ->
                 if (!shouldLoadMore) return@collect
 
@@ -60,18 +64,32 @@ inline fun <T : Innertube.Item> ItemsPage(
                 }?.onSuccess {
                     if (it == null) {
                         if (itemsPage == null) {
-                            itemsPage = Innertube.ItemsPage(null, null)
+                            itemsPage = Innertube.ItemsPage(items = null, continuation = null)
                         }
                     } else {
                         itemsPage += it
+                        if (itemsPage == it) coroutineScope.launch {
+                            lazyGridState.scrollToItem(index = 0)
+                        }
                     }
                 }
             }
     }
 
-    LazyColumn(
-        state = lazyListState,
-        contentPadding = PaddingValues(top = 8.dp),
+    val listLayout = tag.contains("songs") || tag.contains("videos")
+
+    LazyVerticalGrid(
+        state = lazyGridState,
+        columns = GridCells.Adaptive(
+            minSize = if (listLayout) 350.dp else 150.dp
+        ),
+        contentPadding = PaddingValues(
+            start = if (listLayout) 0.dp else 8.dp,
+            top = 8.dp,
+            end = if (listLayout) 0.dp else 8.dp,
+            bottom = 16.dp
+        ),
+        verticalArrangement = Arrangement.spacedBy(if (listLayout) 0.dp else 4.dp),
         modifier = modifier.fillMaxSize()
     ) {
         items(
@@ -81,7 +99,10 @@ inline fun <T : Innertube.Item> ItemsPage(
         )
 
         if (itemsPage != null && itemsPage?.items.isNullOrEmpty()) {
-            item(key = "empty") {
+            item(
+                key = "empty",
+                span = { GridItemSpan(maxCurrentLineSpan) }
+            ) {
                 Text(
                     text = emptyItemsText,
                     textAlign = TextAlign.Center,
@@ -93,18 +114,15 @@ inline fun <T : Innertube.Item> ItemsPage(
             }
         }
 
-        if (!(itemsPage != null && itemsPage?.continuation == null)) {
-            item(key = "loading") {
-                val isFirstLoad = itemsPage?.items.isNullOrEmpty()
-                ShimmerHost(
-                    modifier = Modifier
-                        .run {
-                            if (isFirstLoad) fillParentMaxSize() else this
-                        }
-                ) {
-                    repeat(if (isFirstLoad) initialPlaceholderCount else continuationPlaceholderCount) {
-                        itemPlaceholderContent()
-                    }
+        if (itemsPage == null || itemsPage?.continuation != null) {
+            val isFirstLoad = itemsPage?.items.isNullOrEmpty()
+
+            items(
+                count = if (isFirstLoad) initialPlaceholderCount else continuationPlaceholderCount,
+                key = { "loading$it" }
+            ) {
+                ShimmerHost {
+                    itemPlaceholderContent()
                 }
             }
         }

@@ -2,11 +2,10 @@ package it.vfsfitvnm.vimusic.ui.screens.artist
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,11 +42,10 @@ import it.vfsfitvnm.vimusic.ui.components.ShimmerHost
 import it.vfsfitvnm.vimusic.ui.components.themed.NonQueuedMediaItemMenu
 import it.vfsfitvnm.vimusic.ui.components.themed.TextPlaceholder
 import it.vfsfitvnm.vimusic.ui.items.AlbumItem
-import it.vfsfitvnm.vimusic.ui.items.AlbumItemPlaceholder
+import it.vfsfitvnm.vimusic.ui.items.ItemPlaceholder
+import it.vfsfitvnm.vimusic.ui.items.ListItemPlaceholder
 import it.vfsfitvnm.vimusic.ui.items.SongItem
-import it.vfsfitvnm.vimusic.ui.items.SongItemPlaceholder
 import it.vfsfitvnm.vimusic.ui.styling.Dimensions
-import it.vfsfitvnm.vimusic.ui.styling.px
 import it.vfsfitvnm.vimusic.utils.asMediaItem
 import it.vfsfitvnm.vimusic.utils.forcePlay
 
@@ -65,10 +63,7 @@ fun ArtistOverview(
     val binder = LocalPlayerServiceBinder.current
     val menuState = LocalMenuState.current
 
-    val songThumbnailSizeDp = Dimensions.thumbnails.song
-    val songThumbnailSizePx = songThumbnailSizeDp.px
-    val albumThumbnailSizeDp = 108.dp
-    val albumThumbnailSizePx = albumThumbnailSizeDp.px
+    val itemSize = 140.dp
 
     Column(
         modifier = Modifier
@@ -147,26 +142,22 @@ fun ArtistOverview(
                 songs.forEach { song ->
                     SongItem(
                         song = song,
-                        thumbnailSizePx = songThumbnailSizePx,
-                        modifier = Modifier
-                            .combinedClickable(
-                                onLongClick = {
-                                    menuState.display {
-                                        NonQueuedMediaItemMenu(
-                                            onDismiss = menuState::hide,
-                                            mediaItem = song.asMediaItem,
-                                        )
-                                    }
-                                },
-                                onClick = {
-                                    val mediaItem = song.asMediaItem
-                                    binder?.stopRadio()
-                                    binder?.player?.forcePlay(mediaItem)
-                                    binder?.setupRadio(
-                                        NavigationEndpoint.Endpoint.Watch(videoId = mediaItem.mediaId)
-                                    )
-                                }
+                        onClick = {
+                            val mediaItem = song.asMediaItem
+                            binder?.stopRadio()
+                            binder?.player?.forcePlay(mediaItem)
+                            binder?.setupRadio(
+                                NavigationEndpoint.Endpoint.Watch(videoId = mediaItem.mediaId)
                             )
+                        },
+                        onLongClick = {
+                            menuState.display {
+                                NonQueuedMediaItemMenu(
+                                    onDismiss = menuState::hide,
+                                    mediaItem = song.asMediaItem,
+                                )
+                            }
+                        }
                     )
                 }
             }
@@ -195,18 +186,17 @@ fun ArtistOverview(
                 }
 
                 LazyRow(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = 8.dp)
                 ) {
                     items(
                         items = albums,
                         key = Innertube.AlbumItem::key
                     ) { album ->
                         AlbumItem(
+                            modifier = Modifier.widthIn(max = itemSize),
                             album = album,
-                            thumbnailSizePx = albumThumbnailSizePx,
-                            thumbnailSizeDp = albumThumbnailSizeDp,
-                            alternative = true,
-                            modifier = Modifier.clickable(onClick = { onAlbumClick(album.key) })
+                            onClick = { onAlbumClick(album.key) }
                         )
                     }
                 }
@@ -237,18 +227,17 @@ fun ArtistOverview(
                 }
 
                 LazyRow(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = 8.dp)
                 ) {
                     items(
                         items = singles,
                         key = Innertube.AlbumItem::key
                     ) { album ->
                         AlbumItem(
+                            modifier = Modifier.widthIn(max = itemSize),
                             album = album,
-                            thumbnailSizePx = albumThumbnailSizePx,
-                            thumbnailSizeDp = albumThumbnailSizeDp,
-                            alternative = true,
-                            modifier = Modifier.clickable(onClick = { onAlbumClick(album.key) })
+                            onClick = { onAlbumClick(album.key) }
                         )
                     }
                 }
@@ -298,9 +287,7 @@ fun ArtistOverview(
                 TextPlaceholder(modifier = placeholderModifier)
 
                 repeat(5) {
-                    SongItemPlaceholder(
-                        thumbnailSizeDp = songThumbnailSizeDp,
-                    )
+                    ListItemPlaceholder()
                 }
 
                 Spacer(modifier = Modifier.height(Dimensions.spacer))
@@ -310,10 +297,7 @@ fun ArtistOverview(
 
                     Row {
                         repeat(2) {
-                            AlbumItemPlaceholder(
-                                thumbnailSizeDp = albumThumbnailSizeDp,
-                                alternative = true
-                            )
+                            ItemPlaceholder(modifier = Modifier.widthIn(max = itemSize))
                         }
                     }
                 }

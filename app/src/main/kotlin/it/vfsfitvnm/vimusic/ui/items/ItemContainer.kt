@@ -1,64 +1,196 @@
 package it.vfsfitvnm.vimusic.ui.items
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import it.vfsfitvnm.vimusic.ui.styling.Dimensions
+import androidx.compose.ui.unit.sp
+import it.vfsfitvnm.vimusic.ui.components.themed.TextPlaceholder
+import it.vfsfitvnm.vimusic.ui.styling.shimmer
 
 @Composable
-inline fun ItemContainer(
-    alternative: Boolean,
-    thumbnailSizeDp: Dp,
+fun ItemContainer(
     modifier: Modifier = Modifier,
-    horizontalAlignment: Alignment.Horizontal = Alignment.Start,
-    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
-    content: @Composable (centeredModifier: Modifier) -> Unit
+    isPlaceholder: Boolean = false,
+    title: String,
+    subtitle: String? = null,
+    onClick: () -> Unit = {},
+    textAlign: TextAlign = TextAlign.Start,
+    shape: Shape = MaterialTheme.shapes.large,
+    color: Color = MaterialTheme.colorScheme.surfaceVariant,
+    thumbnail: @Composable () -> Unit
 ) {
-    if (alternative) {
-        Column(
-            horizontalAlignment = horizontalAlignment,
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = modifier
-                .padding(vertical = Dimensions.itemsVerticalPadding, horizontal = 16.dp)
-                .width(thumbnailSizeDp)
+    Column(
+        modifier = modifier
+            .widthIn(max = 200.dp)
+            .clip(MaterialTheme.shapes.large)
+            .clickable(
+                enabled = onClick != {},
+                onClick = onClick
+            )
+            .padding(8.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(ratio = 1F)
+                .clip(shape)
+                .background(color),
+            contentAlignment = Alignment.Center
         ) {
-            content(
-                Modifier.align(Alignment.CenterHorizontally)
+            thumbnail()
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        if (isPlaceholder) {
+            TextPlaceholder()
+        } else {
+            Text(
+                text = title,
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = textAlign,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
-    } else {
-        Row(
-            verticalAlignment = verticalAlignment,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = modifier
-                .padding(vertical = Dimensions.itemsVerticalPadding, horizontal = 16.dp)
-                .fillMaxWidth()
-        ) {
-            content(
-                Modifier.align(Alignment.CenterVertically)
-            )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        if (isPlaceholder) {
+            TextPlaceholder()
+        } else {
+            subtitle?.let {
+                Text(
+                    text = subtitle,
+                    modifier = Modifier.fillMaxWidth(),
+                    style = MaterialTheme.typography.bodySmall,
+                    textAlign = textAlign,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
     }
 }
 
 @Composable
-inline fun ItemInfoContainer(
+fun ItemPlaceholder(
     modifier: Modifier = Modifier,
-    horizontalAlignment: Alignment.Horizontal = Alignment.Start,
-    content: @Composable ColumnScope.() -> Unit
+    shape: Shape = MaterialTheme.shapes.large
 ) {
-    Column(
-        horizontalAlignment = horizontalAlignment,
+    ItemContainer(
         modifier = modifier,
-        content = content
+        isPlaceholder = true,
+        title = "",
+        shape = shape,
+        color = MaterialTheme.colorScheme.shimmer,
+        thumbnail = {}
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun ListItemContainer(
+    modifier: Modifier = Modifier,
+    isPlaceholder: Boolean = false,
+    title: String,
+    subtitle: String? = null,
+    onClick: () -> Unit = {},
+    onLongClick: () -> Unit = {},
+    maxLines: Int = 1,
+    color: Color = MaterialTheme.colorScheme.surfaceVariant,
+    thumbnail: @Composable () -> Unit,
+    thumbnailHeight: Dp = 56.dp,
+    thumbnailAspectRatio: Float = 1F,
+    trailingContent: @Composable (() -> Unit)? = null
+) {
+    ListItem(
+        headlineContent = {
+            if (isPlaceholder) {
+                TextPlaceholder()
+            } else {
+                Text(
+                    text = title,
+                    lineHeight = 16.sp,
+                    maxLines = maxLines,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        },
+        modifier = modifier
+            .clip(MaterialTheme.shapes.large)
+            .combinedClickable(
+                enabled = onClick != {} || onLongClick != {},
+                onClick = onClick,
+                onLongClick = onLongClick
+            ),
+        supportingContent = {
+            if (isPlaceholder) {
+                TextPlaceholder()
+            } else {
+                subtitle?.let {
+                    Text(
+                        text = subtitle,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+        },
+        leadingContent = {
+            Box(
+                modifier = Modifier
+                    .height(height = thumbnailHeight)
+                    .aspectRatio(ratio = thumbnailAspectRatio)
+                    .clip(MaterialTheme.shapes.medium)
+                    .background(color),
+                contentAlignment = Alignment.Center
+            ) {
+                thumbnail()
+            }
+        },
+        trailingContent = {
+            trailingContent?.invoke()
+        }
+    )
+}
+
+@Composable
+fun ListItemPlaceholder(
+    modifier: Modifier = Modifier,
+    thumbnailHeight: Dp = 56.dp,
+    thumbnailAspectRatio: Float = 1F
+) {
+    ListItemContainer(
+        modifier = modifier,
+        isPlaceholder = true,
+        title = "",
+        color = MaterialTheme.colorScheme.shimmer,
+        thumbnail = {},
+        thumbnailHeight = thumbnailHeight,
+        thumbnailAspectRatio = thumbnailAspectRatio
     )
 }

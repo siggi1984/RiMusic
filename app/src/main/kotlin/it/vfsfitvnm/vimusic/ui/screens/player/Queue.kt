@@ -6,13 +6,12 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -54,11 +53,10 @@ import it.vfsfitvnm.vimusic.R
 import it.vfsfitvnm.vimusic.models.LocalMenuState
 import it.vfsfitvnm.vimusic.ui.components.MusicBars
 import it.vfsfitvnm.vimusic.ui.components.themed.QueuedMediaItemMenu
-import it.vfsfitvnm.vimusic.ui.items.SongItem
-import it.vfsfitvnm.vimusic.ui.items.SongItemPlaceholder
+import it.vfsfitvnm.vimusic.ui.items.ListItemPlaceholder
+import it.vfsfitvnm.vimusic.ui.items.MediaSongItem
 import it.vfsfitvnm.vimusic.ui.styling.Dimensions
 import it.vfsfitvnm.vimusic.ui.styling.onOverlay
-import it.vfsfitvnm.vimusic.ui.styling.px
 import it.vfsfitvnm.vimusic.utils.DisposableListener
 import it.vfsfitvnm.vimusic.utils.queueLoopEnabledKey
 import it.vfsfitvnm.vimusic.utils.rememberPreference
@@ -67,7 +65,7 @@ import it.vfsfitvnm.vimusic.utils.shuffleQueue
 import it.vfsfitvnm.vimusic.utils.windows
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Queue() {
     val binder = LocalPlayerServiceBinder.current
@@ -79,9 +77,6 @@ fun Queue() {
     var queueLoopEnabled by rememberPreference(queueLoopEnabledKey, defaultValue = false)
 
     val menuState = LocalMenuState.current
-
-    val thumbnailSizeDp = Dimensions.thumbnails.song
-    val thumbnailSizePx = thumbnailSizeDp.px
 
     var mediaItemIndex by remember {
         mutableIntStateOf(if (player.mediaItemCount == 0) -1 else player.currentMediaItemIndex)
@@ -139,37 +134,33 @@ fun Queue() {
             ) { window ->
                 val isPlayingThisMediaItem = mediaItemIndex == window.firstPeriodIndex
 
-                SongItem(
+                MediaSongItem(
+                    modifier = Modifier.draggedItem(
+                        reorderingState = reorderingState,
+                        index = window.firstPeriodIndex
+                    ),
                     song = window.mediaItem,
-                    thumbnailSizePx = thumbnailSizePx,
-                    modifier = Modifier
-                        .combinedClickable(
-                            onLongClick = {
-                                menuState.display {
-                                    QueuedMediaItemMenu(
-                                        mediaItem = window.mediaItem,
-                                        indexInQueue = if (isPlayingThisMediaItem) null else window.firstPeriodIndex,
-                                        onDismiss = menuState::hide
-                                    )
-                                }
-                            },
-                            onClick = {
-                                if (isPlayingThisMediaItem) {
-                                    if (shouldBePlaying) {
-                                        player.pause()
-                                    } else {
-                                        player.play()
-                                    }
-                                } else {
-                                    player.seekToDefaultPosition(window.firstPeriodIndex)
-                                    player.playWhenReady = true
-                                }
+                    onClick = {
+                        if (isPlayingThisMediaItem) {
+                            if (shouldBePlaying) {
+                                player.pause()
+                            } else {
+                                player.play()
                             }
-                        )
-                        .draggedItem(
-                            reorderingState = reorderingState,
-                            index = window.firstPeriodIndex
-                        ),
+                        } else {
+                            player.seekToDefaultPosition(window.firstPeriodIndex)
+                            player.playWhenReady = true
+                        }
+                    },
+                    onLongClick = {
+                        menuState.display {
+                            QueuedMediaItemMenu(
+                                mediaItem = window.mediaItem,
+                                indexInQueue = if (isPlayingThisMediaItem) null else window.firstPeriodIndex,
+                                onDismiss = menuState::hide
+                            )
+                        }
+                    },
                     onThumbnailContent = {
                         musicBarsTransition.AnimatedVisibility(
                             visible = { it == window.firstPeriodIndex },
@@ -179,11 +170,11 @@ fun Queue() {
                             Box(
                                 contentAlignment = Alignment.Center,
                                 modifier = Modifier
+                                    .fillMaxSize()
                                     .background(
-                                        color = Color.Black.copy(alpha = 0.25f),
-                                        shape = Dimensions.thumbnailShape
+                                        color = Color.Black.copy(alpha = 0.25F),
+                                        shape = MaterialTheme.shapes.medium
                                     )
-                                    .size(Dimensions.thumbnails.song)
                             ) {
                                 if (shouldBePlaying) {
                                     MusicBars(
@@ -201,19 +192,19 @@ fun Queue() {
                                 }
                             }
                         }
+                    },
+                    trailingContent = {
+                        Icon(
+                            imageVector = Icons.Outlined.Reorder,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .reorder(
+                                    reorderingState = reorderingState,
+                                    index = window.firstPeriodIndex
+                                )
+                        )
                     }
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Reorder,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .reorder(
-                                reorderingState = reorderingState,
-                                index = window.firstPeriodIndex
-                            )
-                            .size(18.dp)
-                    )
-                }
+                )
             }
 
             item {
@@ -223,11 +214,8 @@ fun Queue() {
                             .shimmer()
                     ) {
                         repeat(3) { index ->
-                            SongItemPlaceholder(
-                                thumbnailSizeDp = thumbnailSizeDp,
-                                modifier = Modifier
-                                    .alpha(1f - index * 0.125f)
-                                    .fillMaxWidth()
+                            ListItemPlaceholder(
+                                modifier = Modifier.alpha(1f - index * 0.125f)
                             )
                         }
                     }

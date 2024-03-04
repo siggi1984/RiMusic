@@ -70,11 +70,9 @@ import it.vfsfitvnm.vimusic.models.Song
 import it.vfsfitvnm.vimusic.models.SongPlaylistMap
 import it.vfsfitvnm.vimusic.query
 import it.vfsfitvnm.vimusic.transaction
-import it.vfsfitvnm.vimusic.ui.items.SongItem
+import it.vfsfitvnm.vimusic.ui.items.MediaSongItem
 import it.vfsfitvnm.vimusic.ui.screens.albumRoute
 import it.vfsfitvnm.vimusic.ui.screens.artistRoute
-import it.vfsfitvnm.vimusic.ui.styling.Dimensions
-import it.vfsfitvnm.vimusic.ui.styling.px
 import it.vfsfitvnm.vimusic.utils.addNext
 import it.vfsfitvnm.vimusic.utils.asMediaItem
 import it.vfsfitvnm.vimusic.utils.enqueue
@@ -83,7 +81,6 @@ import it.vfsfitvnm.vimusic.utils.formatAsDuration
 import it.vfsfitvnm.vimusic.utils.playlistSortByKey
 import it.vfsfitvnm.vimusic.utils.playlistSortOrderKey
 import it.vfsfitvnm.vimusic.utils.rememberPreference
-import it.vfsfitvnm.vimusic.utils.thumbnail
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.withContext
@@ -412,15 +409,8 @@ fun MediaItemMenu(
                 modifier = modifier
                     .onPlaced { height = with(density) { it.size.height.toDp() } }
             ) {
-                val thumbnailSizeDp = Dimensions.thumbnails.song
-                val thumbnailSizePx = thumbnailSizeDp.px
-
-                SongItem(
-                    thumbnailUrl = mediaItem.mediaMetadata.artworkUri.thumbnail(thumbnailSizePx)
-                        ?.toString(),
-                    title = mediaItem.mediaMetadata.title.toString(),
-                    authors = mediaItem.mediaMetadata.artist.toString(),
-                    duration = null,
+                MediaSongItem(
+                    song = mediaItem,
                     trailingContent = {
                         Row {
                             IconButton(

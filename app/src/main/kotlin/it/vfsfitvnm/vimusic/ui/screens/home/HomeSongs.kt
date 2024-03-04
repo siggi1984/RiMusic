@@ -4,7 +4,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -48,11 +47,9 @@ import it.vfsfitvnm.vimusic.enums.SortOrder
 import it.vfsfitvnm.vimusic.models.LocalMenuState
 import it.vfsfitvnm.vimusic.models.Song
 import it.vfsfitvnm.vimusic.ui.components.themed.InHistoryMediaItemMenu
-import it.vfsfitvnm.vimusic.ui.items.SongItem
-import it.vfsfitvnm.vimusic.ui.styling.Dimensions
+import it.vfsfitvnm.vimusic.ui.items.LocalSongItem
 import it.vfsfitvnm.vimusic.ui.styling.onOverlay
 import it.vfsfitvnm.vimusic.ui.styling.overlay
-import it.vfsfitvnm.vimusic.ui.styling.px
 import it.vfsfitvnm.vimusic.utils.asMediaItem
 import it.vfsfitvnm.vimusic.utils.forcePlayAtIndex
 import it.vfsfitvnm.vimusic.utils.rememberPreference
@@ -65,9 +62,6 @@ import it.vfsfitvnm.vimusic.utils.songSortOrderKey
 fun HomeSongs() {
     val binder = LocalPlayerServiceBinder.current
     val menuState = LocalMenuState.current
-
-    val thumbnailSizeDp = Dimensions.thumbnails.song
-    val thumbnailSizePx = thumbnailSizeDp.px
 
     var sortBy by rememberPreference(songSortByKey, SongSortBy.Title)
     var sortOrder by rememberPreference(songSortOrderKey, SortOrder.Ascending)
@@ -170,28 +164,24 @@ fun HomeSongs() {
             items = items,
             key = { _, song -> song.id }
         ) { index, song ->
-            SongItem(
+            LocalSongItem(
+                modifier = Modifier.animateItemPlacement(),
                 song = song,
-                thumbnailSizePx = thumbnailSizePx,
-                modifier = Modifier
-                    .combinedClickable(
-                        onLongClick = {
-                            menuState.display {
-                                InHistoryMediaItemMenu(
-                                    song = song,
-                                    onDismiss = menuState::hide
-                                )
-                            }
-                        },
-                        onClick = {
-                            binder?.stopRadio()
-                            binder?.player?.forcePlayAtIndex(
-                                items.map(Song::asMediaItem),
-                                index
-                            )
-                        }
+                onClick = {
+                    binder?.stopRadio()
+                    binder?.player?.forcePlayAtIndex(
+                        items.map(Song::asMediaItem),
+                        index
                     )
-                    .animateItemPlacement(),
+                },
+                onLongClick = {
+                    menuState.display {
+                        InHistoryMediaItemMenu(
+                            song = song,
+                            onDismiss = menuState::hide
+                        )
+                    }
+                },
                 onThumbnailContent = if (sortBy == SongSortBy.PlayTime) ({
                     Text(
                         text = song.formattedTotalPlayTime,
@@ -209,7 +199,7 @@ fun HomeSongs() {
                                         MaterialTheme.colorScheme.overlay
                                     )
                                 ),
-                                shape = Dimensions.thumbnailShape
+                                shape = MaterialTheme.shapes.medium
                             )
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                             .align(Alignment.BottomCenter)

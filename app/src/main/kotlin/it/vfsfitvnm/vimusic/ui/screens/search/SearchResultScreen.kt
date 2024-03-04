@@ -2,8 +2,7 @@ package it.vfsfitvnm.vimusic.ui.screens.search
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.QueueMusic
 import androidx.compose.material.icons.outlined.Album
@@ -13,7 +12,6 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -32,21 +30,16 @@ import it.vfsfitvnm.vimusic.models.Section
 import it.vfsfitvnm.vimusic.ui.components.ChipScaffold
 import it.vfsfitvnm.vimusic.ui.components.themed.NonQueuedMediaItemMenu
 import it.vfsfitvnm.vimusic.ui.items.AlbumItem
-import it.vfsfitvnm.vimusic.ui.items.AlbumItemPlaceholder
 import it.vfsfitvnm.vimusic.ui.items.ArtistItem
-import it.vfsfitvnm.vimusic.ui.items.ArtistItemPlaceholder
+import it.vfsfitvnm.vimusic.ui.items.ItemPlaceholder
+import it.vfsfitvnm.vimusic.ui.items.ListItemPlaceholder
 import it.vfsfitvnm.vimusic.ui.items.PlaylistItem
-import it.vfsfitvnm.vimusic.ui.items.PlaylistItemPlaceholder
 import it.vfsfitvnm.vimusic.ui.items.SongItem
-import it.vfsfitvnm.vimusic.ui.items.SongItemPlaceholder
 import it.vfsfitvnm.vimusic.ui.items.VideoItem
-import it.vfsfitvnm.vimusic.ui.items.VideoItemPlaceholder
 import it.vfsfitvnm.vimusic.ui.screens.albumRoute
 import it.vfsfitvnm.vimusic.ui.screens.artistRoute
 import it.vfsfitvnm.vimusic.ui.screens.globalRoutes
 import it.vfsfitvnm.vimusic.ui.screens.playlistRoute
-import it.vfsfitvnm.vimusic.ui.styling.Dimensions
-import it.vfsfitvnm.vimusic.ui.styling.px
 import it.vfsfitvnm.vimusic.utils.asMediaItem
 import it.vfsfitvnm.vimusic.utils.forcePlay
 import it.vfsfitvnm.vimusic.utils.rememberPreference
@@ -99,8 +92,6 @@ fun SearchResultScreen(query: String, onSearchAgain: () -> Unit) {
                         0 -> {
                             val binder = LocalPlayerServiceBinder.current
                             val menuState = LocalMenuState.current
-                            val thumbnailSizeDp = Dimensions.thumbnails.song
-                            val thumbnailSizePx = thumbnailSizeDp.px
 
                             ItemsPage(
                                 tag = "searchResults/$query/songs",
@@ -124,35 +115,28 @@ fun SearchResultScreen(query: String, onSearchAgain: () -> Unit) {
                                 itemContent = { song ->
                                     SongItem(
                                         song = song,
-                                        thumbnailSizePx = thumbnailSizePx,
-                                        modifier = Modifier
-                                            .combinedClickable(
-                                                onLongClick = {
-                                                    menuState.display {
-                                                        NonQueuedMediaItemMenu(
-                                                            onDismiss = menuState::hide,
-                                                            mediaItem = song.asMediaItem,
-                                                        )
-                                                    }
-                                                },
-                                                onClick = {
-                                                    binder?.stopRadio()
-                                                    binder?.player?.forcePlay(song.asMediaItem)
-                                                    binder?.setupRadio(song.info?.endpoint)
-                                                }
-                                            )
+                                        onClick = {
+                                            binder?.stopRadio()
+                                            binder?.player?.forcePlay(song.asMediaItem)
+                                            binder?.setupRadio(song.info?.endpoint)
+                                        },
+                                        onLongClick = {
+                                            menuState.display {
+                                                NonQueuedMediaItemMenu(
+                                                    onDismiss = menuState::hide,
+                                                    mediaItem = song.asMediaItem,
+                                                )
+                                            }
+                                        }
                                     )
                                 },
                                 itemPlaceholderContent = {
-                                    SongItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp)
+                                    ListItemPlaceholder()
                                 }
                             )
                         }
 
                         1 -> {
-                            val thumbnailSizeDp = 108.dp
-                            val thumbnailSizePx = thumbnailSizeDp.px
-
                             ItemsPage(
                                 tag = "searchResults/$query/albums",
                                 itemsPageProvider = { continuation ->
@@ -175,23 +159,17 @@ fun SearchResultScreen(query: String, onSearchAgain: () -> Unit) {
                                 itemContent = { album ->
                                     AlbumItem(
                                         album = album,
-                                        thumbnailSizePx = thumbnailSizePx,
-                                        thumbnailSizeDp = thumbnailSizeDp,
-                                        modifier = Modifier
-                                            .clickable(onClick = { albumRoute(album.key) })
+                                        onClick = { albumRoute(album.key) }
                                     )
 
                                 },
                                 itemPlaceholderContent = {
-                                    AlbumItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp)
+                                    ItemPlaceholder()
                                 }
                             )
                         }
 
                         2 -> {
-                            val thumbnailSizeDp = 64.dp
-                            val thumbnailSizePx = thumbnailSizeDp.px
-
                             ItemsPage(
                                 tag = "searchResults/$query/artists",
                                 itemsPageProvider = { continuation ->
@@ -214,14 +192,11 @@ fun SearchResultScreen(query: String, onSearchAgain: () -> Unit) {
                                 itemContent = { artist ->
                                     ArtistItem(
                                         artist = artist,
-                                        thumbnailSizePx = thumbnailSizePx,
-                                        thumbnailSizeDp = thumbnailSizeDp,
-                                        modifier = Modifier
-                                            .clickable(onClick = { artistRoute(artist.key) })
+                                        onClick = { artistRoute(artist.key) }
                                     )
                                 },
                                 itemPlaceholderContent = {
-                                    ArtistItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp)
+                                    ItemPlaceholder(shape = CircleShape)
                                 }
                             )
                         }
@@ -229,8 +204,6 @@ fun SearchResultScreen(query: String, onSearchAgain: () -> Unit) {
                         3 -> {
                             val binder = LocalPlayerServiceBinder.current
                             val menuState = LocalMenuState.current
-                            val thumbnailHeightDp = 72.dp
-                            val thumbnailWidthDp = 128.dp
 
                             ItemsPage(
                                 tag = "searchResults/$query/videos",
@@ -254,39 +227,31 @@ fun SearchResultScreen(query: String, onSearchAgain: () -> Unit) {
                                 itemContent = { video ->
                                     VideoItem(
                                         video = video,
-                                        thumbnailWidthDp = thumbnailWidthDp,
-                                        thumbnailHeightDp = thumbnailHeightDp,
-                                        modifier = Modifier
-                                            .combinedClickable(
-                                                onLongClick = {
-                                                    menuState.display {
-                                                        NonQueuedMediaItemMenu(
-                                                            mediaItem = video.asMediaItem,
-                                                            onDismiss = menuState::hide
-                                                        )
-                                                    }
-                                                },
-                                                onClick = {
-                                                    binder?.stopRadio()
-                                                    binder?.player?.forcePlay(video.asMediaItem)
-                                                    binder?.setupRadio(video.info?.endpoint)
-                                                }
-                                            )
+                                        onClick = {
+                                            binder?.stopRadio()
+                                            binder?.player?.forcePlay(video.asMediaItem)
+                                            binder?.setupRadio(video.info?.endpoint)
+                                        },
+                                        onLongClick = {
+                                            menuState.display {
+                                                NonQueuedMediaItemMenu(
+                                                    mediaItem = video.asMediaItem,
+                                                    onDismiss = menuState::hide
+                                                )
+                                            }
+                                        }
                                     )
                                 },
                                 itemPlaceholderContent = {
-                                    VideoItemPlaceholder(
-                                        thumbnailHeightDp = thumbnailHeightDp,
-                                        thumbnailWidthDp = thumbnailWidthDp
+                                    ListItemPlaceholder(
+                                        thumbnailHeight = 64.dp,
+                                        thumbnailAspectRatio = 16F / 9F
                                     )
                                 }
                             )
                         }
 
                         4, 5 -> {
-                            val thumbnailSizeDp = 108.dp
-                            val thumbnailSizePx = thumbnailSizeDp.px
-
                             ItemsPage(
                                 tag = "searchResults/$query/${if (tabIndex == 4) "playlists" else "featured"}",
                                 itemsPageProvider = { continuation ->
@@ -312,14 +277,11 @@ fun SearchResultScreen(query: String, onSearchAgain: () -> Unit) {
                                 itemContent = { playlist ->
                                     PlaylistItem(
                                         playlist = playlist,
-                                        thumbnailSizePx = thumbnailSizePx,
-                                        thumbnailSizeDp = thumbnailSizeDp,
-                                        modifier = Modifier
-                                            .clickable(onClick = { playlistRoute(playlist.key) })
+                                        onClick = { playlistRoute(playlist.key) }
                                     )
                                 },
                                 itemPlaceholderContent = {
-                                    PlaylistItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp)
+                                    ItemPlaceholder()
                                 }
                             )
                         }

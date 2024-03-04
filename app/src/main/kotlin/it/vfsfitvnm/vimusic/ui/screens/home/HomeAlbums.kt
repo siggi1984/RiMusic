@@ -3,15 +3,17 @@ package it.vfsfitvnm.vimusic.ui.screens.home
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material3.DropdownMenu
@@ -39,9 +41,7 @@ import it.vfsfitvnm.vimusic.R
 import it.vfsfitvnm.vimusic.enums.AlbumSortBy
 import it.vfsfitvnm.vimusic.enums.SortOrder
 import it.vfsfitvnm.vimusic.models.Album
-import it.vfsfitvnm.vimusic.ui.items.AlbumItem
-import it.vfsfitvnm.vimusic.ui.styling.Dimensions
-import it.vfsfitvnm.vimusic.ui.styling.px
+import it.vfsfitvnm.vimusic.ui.items.LocalAlbumItem
 import it.vfsfitvnm.vimusic.utils.albumSortByKey
 import it.vfsfitvnm.vimusic.utils.albumSortOrderKey
 import it.vfsfitvnm.vimusic.utils.rememberPreference
@@ -61,9 +61,6 @@ fun HomeAlbums(
         Database.albums(sortBy, sortOrder).collect { items = it }
     }
 
-    val thumbnailSizeDp = Dimensions.thumbnails.song * 2
-    val thumbnailSizePx = thumbnailSizeDp.px
-
     val sortOrderIconRotation by animateFloatAsState(
         targetValue = if (sortOrder == SortOrder.Ascending) 0f else 180f,
         label = "rotation"
@@ -73,13 +70,18 @@ fun HomeAlbums(
         mutableStateOf(false)
     }
 
-    LazyColumn(
-        contentPadding = PaddingValues(bottom = 16.dp),
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = 150.dp),
+        contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.fillMaxSize()
     ) {
-        item(key = "header") {
+        item(
+            key = "header",
+            span = { GridItemSpan(maxCurrentLineSpan) }
+        ) {
             Row(
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(horizontal = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 TextButton(
@@ -156,13 +158,10 @@ fun HomeAlbums(
             items = items,
             key = Album::id
         ) { album ->
-            AlbumItem(
+            LocalAlbumItem(
+                modifier = Modifier.animateItemPlacement(),
                 album = album,
-                thumbnailSizePx = thumbnailSizePx,
-                thumbnailSizeDp = thumbnailSizeDp,
-                modifier = Modifier
-                    .clickable(onClick = { onAlbumClick(album) })
-                    .animateItemPlacement()
+                onClick = { onAlbumClick(album) }
             )
         }
     }

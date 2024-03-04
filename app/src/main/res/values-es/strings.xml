@@ -132,4 +132,6 @@
     <string name="history_is_empty">El historial está vacío</string>
     <string name="already_unrestricted">Ya sin restricciones</string>
     <string name="disable_background_restrictions">Desactivar las restricciones en segundo plano</string>
+    <string name="subscribers">Suscriptores</string>
+    <string name="home_error">Ha ocurrido un error</string>
 </resources>
