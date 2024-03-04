@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Music You</string>
     <string name="home">Startseite</string>
     <string name="songs">Songs</string>
     <string name="playlists">Wiedergabeliten</string>
@@ -56,7 +55,6 @@
     <string name="restore_information">Vorhandene Daten werden überschrieben. Die App schließt sich nach der Wiederherstellung der Datenbank automatisch.</string>
     <string name="backup_description">Exportieren Sie die Datenbank auf den externen Speicher.</string>
     <string name="restore_description">Importieren Sie die Datenbank vom externen Speicher.</string>
-    <string name="android_auto" translatable="false">Android Auto</string>
     <string name="search_history">Suchverlauf</string>
     <string name="service_lifetime">Unbezwingbarere Dienst</string>
     <string name="pause_search_history">Suchverlauf anhalten</string>
@@ -71,7 +69,7 @@
     <string name="about">Info</string>
     <string name="social">Social</string>
     <string name="troubleshooting">Fehlersuche und -behebung</string>
-    <string name="search">Suche...</string>
+    <string name="search">Suche</string>
     <string name="featured">Ausgewählte</string>
     <string name="confirm">Bestätigen</string>
     <string name="set">Einstellen</string>
@@ -80,7 +78,6 @@
     <string name="hide">Löschen</string>
     <string name="remove_from_queue">Aus der Warteschlange entfernen</string>
     <string name="remove_from_playlist">Aus der Wiedergabeliste entfernen</string>
-    <string name="github" translatable="false">GitHub</string>
     <string name="view_source_code">Den Quellcode anzeigen</string>
     <string name="create_issue">Ein Problem melden</string>
     <string name="redirected_to_github">Sie werden zu Github weitergeleitet</string>
@@ -124,4 +121,4 @@
     <string name="unknown_playback_error">Es ist ein unbekannter Wiedergabefehler aufgetreten.</string>
     <string name="opening_url">URL öffnen</string>
     <string name="no_alternative_versions">Dieses Album hat keine alternativen Versionen.</string>
-</resources</resources>
+</resources>
