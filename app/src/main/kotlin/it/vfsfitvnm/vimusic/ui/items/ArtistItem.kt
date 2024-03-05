@@ -57,6 +57,8 @@ fun LocalArtistItem(
     ItemContainer(
         modifier = modifier,
         title = artist.name ?: "",
+        textAlign = TextAlign.Center,
+        shape = CircleShape,
         onClick = onClick
     ) {
         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
