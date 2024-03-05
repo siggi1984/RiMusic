@@ -100,7 +100,11 @@ fun MediaSongItem(
     ListItemContainer(
         modifier = modifier,
         title = song.mediaMetadata.title.toString(),
-        subtitle = "${song.mediaMetadata.artist} • ${song.mediaMetadata.extras?.getString("durationText")}",
+        subtitle = if (song.mediaMetadata.extras?.getString("durationText") == null) {
+            song.mediaMetadata.artist.toString()
+        } else {
+            "${song.mediaMetadata.artist} • ${song.mediaMetadata.extras?.getString("durationText")}"
+        },
         onClick = onClick,
         onLongClick = onLongClick,
         thumbnail = {
