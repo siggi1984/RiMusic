@@ -88,7 +88,7 @@ fun QuickPicks(
         Database.trending().distinctUntilChanged().collect { song ->
             if ((song == null && relatedPageResult == null) || trending?.id != song?.id) {
                 relatedPageResult =
-                    Innertube.relatedPage(NextBody(videoId = (song?.id ?: "J7p4bzqLvCw")))
+                    Innertube.relatedPage(NextBody(videoId = (song?.id ?: "fJ9rUzIMcZQ")))
             }
             trending = song
         }
