@@ -134,4 +134,6 @@
     <string name="disable_background_restrictions">Disable background restrictions</string>
     <string name="subscribers">Subscribers</string>
     <string name="home_error">An error has occurred</string>
+    <string name="no_albums_artist">This artist didn\'t release any album</string>
+    <string name="no_singles_artist">This artist didn\'t release any single</string>
 </resources>

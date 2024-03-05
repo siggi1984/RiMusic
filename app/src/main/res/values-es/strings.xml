@@ -121,7 +121,7 @@
     <string name="unknown_playback_error">Ha ocurrido un error de reproducción desconocido</string>
     <string name="opening_url">Abriendo el enlace</string>
     <string name="no_alternative_versions">Este álbum no tiene ninguna versión alternativa</string>
-    <string name="fetch_lyrics_again">Cargar las letras de nuevo</string>
+    <string name="fetch_lyrics_again">Cargar la letra de nuevo</string>
     <string name="lyrics_not_available">La letra no está disponible para esta canción</string>
     <string name="synchronized_lyrics_not_available">La letra sincronizada no está disponible para esta canción</string>
     <string name="error_fetching_lyrics">Ha ocurrido un error al cargar la letra</string>
@@ -134,4 +134,6 @@
     <string name="disable_background_restrictions">Desactivar las restricciones en segundo plano</string>
     <string name="subscribers">Suscriptores</string>
     <string name="home_error">Ha ocurrido un error</string>
+    <string name="no_singles_artist">Este artista no ha publicado ningún sencillo</string>
+    <string name="no_albums_artist">Este artista no ha publicado ningún álbum</string>
 </resources>

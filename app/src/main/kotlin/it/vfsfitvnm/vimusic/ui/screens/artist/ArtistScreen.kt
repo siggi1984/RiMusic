@@ -237,7 +237,7 @@ fun ArtistScreen(browseId: String) {
                         2 -> {
                             ItemsPage(
                                 tag = "artist/$browseId/albums",
-                                emptyItemsText = "This artist didn't release any album",
+                                emptyItemsText = stringResource(id = R.string.no_albums_artist),
                                 itemsPageProvider = artistPage?.let {
                                     ({ continuation ->
                                         continuation?.let {
@@ -280,7 +280,7 @@ fun ArtistScreen(browseId: String) {
                         3 -> {
                             ItemsPage(
                                 tag = "artist/$browseId/singles",
-                                emptyItemsText = "This artist didn't release any single",
+                                emptyItemsText = stringResource(id = R.string.no_singles_artist),
                                 itemsPageProvider = artistPage?.let {
                                     ({ continuation ->
                                         continuation?.let {
