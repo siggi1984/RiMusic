@@ -1,6 +1,6 @@
 # Music You
 
-An Android application for streaming music from YouTube Music.
+**Music You** is an Android application for streaming music from YouTube Music.
 
 ## ✨ Features
 
@@ -19,7 +19,20 @@ An Android application for streaming music from YouTube Music.
 - Android Auto support
 - Persistent queue
 - Open YouTube and YouTube Music links (`watch`, `playlist`, `channel`)
-- Multilingual support: English and Spanish
+- Multilingual support
+
+### 🗒️ Planned features
+
+- [ ] Settings redesign
+- [ ] Download songs for offline play
+- [ ] New built-in playlists
+- [ ] Quick picks selection customization
+
+## 🌐 Available languages
+
+- English
+- Spanish
+- German (thanks to @siggi1984)
 
 ## 📸 Screenshots
 
@@ -42,8 +55,7 @@ height="80">](https://github.com/DanielSevillano/music-you/releases/latest)
 
 - [ViMusic](https://github.com/vfsfitvnm/ViMusic)
 - [RiMusic](https://github.com/fast4x/RiMusic)
-- [ViMusic](https://github.com/25huizengek1/ViMusic) (fork
-  by [@25huizengek1](https://github.com/25huizengek1))
+- [ViTune](https://github.com/25huizengek1/ViTune)
 - [InnerTune](https://github.com/z-huang/InnerTune)
 - [Symphony](https://github.com/zyrouge/symphony)
 
