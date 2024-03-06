@@ -21,7 +21,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.outlined.Reorder
+import androidx.compose.material.icons.outlined.DragHandle
 import androidx.compose.material.icons.outlined.Repeat
 import androidx.compose.material.icons.outlined.Shuffle
 import androidx.compose.material3.Icon
@@ -194,15 +194,19 @@ fun Queue() {
                         }
                     },
                     trailingContent = {
-                        Icon(
-                            imageVector = Icons.Outlined.Reorder,
-                            contentDescription = null,
+                        IconButton(
+                            onClick = {},
                             modifier = Modifier
                                 .reorder(
                                     reorderingState = reorderingState,
                                     index = window.firstPeriodIndex
                                 )
-                        )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.DragHandle,
+                                contentDescription = null
+                            )
+                        }
                     }
                 )
             }
