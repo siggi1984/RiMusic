@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -15,7 +14,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.PlaylistPlay
-import androidx.compose.material.icons.outlined.Reorder
+import androidx.compose.material.icons.outlined.DragHandle
 import androidx.compose.material.icons.outlined.Shuffle
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -166,10 +165,9 @@ fun LocalPlaylistSongs(
                                 reorderingState = reorderingState,
                                 index = index
                             )
-                            .size(18.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.Reorder,
+                            imageVector = Icons.Outlined.DragHandle,
                             contentDescription = null,
                         )
                     }
