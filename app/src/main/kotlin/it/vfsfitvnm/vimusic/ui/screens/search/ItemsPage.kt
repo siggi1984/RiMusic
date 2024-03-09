@@ -77,11 +77,12 @@ inline fun <T : Innertube.Item> ItemsPage(
     }
 
     val listLayout = tag.contains("songs") || tag.contains("videos")
+    val artistsLayout = tag.contains("artists")
 
     LazyVerticalGrid(
         state = lazyGridState,
         columns = GridCells.Adaptive(
-            minSize = if (listLayout) 350.dp else 150.dp
+            minSize = if (listLayout) 350.dp else if (artistsLayout) 100.dp else 150.dp
         ),
         contentPadding = PaddingValues(
             start = if (listLayout) 0.dp else 8.dp,
