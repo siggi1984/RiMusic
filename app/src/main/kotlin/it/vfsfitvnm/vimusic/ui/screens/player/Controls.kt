@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.RepeatOne
 import androidx.compose.material.icons.outlined.SkipNext
@@ -222,6 +223,8 @@ fun Controls(
                     } else {
                         if (binder.player.playbackState == Player.STATE_IDLE) {
                             binder.player.prepare()
+                        } else if (binder.player.playbackState == Player.STATE_ENDED) {
+                            binder.player.seekToDefaultPosition(0)
                         }
                         binder.player.play()
                     }
@@ -230,7 +233,10 @@ fun Controls(
                 shape = RoundedCornerShape(playPauseRoundness)
             ) {
                 Icon(
-                    imageVector = if (shouldBePlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                    imageVector =
+                    if (shouldBePlaying) Icons.Filled.Pause
+                    else if (binder.player.playbackState == Player.STATE_ENDED) Icons.Filled.Replay
+                    else Icons.Filled.PlayArrow,
                     contentDescription = null,
                     modifier = Modifier.size(28.dp)
                 )
