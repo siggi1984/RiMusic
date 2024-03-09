@@ -134,6 +134,6 @@
     <string name="disable_background_restrictions">Désactiver les restrictions en arrière-plan</string>
     <string name="subscribers">Abonnés</string>
     <string name="home_error">Une erreur est survenue</string>
-    <string name="no_albums_artist">Cet artiste n\'a pas sorti d'album</string>
+    <string name="no_albums_artist">Cet artiste n\'a pas sorti d\'album</string>
     <string name="no_singles_artist">Cet artiste n\'a pas sorti de single</string>
 </resources>
