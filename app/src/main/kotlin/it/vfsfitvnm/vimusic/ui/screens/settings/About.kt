@@ -1,7 +1,6 @@
 package it.vfsfitvnm.vimusic.ui.screens.settings
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,7 +46,7 @@ fun About() {
             val packageName = context.packageName
             val packageInfo = packageManager.getPackageInfo(packageName, 0)
 
-            Image(
+            Icon(
                 painter = painterResource(id = R.drawable.app_icon),
                 contentDescription = stringResource(id = R.string.app_name)
             )
