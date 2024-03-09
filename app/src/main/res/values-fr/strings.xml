@@ -136,4 +136,10 @@
     <string name="home_error">Une erreur est survenue</string>
     <string name="no_albums_artist">Cet artiste n\'a pas sorti d\'album</string>
     <string name="no_singles_artist">Cet artiste n\'a pas sorti de single</string>
+    <string name="open_supported_links_by_default">Open supported links by default</string>
+    <string name="configure_supported_links">Configure supported links</string>
+    <string name="open_system_settings">Open the system settings</string>
+    <string name="configure_supported_links_information">Music You can open by default YouTube and YouTube music links.</string>
+    <string name="app_language">App language</string>
+    <string name="configure_app_language">Configure app language</string>
 </resources>
