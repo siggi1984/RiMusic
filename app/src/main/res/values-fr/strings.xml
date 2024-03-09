@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Music You</string>
     <string name="home">Accueil</string>
     <string name="songs">Chansons</string>
     <string name="playlists">Playlists</string>
@@ -56,23 +55,22 @@
     <string name="restore_information">Les données existantes seront écrasées. L\'application se fermera automatiquement après avoir restauré la base de données..</string>
     <string name="backup_description">Exporter la base de données vers la mémoire externe</string>
     <string name="restore_description">Importer la base de données à partir de la mémoire externe</string>
-    <string name="android_auto" translatable="false">Android Auto</string>
     <string name="search_history">Historique des recherches</string>
     <string name="service_lifetime">Durée de vie du service</string>
     <string name="pause_search_history">Suspendre l\'historique des recherches</string>
     <string name="pause_search_history_description">Ne pas enregistrer les nouvelles recherches ni afficher l\'historique</string>
     <string name="clear_search_history">Supprimer l\'historique des recherches</string>
     <string name="android_auto_description">Activer le support d\'Android Auto</string>
-    <string name="android_auto_information">N'oubliez pas d'activer l\'option "Sources inconnues" dans les paramètres de développement d\'Android Auto.</string>
+    <string name="android_auto_information">N\'oubliez pas d\'activer l\'option "Sources inconnues" dans les paramètres de développement d\'Android Auto.</string>
     <string name="ignore_battery_optimizations">Ignorer l\'optimisation de la batterie</string>
-    <string name="service_lifetime_description">Quand désactiver les optimisations de la batterie ne suffit pas...</string>
+    <string name="service_lifetime_description">Quand désactiver les optimisations de la batterie ne suffit pas…</string>
     <string name="service_lifetime_information">Lorsque des optimisations de la batterie sont appliquées, la notification de lecture peut disparaître soudainement lors de la mise en pause.</string>
     <string name="service_lifetime_information_plus">Depuis Android 12, la désactivation des optimisations de la batterie est nécessaire pour que l\'option "Service invincible" prenne effet..</string>
     <string name="about">A propos</string>
     <string name="social">Social</string>
     <string name="troubleshooting">Résolution des problèmes</string>
     <string name="search">Chercher</string>
-    <string name="featured">À l'honneur</string>
+    <string name="featured">À l\'honneur</string>
     <string name="confirm">Confirmer</string>
     <string name="set">Appliquer</string>
     <string name="sleep_timer">Minuterie de mise en veille</string>
@@ -80,7 +78,6 @@
     <string name="hide">Masquer</string>
     <string name="remove_from_queue">Enlever de la file d\'attente</string>
     <string name="remove_from_playlist">Enlever de la playlist</string>
-    <string name="github" translatable="false">GitHub</string>
     <string name="view_source_code">Voir le code source</string>
     <string name="create_issue">Create an issue</string>
     <string name="redirected_to_github">Vous serez redirigé vers Github</string>
@@ -110,24 +107,24 @@
     <string name="hide_song_dialog">Masquer ce morceau ?</string>
     <string name="hide_song_dialog_description">Son temps de lecture et la mémoire cache seront effacés. Cette action est irréversible.</string>
     <string name="delete_playlist_dialog">Supprimer cette playlist?</string>
-    <string name="no_items_found">Pas d'objet trouvé</string>
+    <string name="no_items_found">Pas d\'objet trouvé</string>
     <string name="no_results_found">Pas de résultat trouvé. Veuillez essayer une autre requête ou une autre catégorie</string>
     <string name="open_queue">Ouvrir la file d\'attente</string>
     <string name="rename_playlist">Renommer la playlist</string>
     <string name="import_playlist">Importer la playlist</string>
     <string name="enter_lyrics">Saisir les paroles</string>
-    <string name="network_error">Une erreur réseau s'est produite</string>
+    <string name="network_error">Une erreur réseau s\'est produite</string>
     <string name="playable_format_not_found_error">Impossible de trouver un format audio lisible</string>
     <string name="video_source_deleted_error">La source vidéo originale de cette chanson a été supprimée.</string>
     <string name="server_restrictions_error">Cette chanson ne peut pas être jouée en raison de restrictions du serveur</string>
     <string name="id_mismatch_error">L\'identifiant de la vidéo renvoyée ne correspond pas à celui demandé</string>
     <string name="unknown_playback_error">Une erreur de lecture inconnue est survenue</string>
-    <string name="opening_url">Ouverture de l\'url en cours...</string>
-    <string name="no_alternative_versions">Cet album n'a pas de version alternative.</string>
+    <string name="opening_url">Ouverture de l\'url en cours…</string>
+    <string name="no_alternative_versions">Cet album n\'a pas de version alternative.</string>
     <string name="fetch_lyrics_again">Rechercher à nouveau les paroles</string>
     <string name="lyrics_not_available">Les paroles ne sont pas disponibles pour cette chanson</string>
     <string name="synchronized_lyrics_not_available">Les paroles synchronisées ne sont pas disponibles pour cette chanson.</string>
-    <string name="error_fetching_lyrics">Une erreur s\'est produite lors de l`'extraction des paroles.</string>
+    <string name="error_fetching_lyrics">Une erreur s\'est produite lors de l`\'extraction des paroles.</string>
     <string name="error_fetching_synchronized_lyrics">Une erreur s\'est produite lors de l\'extraction des paroles synchronisées.</string>
     <string name="delete_playback_events">Effacer %d événements de lecture</string>
     <string name="quick_picks_cleared">Les choix rapides sont approuvés</string>

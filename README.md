@@ -32,7 +32,8 @@
 
 - English
 - Spanish
-- German (thanks to @siggi1984)
+- German (thanks to [@siggi1984](https://github.com/siggi1984))
+- French (thanks to [@patxixi](https://github.com/patxixi))
 
 ## 📸 Screenshots
 
