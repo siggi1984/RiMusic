@@ -36,6 +36,7 @@ import it.vfsfitvnm.vimusic.query
 import it.vfsfitvnm.vimusic.service.PlayerMediaBrowserService
 import it.vfsfitvnm.vimusic.ui.styling.Dimensions
 import it.vfsfitvnm.vimusic.utils.isAtLeastAndroid12
+import it.vfsfitvnm.vimusic.utils.isAtLeastAndroid13
 import it.vfsfitvnm.vimusic.utils.isAtLeastAndroid6
 import it.vfsfitvnm.vimusic.utils.isIgnoringBatteryOptimizations
 import it.vfsfitvnm.vimusic.utils.isInvincibilityEnabledKey
@@ -133,6 +134,50 @@ fun OtherSettings() {
             onClick = { query(Database::clearQueries) },
             isEnabled = queriesCount > 0
         )
+
+        if (isAtLeastAndroid12) {
+            val intent = Intent(
+                Settings.ACTION_APP_OPEN_BY_DEFAULT_SETTINGS,
+                Uri.parse("package:${context.packageName}")
+            )
+
+            Spacer(modifier = Modifier.height(Dimensions.spacer))
+
+            Text(
+                text = stringResource(id = R.string.open_supported_links_by_default),
+                modifier = Modifier.padding(horizontal = 16.dp),
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            SettingsEntry(
+                title = stringResource(id = R.string.configure_supported_links),
+                text = stringResource(id = R.string.open_system_settings),
+                onClick = { context.startActivity(intent) }
+            )
+
+            SettingsInformation(text = stringResource(id = R.string.configure_supported_links_information))
+        }
+
+        if (isAtLeastAndroid13) {
+            val intent = Intent(
+                Settings.ACTION_APP_LOCALE_SETTINGS,
+                Uri.parse("package:${context.packageName}")
+            )
+
+            Spacer(modifier = Modifier.height(Dimensions.spacer))
+
+            Text(
+                text = stringResource(id = R.string.app_language),
+                modifier = Modifier.padding(horizontal = 16.dp),
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            SettingsEntry(
+                title = stringResource(id = R.string.configure_app_language),
+                text = stringResource(id = R.string.open_system_settings),
+                onClick = { context.startActivity(intent) }
+            )
+        }
 
         Spacer(modifier = Modifier.height(Dimensions.spacer))
 

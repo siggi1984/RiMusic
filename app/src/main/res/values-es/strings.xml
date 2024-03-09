@@ -136,4 +136,10 @@
     <string name="home_error">Ha ocurrido un error</string>
     <string name="no_singles_artist">Este artista no ha publicado ningún sencillo</string>
     <string name="no_albums_artist">Este artista no ha publicado ningún álbum</string>
+    <string name="open_supported_links_by_default">Abrir enlaces compatibles por defecto</string>
+    <string name="configure_supported_links">Configurar los enlaces compatibles</string>
+    <string name="open_system_settings">Abre los ajustes del sistema</string>
+    <string name="configure_supported_links_information">Music You puede abrir por defecto enlaces de YouTube y YouTube Music.</string>
+    <string name="app_language">Idioma de la aplicación</string>
+    <string name="configure_app_language">Configurar el idioma de la aplicación</string>
 </resources>
