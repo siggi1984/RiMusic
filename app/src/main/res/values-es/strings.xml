@@ -142,4 +142,7 @@
     <string name="configure_supported_links_information">Music You puede abrir por defecto enlaces de YouTube y YouTube Music.</string>
     <string name="app_language">Idioma de la aplicación</string>
     <string name="configure_app_language">Configurar el idioma de la aplicación</string>
+    <string name="most_played">Más reproducido</string>
+    <string name="last_played">Más reciente</string>
+    <string name="quick_picks_source">Fuente</string>
 </resources>

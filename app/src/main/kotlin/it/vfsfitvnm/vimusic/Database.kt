@@ -315,6 +315,10 @@ interface Database {
     @RewriteQueriesToDropUnusedColumns
     fun trending(now: Long = System.currentTimeMillis()): Flow<Song?>
 
+    @Transaction
+    @Query("SELECT Song.* FROM Event JOIN Song ON Song.id = songId GROUP BY songId ORDER BY timestamp DESC LIMIT 1")
+    fun lastPlayed(): Flow<Song?>
+
     @Query("SELECT COUNT (*) FROM Event")
     fun eventsCount(): Flow<Int>
 
