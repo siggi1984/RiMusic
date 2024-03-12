@@ -4,29 +4,25 @@
 
 ## ✨ Features
 
-- Play almost any song or video from YouTube Music
 - Background playback
 - Cache audio chunks for offline playback
 - Search for songs, albums, artists, videos and playlists
 - Bookmark artists and albums
-- Import playlists
+- Import playlists and manage local playlists
 - Fetch, display and edit songs lyrics or synchronized lyrics
-- Local playlist management
-- Reorder songs in playlist or queue
-- Skip silence
-- Sleep timer
-- Audio normalization
-- Android Auto support
-- Persistent queue
-- Open YouTube and YouTube Music links (`watch`, `playlist`, `channel`)
-- Multilingual support
+- Open YouTube and YouTube Music links by default
+- Player features, such as sleep timer and persistent queue
+- Audio features, such as skip silence and audio normalization
+- Other features, such as Android Auto support and invincible service
 
-### 🗒️ Planned features
+### 🗒️ New features
 
+- [x] Material You
+- [x] Multilingual support
+- [x] Quick picks selection customization
 - [ ] Settings redesign
 - [ ] Download songs for offline play
 - [ ] New built-in playlists
-- [ ] Quick picks selection customization
 
 ## 🌐 Available languages
 
