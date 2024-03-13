@@ -119,7 +119,7 @@ fun MiniPlayer(openPlayer: () -> Unit) {
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .clip(Dimensions.thumbnailShape)
+                            .clip(MaterialTheme.shapes.medium)
                             .size(52.dp)
                     )
                 },

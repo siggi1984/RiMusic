@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -123,7 +124,7 @@ fun Thumbnail(
         Box(
             modifier = modifier
                 .aspectRatio(1f)
-                .clip(Dimensions.thumbnailShape)
+                .clip(MaterialTheme.shapes.large)
                 .size(thumbnailSizeDp)
         ) {
             AsyncImage(
