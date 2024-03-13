@@ -117,7 +117,7 @@ interface Database {
     @Query("DELETE FROM QueuedMediaItem")
     fun clearQueue()
 
-    @Query("SELECT * FROM SearchQuery WHERE :query LIKE :query ORDER BY id DESC")
+    @Query("SELECT * FROM SearchQuery WHERE `query` LIKE :query ORDER BY id DESC")
     fun queries(query: String): Flow<List<SearchQuery>>
 
     @Query("SELECT COUNT (*) FROM SearchQuery")
