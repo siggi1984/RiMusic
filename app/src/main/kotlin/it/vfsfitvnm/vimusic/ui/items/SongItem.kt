@@ -92,8 +92,8 @@ fun LocalSongItem(
 fun MediaSongItem(
     modifier: Modifier = Modifier,
     song: MediaItem,
-    onClick: () -> Unit = {},
-    onLongClick: () -> Unit = {},
+    onClick: (() -> Unit)? = null,
+    onLongClick: (() -> Unit)? = null,
     onThumbnailContent: @Composable (() -> Unit)? = null,
     trailingContent: @Composable (() -> Unit)? = null
 ) {

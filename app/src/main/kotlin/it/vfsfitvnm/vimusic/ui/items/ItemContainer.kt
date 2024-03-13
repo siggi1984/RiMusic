@@ -12,6 +12,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,7 +39,7 @@ fun ItemContainer(
     isPlaceholder: Boolean = false,
     title: String,
     subtitle: String? = null,
-    onClick: () -> Unit = {},
+    onClick: (() -> Unit)? = null,
     textAlign: TextAlign = TextAlign.Start,
     shape: Shape = MaterialTheme.shapes.large,
     color: Color = MaterialTheme.colorScheme.surfaceVariant,
@@ -46,8 +50,8 @@ fun ItemContainer(
             .widthIn(max = 200.dp)
             .clip(MaterialTheme.shapes.large)
             .clickable(
-                enabled = onClick != {},
-                onClick = onClick
+                enabled = onClick != null,
+                onClick = onClick ?: {}
             )
             .padding(8.dp)
     ) {
@@ -118,8 +122,8 @@ fun ListItemContainer(
     isPlaceholder: Boolean = false,
     title: String,
     subtitle: String? = null,
-    onClick: () -> Unit = {},
-    onLongClick: () -> Unit = {},
+    onClick: (() -> Unit)? = null,
+    onLongClick: (() -> Unit)? = null,
     maxLines: Int = 1,
     color: Color = MaterialTheme.colorScheme.surfaceVariant,
     thumbnail: @Composable () -> Unit,
@@ -143,9 +147,9 @@ fun ListItemContainer(
         modifier = modifier
             .clip(MaterialTheme.shapes.large)
             .combinedClickable(
-                enabled = onClick != {} || onLongClick != {},
-                onClick = onClick,
-                onLongClick = onLongClick
+                enabled = onClick != null || onLongClick != null,
+                onClick = onClick ?: {},
+                onLongClick = onLongClick ?: {}
             ),
         supportingContent = {
             if (isPlaceholder) {
@@ -173,7 +177,15 @@ fun ListItemContainer(
             }
         },
         trailingContent = {
-            trailingContent?.invoke()
+            if (trailingContent != null) trailingContent()
+            else if (onLongClick != null) {
+                IconButton(onClick = onLongClick) {
+                    Icon(
+                        imageVector = Icons.Outlined.MoreVert,
+                        contentDescription = null
+                    )
+                }
+            }
         }
     )
 }
