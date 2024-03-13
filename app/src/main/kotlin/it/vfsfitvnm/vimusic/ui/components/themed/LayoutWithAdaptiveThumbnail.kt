@@ -49,6 +49,7 @@ fun adaptiveThumbnailContent(
             .padding(16.dp)
             .clip(MaterialTheme.shapes.large)
             .size(thumbnailSizeDp)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
 
         if (isLoading) {
             Spacer(
