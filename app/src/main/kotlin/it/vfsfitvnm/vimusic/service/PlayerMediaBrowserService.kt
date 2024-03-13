@@ -11,9 +11,11 @@ import android.os.IBinder
 import android.os.Process
 import android.service.media.MediaBrowserService
 import androidx.annotation.DrawableRes
+import androidx.annotation.OptIn
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import it.vfsfitvnm.vimusic.Database
 import it.vfsfitvnm.vimusic.R
@@ -221,6 +223,7 @@ class PlayerMediaBrowserService : MediaBrowserService(), ServiceConnection {
             BrowserMediaItem.FLAG_PLAYABLE
         )
 
+    @OptIn(UnstableApi::class)
     private inner class SessionCallback(private val player: Player, private val cache: Cache) :
         MediaSession.Callback() {
         override fun onPlay() = player.play()
@@ -230,7 +233,7 @@ class PlayerMediaBrowserService : MediaBrowserService(), ServiceConnection {
         override fun onSeekTo(pos: Long) = player.seekTo(pos)
         override fun onSkipToQueueItem(id: Long) = player.seekToDefaultPosition(id.toInt())
 
-        @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+        @OptIn(androidx.media3.common.util.UnstableApi::class)
         override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
             val data = mediaId?.split('/') ?: return
             var index = 0
