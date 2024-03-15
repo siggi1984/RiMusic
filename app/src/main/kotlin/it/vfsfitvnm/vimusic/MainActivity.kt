@@ -10,18 +10,30 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material.icons.outlined.SkipNext
+import androidx.compose.material.icons.outlined.SkipPrevious
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -30,7 +42,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -54,6 +68,8 @@ import it.vfsfitvnm.vimusic.ui.screens.playlistRoute
 import it.vfsfitvnm.vimusic.ui.styling.AppTheme
 import it.vfsfitvnm.vimusic.utils.asMediaItem
 import it.vfsfitvnm.vimusic.utils.forcePlay
+import it.vfsfitvnm.vimusic.utils.forceSeekToNext
+import it.vfsfitvnm.vimusic.utils.forceSeekToPrevious
 import it.vfsfitvnm.vimusic.utils.intent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filterNotNull
@@ -107,12 +123,60 @@ class MainActivity : ComponentActivity(), PersistMapOwner {
                         mutableStateOf(false)
                     }
 
-                    CompositionLocalProvider(LocalPlayerServiceBinder provides binder) {
+                    CompositionLocalProvider(value = LocalPlayerServiceBinder provides binder) {
                         val sheetState = LocalMenuState.current
+                        val dismissState = rememberSwipeToDismissBoxState(
+                            confirmValueChange = { value ->
+                                val player =
+                                    binder?.player ?: return@rememberSwipeToDismissBoxState false
+
+                                if (value == SwipeToDismissBoxValue.StartToEnd) player.forceSeekToPrevious()
+                                else if (value == SwipeToDismissBoxValue.EndToStart) player.forceSeekToNext()
+
+                                return@rememberSwipeToDismissBoxState false
+                            }
+                        )
 
                         Scaffold(
                             bottomBar = {
-                                MiniPlayer(openPlayer = { isPlayerOpen = true })
+                                SwipeToDismissBox(
+                                    state = dismissState,
+                                    backgroundContent = {
+                                        val color by animateColorAsState(
+                                            targetValue = when (dismissState.targetValue) {
+                                                SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.primaryContainer
+                                                SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.primaryContainer
+                                                SwipeToDismissBoxValue.Settled -> Color.Transparent
+                                            },
+                                            label = "background"
+                                        )
+
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .background(color)
+                                                .padding(horizontal = 16.dp),
+                                            horizontalArrangement = when (dismissState.targetValue) {
+                                                SwipeToDismissBoxValue.StartToEnd -> Arrangement.Start
+                                                SwipeToDismissBoxValue.EndToStart -> Arrangement.End
+                                                SwipeToDismissBoxValue.Settled -> Arrangement.Center
+                                            },
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Icon(
+                                                imageVector = when (dismissState.targetValue) {
+                                                    SwipeToDismissBoxValue.StartToEnd -> Icons.Outlined.SkipPrevious
+                                                    SwipeToDismissBoxValue.EndToStart -> Icons.Outlined.SkipNext
+                                                    SwipeToDismissBoxValue.Settled -> Icons.Outlined.PlayArrow
+                                                },
+                                                contentDescription = null,
+                                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                                            )
+                                        }
+                                    }
+                                ) {
+                                    MiniPlayer(openPlayer = { isPlayerOpen = true })
+                                }
                             }
                         ) { paddingValues ->
                             Box(modifier = Modifier.padding(paddingValues)) {
