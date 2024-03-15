@@ -25,7 +25,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -252,13 +251,6 @@ fun QuickPicks(
                                             }
                                         )
                                     }
-                                },
-                                trailingContent = {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Star,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary
-                                    )
                                 }
                             )
                         }
