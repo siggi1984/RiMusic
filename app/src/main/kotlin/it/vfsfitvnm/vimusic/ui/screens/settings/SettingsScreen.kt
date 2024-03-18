@@ -208,7 +208,7 @@ fun SettingsProgress(text: String, progress: Float) {
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
-            text = text,
+            text = "$text (${(progress * 100).toInt()}%)",
             style = MaterialTheme.typography.labelLarge
         )
 
