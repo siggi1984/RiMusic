@@ -106,9 +106,11 @@ fun Controls(
         Text(
             text = title ?: "",
             modifier = Modifier.basicMarquee(),
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleMedium,
             maxLines = 1
         )
+
+        Spacer(modifier = Modifier.height(4.dp))
 
         Text(
             text = artist ?: "",
@@ -201,6 +203,7 @@ fun Controls(
                 Icon(
                     imageVector = if (likedAt == null) Icons.Outlined.FavoriteBorder else Icons.Filled.Favorite,
                     contentDescription = null,
+                    modifier = Modifier.size(28.dp),
                     tint = MaterialTheme.colorScheme.error
                 )
             }
@@ -211,7 +214,8 @@ fun Controls(
             ) {
                 Icon(
                     imageVector = Icons.Outlined.SkipPrevious,
-                    contentDescription = null
+                    contentDescription = null,
+                    modifier = Modifier.size(28.dp)
                 )
             }
 
@@ -255,7 +259,8 @@ fun Controls(
             ) {
                 Icon(
                     imageVector = Icons.Outlined.SkipNext,
-                    contentDescription = null
+                    contentDescription = null,
+                    modifier = Modifier.size(28.dp)
                 )
             }
 
@@ -266,7 +271,9 @@ fun Controls(
                 Icon(
                     imageVector = Icons.Outlined.RepeatOne,
                     contentDescription = null,
-                    modifier = Modifier.alpha(if (trackLoopEnabled) 1F else Dimensions.lowOpacity)
+                    modifier = Modifier
+                        .alpha(if (trackLoopEnabled) 1F else Dimensions.lowOpacity)
+                        .size(28.dp)
                 )
             }
         }
