@@ -2,17 +2,16 @@ package it.vfsfitvnm.vimusic.ui.components.themed
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,7 +26,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.dp
 import it.vfsfitvnm.vimusic.R
 import kotlinx.coroutines.delay
 
@@ -83,30 +81,25 @@ fun TextFieldDialog(
             Text(text = title)
         },
         text = {
-            Column {
-                TextField(
-                    value = textFieldValue,
-                    onValueChange = { textFieldValue = it },
-                    singleLine = singleLine,
-                    maxLines = maxLines,
-                    placeholder = {
-                        Text(text = hintText)
-                    },
-                    keyboardOptions = KeyboardOptions(imeAction = if (singleLine) ImeAction.Done else ImeAction.None),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            if (isTextInputValid(textFieldValue.text)) {
-                                onDismiss()
-                                onDone(textFieldValue.text)
-                            }
+            OutlinedTextField(
+                value = textFieldValue,
+                onValueChange = { textFieldValue = it },
+                singleLine = singleLine,
+                maxLines = maxLines,
+                placeholder = {
+                    Text(text = hintText)
+                },
+                keyboardOptions = KeyboardOptions(imeAction = if (singleLine) ImeAction.Done else ImeAction.None),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        if (isTextInputValid(textFieldValue.text)) {
+                            onDismiss()
+                            onDone(textFieldValue.text)
                         }
-                    ),
-                    modifier = Modifier
-                        .padding(all = 16.dp)
-                        .weight(weight = 1f, fill = false)
-                        .focusRequester(focusRequester)
-                )
-            }
+                    }
+                ),
+                modifier = Modifier.focusRequester(focusRequester)
+            )
         }
     )
 
