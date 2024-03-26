@@ -19,11 +19,8 @@ import android.os.Looper
 // 4 - Host the service in a separate process - overkill and pathetic.
 abstract class InvincibleService : Service() {
     protected val handler = Handler(Looper.getMainLooper())
-
     protected abstract val isInvincibilityEnabled: Boolean
-
     protected abstract val notificationId: Int
-
     private var invincibility: Invincibility? = null
 
     private val isAllowedToStartForegroundServices: Boolean
@@ -42,9 +39,8 @@ abstract class InvincibleService : Service() {
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
-        if (isInvincibilityEnabled && isAllowedToStartForegroundServices) {
-            invincibility = Invincibility()
-        }
+        if (isInvincibilityEnabled && isAllowedToStartForegroundServices) invincibility =
+            Invincibility()
         return true
     }
 
@@ -55,11 +51,8 @@ abstract class InvincibleService : Service() {
     }
 
     protected fun makeInvincible(isInvincible: Boolean = true) {
-        if (isInvincible) {
-            invincibility?.start()
-        } else {
-            invincibility?.stop()
-        }
+        if (isInvincible) invincibility?.start()
+        else invincibility?.stop()
     }
 
     protected abstract fun shouldBeInvincible(): Boolean
@@ -105,6 +98,7 @@ abstract class InvincibleService : Service() {
             if (shouldBeInvincible() && isAllowedToStartForegroundServices) {
                 notification()?.let { notification ->
                     startForeground(notificationId, notification)
+                    @Suppress("DEPRECATION")
                     stopForeground(false)
                     handler.postDelayed(this, intervalMs)
                 }

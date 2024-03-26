@@ -152,7 +152,13 @@ fun OtherSettings() {
             SettingsEntry(
                 title = stringResource(id = R.string.configure_supported_links),
                 text = stringResource(id = R.string.open_system_settings),
-                onClick = { context.startActivity(intent) }
+                onClick = {
+                    try {
+                        context.startActivity(intent)
+                    } catch (e: ActivityNotFoundException) {
+                        context.toast("Couldn't find supported links settings, please configure them manually")
+                    }
+                }
             )
 
             SettingsInformation(text = stringResource(id = R.string.configure_supported_links_information))

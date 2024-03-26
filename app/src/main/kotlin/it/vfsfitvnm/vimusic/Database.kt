@@ -656,7 +656,7 @@ object Converters {
                 val bundle = parcel.readBundle(MediaItem::class.java.classLoader)
                 parcel.recycle()
 
-                bundle?.let(MediaItem.CREATOR::fromBundle)
+                bundle?.let(MediaItem::fromBundle)
             }.getOrNull()
         }
     }
