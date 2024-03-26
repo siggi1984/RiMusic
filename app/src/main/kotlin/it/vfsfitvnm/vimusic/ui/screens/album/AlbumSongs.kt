@@ -54,6 +54,7 @@ import it.vfsfitvnm.vimusic.utils.forcePlayFromBeginning
 fun AlbumSongs(
     browseId: String,
     thumbnailContent: @Composable () -> Unit,
+    onGoToArtist: (String) -> Unit
 ) {
     val binder = LocalPlayerServiceBinder.current
     val menuState = LocalMenuState.current
@@ -134,6 +135,7 @@ fun AlbumSongs(
                         NonQueuedMediaItemMenu(
                             onDismiss = menuState::hide,
                             mediaItem = song.asMediaItem,
+                            onGoToArtist = onGoToArtist
                         )
                     }
                 },

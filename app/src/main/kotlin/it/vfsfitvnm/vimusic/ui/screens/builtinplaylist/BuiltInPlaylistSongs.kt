@@ -49,16 +49,18 @@ import kotlinx.coroutines.flow.map
 @ExperimentalAnimationApi
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 @Composable
-fun BuiltInPlaylistSongs(builtInPlaylist: BuiltInPlaylist) {
+fun BuiltInPlaylistSongs(
+    builtInPlaylist: BuiltInPlaylist,
+    onGoToAlbum: (String) -> Unit,
+    onGoToArtist: (String) -> Unit
+) {
     val binder = LocalPlayerServiceBinder.current
     val menuState = LocalMenuState.current
-
     var songs by persistList<Song>("${builtInPlaylist.name}/songs")
 
     LaunchedEffect(Unit) {
         when (builtInPlaylist) {
-            BuiltInPlaylist.Favorites -> Database
-                .favorites()
+            BuiltInPlaylist.Favorites -> Database.favorites()
 
             BuiltInPlaylist.Offline -> Database
                 .songsWithContentLength()
@@ -140,12 +142,16 @@ fun BuiltInPlaylistSongs(builtInPlaylist: BuiltInPlaylist) {
                         when (builtInPlaylist) {
                             BuiltInPlaylist.Favorites -> NonQueuedMediaItemMenu(
                                 mediaItem = song.asMediaItem,
-                                onDismiss = menuState::hide
+                                onDismiss = menuState::hide,
+                                onGoToAlbum = onGoToAlbum,
+                                onGoToArtist = onGoToArtist
                             )
 
                             BuiltInPlaylist.Offline -> InHistoryMediaItemMenu(
                                 song = song,
-                                onDismiss = menuState::hide
+                                onDismiss = menuState::hide,
+                                onGoToAlbum = onGoToAlbum,
+                                onGoToArtist = onGoToArtist
                             )
                         }
                     }

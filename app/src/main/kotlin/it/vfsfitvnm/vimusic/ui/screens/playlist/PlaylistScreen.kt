@@ -30,7 +30,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import it.vfsfitvnm.compose.persist.PersistMapCleanup
 import it.vfsfitvnm.compose.persist.persist
-import it.vfsfitvnm.compose.routing.RouteHandler
 import it.vfsfitvnm.innertube.Innertube
 import it.vfsfitvnm.innertube.models.bodies.BrowseBody
 import it.vfsfitvnm.innertube.requests.playlistPage
@@ -41,7 +40,6 @@ import it.vfsfitvnm.vimusic.models.SongPlaylistMap
 import it.vfsfitvnm.vimusic.query
 import it.vfsfitvnm.vimusic.transaction
 import it.vfsfitvnm.vimusic.ui.components.themed.TextFieldDialog
-import it.vfsfitvnm.vimusic.ui.screens.globalRoutes
 import it.vfsfitvnm.vimusic.utils.asMediaItem
 import it.vfsfitvnm.vimusic.utils.completed
 import kotlinx.coroutines.Dispatchers
@@ -51,135 +49,132 @@ import kotlinx.coroutines.withContext
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @Composable
-fun PlaylistScreen(browseId: String) {
+fun PlaylistScreen(
+    browseId: String,
+    pop: () -> Unit,
+    onGoToAlbum: (String) -> Unit,
+    onGoToArtist: (String) -> Unit
+) {
     PersistMapCleanup(tagPrefix = "playlist/$browseId")
 
-    RouteHandler(listenToGlobalEmitter = true) {
-        globalRoutes()
+    var playlistPage by persist<Innertube.PlaylistOrAlbumPage?>("playlist/$browseId/playlistPage")
+    var isImportingPlaylist by rememberSaveable { mutableStateOf(false) }
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-        host {
-            var playlistPage by persist<Innertube.PlaylistOrAlbumPage?>("playlist/$browseId/playlistPage")
+    LaunchedEffect(Unit) {
+        if (playlistPage != null && playlistPage?.songsPage?.continuation == null) return@LaunchedEffect
 
-            LaunchedEffect(Unit) {
-                if (playlistPage != null && playlistPage?.songsPage?.continuation == null) return@LaunchedEffect
+        playlistPage = withContext(Dispatchers.IO) {
+            Innertube.playlistPage(BrowseBody(browseId = browseId))?.completed()
+                ?.getOrNull()
+        }
+    }
 
-                playlistPage = withContext(Dispatchers.IO) {
-                    Innertube.playlistPage(BrowseBody(browseId = browseId))?.completed()
-                        ?.getOrNull()
-                }
-            }
-
-            var isImportingPlaylist by rememberSaveable {
-                mutableStateOf(false)
-            }
-
-            val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
-            Scaffold(
-                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                topBar = {
-                    TopAppBar(
-                        title = {
-                            Text(
-                                text = playlistPage?.title ?: "",
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        },
-                        navigationIcon = {
-                            IconButton(onClick = pop) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                                    contentDescription = null
-                                )
-                            }
-                        },
-                        actions = {
-                            val context = LocalContext.current
-
-                            IconButton(
-                                onClick = { isImportingPlaylist = true }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.LibraryAdd,
-                                    contentDescription = null,
-                                )
-                            }
-
-                            IconButton(
-                                onClick = {
-                                    (playlistPage?.url
-                                        ?: "https://music.youtube.com/playlist?list=${
-                                            browseId.removePrefix(
-                                                "VL"
-                                            )
-                                        }").let { url ->
-                                        val sendIntent = Intent().apply {
-                                            action = Intent.ACTION_SEND
-                                            type = "text/plain"
-                                            putExtra(Intent.EXTRA_TEXT, url)
-                                        }
-
-                                        context.startActivity(
-                                            Intent.createChooser(
-                                                sendIntent,
-                                                null
-                                            )
-                                        )
-                                    }
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Share,
-                                    contentDescription = null,
-                                )
-                            }
-                        },
-                        scrollBehavior = scrollBehavior
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = playlistPage?.title ?: "",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
-                }
-            ) { paddingValues ->
-                Surface(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                ) {
-                    PlaylistSongList(
-                        playlistPage = playlistPage
-                    )
-
-                    if (isImportingPlaylist) {
-                        TextFieldDialog(
-                            title = stringResource(id = R.string.import_playlist),
-                            hintText = stringResource(id = R.string.playlist_name_hint),
-                            initialTextInput = playlistPage?.title ?: "",
-                            onDismiss = { isImportingPlaylist = false },
-                            onDone = { text ->
-                                query {
-                                    transaction {
-                                        val playlistId = Database.insert(
-                                            Playlist(
-                                                name = text,
-                                                browseId = browseId
-                                            )
-                                        )
-
-                                        playlistPage?.songsPage?.items
-                                            ?.map(Innertube.SongItem::asMediaItem)
-                                            ?.onEach(Database::insert)
-                                            ?.mapIndexed { index, mediaItem ->
-                                                SongPlaylistMap(
-                                                    songId = mediaItem.mediaId,
-                                                    playlistId = playlistId,
-                                                    position = index
-                                                )
-                                            }?.let(Database::insertSongPlaylistMaps)
-                                    }
-                                }
-                            }
+                },
+                navigationIcon = {
+                    IconButton(onClick = pop) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                            contentDescription = null
                         )
                     }
-                }
+                },
+                actions = {
+                    val context = LocalContext.current
+
+                    IconButton(
+                        onClick = { isImportingPlaylist = true }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.LibraryAdd,
+                            contentDescription = null,
+                        )
+                    }
+
+                    IconButton(
+                        onClick = {
+                            (playlistPage?.url
+                                ?: "https://music.youtube.com/playlist?list=${
+                                    browseId.removePrefix(
+                                        "VL"
+                                    )
+                                }").let { url ->
+                                val sendIntent = Intent().apply {
+                                    action = Intent.ACTION_SEND
+                                    type = "text/plain"
+                                    putExtra(Intent.EXTRA_TEXT, url)
+                                }
+
+                                context.startActivity(
+                                    Intent.createChooser(
+                                        sendIntent,
+                                        null
+                                    )
+                                )
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Share,
+                            contentDescription = null,
+                        )
+                    }
+                },
+                scrollBehavior = scrollBehavior
+            )
+        }
+    ) { paddingValues ->
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            PlaylistSongList(
+                playlistPage = playlistPage,
+                onGoToAlbum = onGoToAlbum,
+                onGoToArtist = onGoToArtist
+            )
+
+            if (isImportingPlaylist) {
+                TextFieldDialog(
+                    title = stringResource(id = R.string.import_playlist),
+                    hintText = stringResource(id = R.string.playlist_name_hint),
+                    initialTextInput = playlistPage?.title ?: "",
+                    onDismiss = { isImportingPlaylist = false },
+                    onDone = { text ->
+                        query {
+                            transaction {
+                                val playlistId = Database.insert(
+                                    Playlist(
+                                        name = text,
+                                        browseId = browseId
+                                    )
+                                )
+
+                                playlistPage?.songsPage?.items
+                                    ?.map(Innertube.SongItem::asMediaItem)
+                                    ?.onEach(Database::insert)
+                                    ?.mapIndexed { index, mediaItem ->
+                                        SongPlaylistMap(
+                                            songId = mediaItem.mediaId,
+                                            playlistId = playlistId,
+                                            position = index
+                                        )
+                                    }?.let(Database::insertSongPlaylistMaps)
+                            }
+                        }
+                    }
+                )
             }
         }
     }

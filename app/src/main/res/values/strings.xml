@@ -122,7 +122,6 @@
     <string name="server_restrictions_error">This song cannot be played due to server restrictions</string>
     <string name="id_mismatch_error">The returned video id doesn\'t match the requested one</string>
     <string name="unknown_playback_error">An unknown playback error has occurred</string>
-    <string name="opening_url">Opening url</string>
     <string name="no_alternative_versions">This album doesn\'t have any alternative versions</string>
     <string name="fetch_lyrics_again">Fetch lyrics again</string>
     <string name="lyrics_not_available">Lyrics are not available for this song</string>

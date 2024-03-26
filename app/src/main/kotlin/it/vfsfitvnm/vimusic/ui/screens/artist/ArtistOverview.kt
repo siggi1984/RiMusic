@@ -62,7 +62,6 @@ fun ArtistOverview(
 ) {
     val binder = LocalPlayerServiceBinder.current
     val menuState = LocalMenuState.current
-
     val itemSize = 140.dp
 
     Column(
@@ -155,6 +154,7 @@ fun ArtistOverview(
                                 NonQueuedMediaItemMenu(
                                     onDismiss = menuState::hide,
                                     mediaItem = song.asMediaItem,
+                                    onGoToAlbum = onAlbumClick
                                 )
                             }
                         }

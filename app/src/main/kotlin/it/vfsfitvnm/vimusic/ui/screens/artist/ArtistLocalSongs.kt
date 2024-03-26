@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.PlaylistPlay
@@ -48,20 +47,17 @@ import it.vfsfitvnm.vimusic.utils.forcePlayFromBeginning
 fun ArtistLocalSongs(
     browseId: String,
     thumbnailContent: @Composable () -> Unit,
+    onGoToAlbum: (String) -> Unit
 ) {
     val binder = LocalPlayerServiceBinder.current
     val menuState = LocalMenuState.current
-
     var songs by persist<List<Song>?>("artist/$browseId/localSongs")
 
     LaunchedEffect(Unit) {
         Database.artistSongs(browseId).collect { songs = it }
     }
 
-    val lazyListState = rememberLazyListState()
-
     LazyColumn(
-        state = lazyListState,
         contentPadding = PaddingValues(vertical = 16.dp),
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -131,6 +127,7 @@ fun ArtistLocalSongs(
                             NonQueuedMediaItemMenu(
                                 onDismiss = menuState::hide,
                                 mediaItem = song.asMediaItem,
+                                onGoToAlbum = onGoToAlbum
                             )
                         }
                     }

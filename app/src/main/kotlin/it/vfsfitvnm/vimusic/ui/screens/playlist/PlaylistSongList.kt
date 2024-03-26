@@ -41,7 +41,9 @@ import it.vfsfitvnm.vimusic.utils.forcePlayFromBeginning
 @ExperimentalAnimationApi
 @Composable
 fun PlaylistSongList(
-    playlistPage: Innertube.PlaylistOrAlbumPage?
+    playlistPage: Innertube.PlaylistOrAlbumPage?,
+    onGoToAlbum: (String) -> Unit,
+    onGoToArtist: (String) -> Unit
 ) {
     val binder = LocalPlayerServiceBinder.current
     val menuState = LocalMenuState.current
@@ -116,6 +118,8 @@ fun PlaylistSongList(
                         NonQueuedMediaItemMenu(
                             onDismiss = menuState::hide,
                             mediaItem = song.asMediaItem,
+                            onGoToAlbum = onGoToAlbum,
+                            onGoToArtist = onGoToArtist
                         )
                     }
                 }

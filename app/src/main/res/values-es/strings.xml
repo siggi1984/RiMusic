@@ -119,7 +119,6 @@
     <string name="server_restrictions_error">Esta canción no puede ser reproducida debido a restricciones del servidor</string>
     <string name="id_mismatch_error">El identificador del vídeo no se corresponde con el que se solicitó</string>
     <string name="unknown_playback_error">Ha ocurrido un error de reproducción desconocido</string>
-    <string name="opening_url">Abriendo el enlace</string>
     <string name="no_alternative_versions">Este álbum no tiene ninguna versión alternativa</string>
     <string name="fetch_lyrics_again">Cargar la letra de nuevo</string>
     <string name="lyrics_not_available">La letra no está disponible para esta canción</string>

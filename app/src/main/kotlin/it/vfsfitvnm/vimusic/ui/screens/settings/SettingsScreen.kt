@@ -33,51 +33,43 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import it.vfsfitvnm.compose.routing.RouteHandler
 import it.vfsfitvnm.vimusic.R
 import it.vfsfitvnm.vimusic.models.Section
 import it.vfsfitvnm.vimusic.ui.components.TabScaffold
 import it.vfsfitvnm.vimusic.ui.components.themed.ValueSelectorDialog
-import it.vfsfitvnm.vimusic.ui.screens.globalRoutes
 import it.vfsfitvnm.vimusic.ui.styling.Dimensions
 
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(
+    pop: () -> Unit
+) {
     val saveableStateHolder = rememberSaveableStateHolder()
+    val (tabIndex, onTabChanged) = rememberSaveable { mutableIntStateOf(0) }
+    val sections = listOf(
+        Section(stringResource(id = R.string.player), Icons.Outlined.PlayArrow),
+        Section(stringResource(id = R.string.cache), Icons.Outlined.History),
+        Section(stringResource(id = R.string.database), Icons.Outlined.Save),
+        Section(stringResource(id = R.string.other), Icons.AutoMirrored.Outlined.More),
+        Section(stringResource(id = R.string.about), Icons.Outlined.Info)
+    )
 
-    val (tabIndex, onTabChanged) = rememberSaveable {
-        mutableIntStateOf(0)
-    }
-
-    RouteHandler(listenToGlobalEmitter = true) {
-        globalRoutes()
-
-        host {
-            TabScaffold(
-                topIconButtonId = Icons.AutoMirrored.Outlined.ArrowBack,
-                onTopIconButtonClick = pop,
-                sectionTitle = stringResource(id = R.string.settings),
-                tabIndex = tabIndex,
-                onTabChanged = onTabChanged,
-                tabColumnContent = listOf(
-                    Section(stringResource(id = R.string.player), Icons.Outlined.PlayArrow),
-                    Section(stringResource(id = R.string.cache), Icons.Outlined.History),
-                    Section(stringResource(id = R.string.database), Icons.Outlined.Save),
-                    Section(stringResource(id = R.string.other), Icons.AutoMirrored.Outlined.More),
-                    Section(stringResource(id = R.string.about), Icons.Outlined.Info)
-                )
-            ) { currentTabIndex ->
-                saveableStateHolder.SaveableStateProvider(currentTabIndex) {
-                    when (currentTabIndex) {
-                        0 -> PlayerSettings()
-                        1 -> CacheSettings()
-                        2 -> DatabaseSettings()
-                        3 -> OtherSettings()
-                        4 -> About()
-                    }
-                }
+    TabScaffold(
+        topIconButtonId = Icons.AutoMirrored.Outlined.ArrowBack,
+        onTopIconButtonClick = pop,
+        sectionTitle = stringResource(id = R.string.settings),
+        tabIndex = tabIndex,
+        onTabChanged = onTabChanged,
+        tabColumnContent = sections
+    ) { index ->
+        saveableStateHolder.SaveableStateProvider(index) {
+            when (index) {
+                0 -> PlayerSettings()
+                1 -> CacheSettings()
+                2 -> DatabaseSettings()
+                3 -> OtherSettings()
+                4 -> About()
             }
         }
     }

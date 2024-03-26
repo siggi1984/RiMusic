@@ -49,14 +49,14 @@ import it.vfsfitvnm.vimusic.utils.forcePlayFromBeginning
 @Composable
 fun LocalPlaylistSongs(
     playlistId: Long,
-    playlistWithSongs: PlaylistWithSongs?
+    playlistWithSongs: PlaylistWithSongs?,
+    onGoToAlbum: (String) -> Unit,
+    onGoToArtist: (String) -> Unit
 ) {
     val binder = LocalPlayerServiceBinder.current
-
     val menuState = LocalMenuState.current
 
     val lazyListState = rememberLazyListState()
-
     val reorderingState = rememberReorderingState(
         lazyListState = lazyListState,
         key = playlistWithSongs?.songs ?: emptyList<Any>(),
@@ -153,7 +153,9 @@ fun LocalPlaylistSongs(
                             playlistId = playlistId,
                             positionInPlaylist = index,
                             song = song,
-                            onDismiss = menuState::hide
+                            onDismiss = menuState::hide,
+                            onGoToAlbum = onGoToAlbum,
+                            onGoToArtist = onGoToArtist
                         )
                     }
                 },

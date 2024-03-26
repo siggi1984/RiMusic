@@ -119,7 +119,6 @@
     <string name="server_restrictions_error">Cette chanson ne peut pas être jouée en raison de restrictions du serveur</string>
     <string name="id_mismatch_error">L\'identifiant de la vidéo renvoyée ne correspond pas à celui demandé</string>
     <string name="unknown_playback_error">Une erreur de lecture inconnue est survenue</string>
-    <string name="opening_url">Ouverture de l\'url en cours…</string>
     <string name="no_alternative_versions">Cet album n\'a pas de version alternative.</string>
     <string name="fetch_lyrics_again">Rechercher à nouveau les paroles</string>
     <string name="lyrics_not_available">Les paroles ne sont pas disponibles pour cette chanson</string>

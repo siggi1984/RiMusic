@@ -67,28 +67,20 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun Queue() {
+fun Queue(
+    onGoToAlbum: (String) -> Unit,
+    onGoToArtist: (String) -> Unit
+) {
     val binder = LocalPlayerServiceBinder.current
-
-    binder?.player ?: return
-
-    val player = binder.player
-
-    var queueLoopEnabled by rememberPreference(queueLoopEnabledKey, defaultValue = false)
-
+    val player = binder?.player ?: return
     val menuState = LocalMenuState.current
 
+    var queueLoopEnabled by rememberPreference(queueLoopEnabledKey, defaultValue = false)
     var mediaItemIndex by remember {
         mutableIntStateOf(if (player.mediaItemCount == 0) -1 else player.currentMediaItemIndex)
     }
-
-    var windows by remember {
-        mutableStateOf(player.currentTimeline.windows)
-    }
-
-    var shouldBePlaying by remember {
-        mutableStateOf(binder.player.shouldBePlaying)
-    }
+    var windows by remember { mutableStateOf(player.currentTimeline.windows) }
+    var shouldBePlaying by remember { mutableStateOf(binder.player.shouldBePlaying) }
 
     player.DisposableListener {
         object : Player.Listener {
@@ -157,7 +149,9 @@ fun Queue() {
                             QueuedMediaItemMenu(
                                 mediaItem = window.mediaItem,
                                 indexInQueue = if (isPlayingThisMediaItem) null else window.firstPeriodIndex,
-                                onDismiss = menuState::hide
+                                onDismiss = menuState::hide,
+                                onGoToAlbum = onGoToAlbum,
+                                onGoToArtist = onGoToArtist
                             )
                         }
                     },

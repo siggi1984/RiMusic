@@ -119,7 +119,6 @@
     <string name="server_restrictions_error">Dieses Lied kann aufgrund von Serverbeschränkungen nicht abgespielt werden.</string>
     <string name="id_mismatch_error">Die zurückgegebene Video-ID stimmt nicht mit der angeforderten überein.</string>
     <string name="unknown_playback_error">Es ist ein unbekannter Wiedergabefehler aufgetreten.</string>
-    <string name="opening_url">URL öffnen</string>
     <string name="no_alternative_versions">Dieses Album hat keine alternativen Versionen.</string>
     <string name="fetch_lyrics_again">Lyrics erneut Herunterladen</string>
     <string name="lyrics_not_available">Für dieses Lied sind keine Lyrics verfügbar</string>

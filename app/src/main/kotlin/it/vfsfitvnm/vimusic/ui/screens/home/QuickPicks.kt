@@ -248,7 +248,9 @@ fun QuickPicks(
                                                 query {
                                                     Database.clearEventsFor(song.id)
                                                 }
-                                            }
+                                            },
+                                            onGoToAlbum = onAlbumClick,
+                                            onGoToArtist = onArtistClick
                                         )
                                     }
                                 }
@@ -278,7 +280,9 @@ fun QuickPicks(
                                 menuState.display {
                                     NonQueuedMediaItemMenu(
                                         onDismiss = menuState::hide,
-                                        mediaItem = song.asMediaItem
+                                        mediaItem = song.asMediaItem,
+                                        onGoToAlbum = onAlbumClick,
+                                        onGoToArtist = onArtistClick
                                     )
                                 }
                             }

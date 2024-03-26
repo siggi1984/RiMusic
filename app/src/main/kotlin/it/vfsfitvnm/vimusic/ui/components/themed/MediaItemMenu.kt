@@ -71,8 +71,6 @@ import it.vfsfitvnm.vimusic.models.SongPlaylistMap
 import it.vfsfitvnm.vimusic.query
 import it.vfsfitvnm.vimusic.transaction
 import it.vfsfitvnm.vimusic.ui.items.MediaSongItem
-import it.vfsfitvnm.vimusic.ui.screens.albumRoute
-import it.vfsfitvnm.vimusic.ui.screens.artistRoute
 import it.vfsfitvnm.vimusic.utils.addNext
 import it.vfsfitvnm.vimusic.utils.asMediaItem
 import it.vfsfitvnm.vimusic.utils.enqueue
@@ -91,13 +89,12 @@ import kotlinx.coroutines.withContext
 fun InHistoryMediaItemMenu(
     onDismiss: () -> Unit,
     song: Song,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onGoToAlbum: (String) -> Unit,
+    onGoToArtist: (String) -> Unit
 ) {
     val binder = LocalPlayerServiceBinder.current
-
-    var isHiding by remember {
-        mutableStateOf(false)
-    }
+    var isHiding by remember { mutableStateOf(false) }
 
     if (isHiding) {
         ConfirmationDialog(
@@ -119,7 +116,9 @@ fun InHistoryMediaItemMenu(
         mediaItem = song.asMediaItem,
         onDismiss = onDismiss,
         onHideFromDatabase = { isHiding = true },
-        modifier = modifier
+        modifier = modifier,
+        onGoToAlbum = onGoToAlbum,
+        onGoToArtist = onGoToArtist
     )
 }
 
@@ -130,7 +129,9 @@ fun InPlaylistMediaItemMenu(
     playlistId: Long,
     positionInPlaylist: Int,
     song: Song,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onGoToAlbum: (String) -> Unit,
+    onGoToArtist: (String) -> Unit
 ) {
     NonQueuedMediaItemMenu(
         mediaItem = song.asMediaItem,
@@ -141,7 +142,9 @@ fun InPlaylistMediaItemMenu(
                 Database.delete(SongPlaylistMap(song.id, playlistId, Int.MAX_VALUE))
             }
         },
-        modifier = modifier
+        modifier = modifier,
+        onGoToAlbum = onGoToAlbum,
+        onGoToArtist = onGoToArtist
     )
 }
 
@@ -154,6 +157,8 @@ fun NonQueuedMediaItemMenu(
     onRemoveFromPlaylist: (() -> Unit)? = null,
     onHideFromDatabase: (() -> Unit)? = null,
     onRemoveFromQuickPicks: (() -> Unit)? = null,
+    onGoToAlbum: ((String) -> Unit)? = null,
+    onGoToArtist: ((String) -> Unit)? = null
 ) {
     val binder = LocalPlayerServiceBinder.current
 
@@ -175,7 +180,9 @@ fun NonQueuedMediaItemMenu(
         onEnqueue = { binder?.player?.enqueue(mediaItem) },
         onRemoveFromPlaylist = onRemoveFromPlaylist,
         onHideFromDatabase = onHideFromDatabase,
-        onRemoveFromQuickPicks = onRemoveFromQuickPicks
+        onRemoveFromQuickPicks = onRemoveFromQuickPicks,
+        onGoToAlbum = onGoToAlbum,
+        onGoToArtist = onGoToArtist
     )
 }
 
@@ -185,7 +192,9 @@ fun QueuedMediaItemMenu(
     onDismiss: () -> Unit,
     mediaItem: MediaItem,
     indexInQueue: Int?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onGoToAlbum: (String) -> Unit,
+    onGoToArtist: (String) -> Unit
 ) {
     val binder = LocalPlayerServiceBinder.current
 
@@ -195,7 +204,9 @@ fun QueuedMediaItemMenu(
         modifier = modifier,
         onRemoveFromQueue = if (indexInQueue != null) ({
             binder?.player?.removeMediaItem(indexInQueue)
-        }) else null
+        }) else null,
+        onGoToAlbum = onGoToAlbum,
+        onGoToArtist = onGoToArtist
     )
 }
 
@@ -213,6 +224,8 @@ fun BaseMediaItemMenu(
     onRemoveFromPlaylist: (() -> Unit)? = null,
     onHideFromDatabase: (() -> Unit)? = null,
     onRemoveFromQuickPicks: (() -> Unit)? = null,
+    onGoToAlbum: ((String) -> Unit)? = null,
+    onGoToArtist: ((String) -> Unit)? = null
 ) {
     val context = LocalContext.current
 
@@ -239,8 +252,8 @@ fun BaseMediaItemMenu(
                 )
             }
         },
-        onGoToAlbum = albumRoute::global,
-        onGoToArtist = artistRoute::global,
+        onGoToAlbum = onGoToAlbum,
+        onGoToArtist = onGoToArtist,
         onRemoveFromQuickPicks = onRemoveFromQuickPicks
     ) {
         val sendIntent = Intent().apply {
@@ -483,11 +496,7 @@ fun MediaItemMenu(
                 // TODO: find solution to this
                 onShowSleepTimer?.let {
                     val binder = LocalPlayerServiceBinder.current
-
-                    var isShowingSleepTimerDialog by remember {
-                        mutableStateOf(false)
-                    }
-
+                    var isShowingSleepTimerDialog by remember { mutableStateOf(false) }
                     val sleepTimerMillisLeft by (binder?.sleepTimerMillisLeft
                         ?: flowOf(null))
                         .collectAsState(initial = null)
@@ -505,9 +514,7 @@ fun MediaItemMenu(
                                 confirmText = stringResource(id = R.string.yes)
                             )
                         } else {
-                            var amount by remember {
-                                mutableIntStateOf(1)
-                            }
+                            var amount by remember { mutableIntStateOf(1) }
 
                             AlertDialog(
                                 onDismissRequest = { isShowingSleepTimerDialog = false },

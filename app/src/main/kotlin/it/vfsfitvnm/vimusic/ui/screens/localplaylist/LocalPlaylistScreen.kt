@@ -29,7 +29,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import it.vfsfitvnm.compose.persist.PersistMapCleanup
 import it.vfsfitvnm.compose.persist.persist
-import it.vfsfitvnm.compose.routing.RouteHandler
 import it.vfsfitvnm.innertube.Innertube
 import it.vfsfitvnm.innertube.models.bodies.BrowseBody
 import it.vfsfitvnm.innertube.requests.playlistPage
@@ -41,7 +40,6 @@ import it.vfsfitvnm.vimusic.query
 import it.vfsfitvnm.vimusic.transaction
 import it.vfsfitvnm.vimusic.ui.components.themed.ConfirmationDialog
 import it.vfsfitvnm.vimusic.ui.components.themed.TextFieldDialog
-import it.vfsfitvnm.vimusic.ui.screens.globalRoutes
 import it.vfsfitvnm.vimusic.utils.asMediaItem
 import it.vfsfitvnm.vimusic.utils.completed
 import kotlinx.coroutines.Dispatchers
@@ -53,142 +51,137 @@ import kotlinx.coroutines.withContext
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @Composable
-fun LocalPlaylistScreen(playlistId: Long) {
+fun LocalPlaylistScreen(
+    playlistId: Long,
+    pop: () -> Unit,
+    onGoToAlbum: (String) -> Unit,
+    onGoToArtist: (String) -> Unit
+) {
     PersistMapCleanup(tagPrefix = "localPlaylist/$playlistId/")
 
-    RouteHandler(listenToGlobalEmitter = true) {
-        globalRoutes()
+    var playlistWithSongs by persist<PlaylistWithSongs?>("localPlaylist/$playlistId/playlistWithSongs")
+    var isRenaming by rememberSaveable { mutableStateOf(false) }
+    var isDeleting by rememberSaveable { mutableStateOf(false) }
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-        host {
-            var playlistWithSongs by persist<PlaylistWithSongs?>("localPlaylist/$playlistId/playlistWithSongs")
-            var isRenaming by rememberSaveable {
-                mutableStateOf(false)
-            }
-            var isDeleting by rememberSaveable {
-                mutableStateOf(false)
-            }
+    LaunchedEffect(Unit) {
+        Database.playlistWithSongs(playlistId).filterNotNull().collect { playlistWithSongs = it }
+    }
 
-            LaunchedEffect(Unit) {
-                Database.playlistWithSongs(playlistId).filterNotNull()
-                    .collect { playlistWithSongs = it }
-            }
-
-            val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
-            Scaffold(
-                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                topBar = {
-                    TopAppBar(
-                        title = {
-                            Text(
-                                text = playlistWithSongs?.playlist?.name ?: "",
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        },
-                        navigationIcon = {
-                            IconButton(onClick = pop) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                                    contentDescription = null
-                                )
-                            }
-                        },
-                        actions = {
-                            if (!playlistWithSongs?.playlist?.browseId.isNullOrEmpty()) {
-                                IconButton(
-                                    onClick = {
-                                        playlistWithSongs?.playlist?.browseId?.let { browseId ->
-                                            transaction {
-                                                runBlocking(Dispatchers.IO) {
-                                                    withContext(Dispatchers.IO) {
-                                                        Innertube.playlistPage(
-                                                            BrowseBody(browseId = browseId)
-                                                        )
-                                                            ?.completed()
-                                                    }
-                                                }?.getOrNull()?.let { remotePlaylist ->
-                                                    Database.clearPlaylist(playlistId)
-
-                                                    remotePlaylist.songsPage
-                                                        ?.items
-                                                        ?.map(Innertube.SongItem::asMediaItem)
-                                                        ?.onEach(Database::insert)
-                                                        ?.mapIndexed { position, mediaItem ->
-                                                            SongPlaylistMap(
-                                                                songId = mediaItem.mediaId,
-                                                                playlistId = playlistId,
-                                                                position = position
-                                                            )
-                                                        }?.let(Database::insertSongPlaylistMaps)
-                                                }
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = playlistWithSongs?.playlist?.name ?: "",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = pop) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                            contentDescription = null
+                        )
+                    }
+                },
+                actions = {
+                    if (!playlistWithSongs?.playlist?.browseId.isNullOrEmpty()) {
+                        IconButton(
+                            onClick = {
+                                playlistWithSongs?.playlist?.browseId?.let { browseId ->
+                                    transaction {
+                                        runBlocking(Dispatchers.IO) {
+                                            withContext(Dispatchers.IO) {
+                                                Innertube.playlistPage(
+                                                    BrowseBody(browseId = browseId)
+                                                )
+                                                    ?.completed()
                                             }
+                                        }?.getOrNull()?.let { remotePlaylist ->
+                                            Database.clearPlaylist(playlistId)
+
+                                            remotePlaylist.songsPage
+                                                ?.items
+                                                ?.map(Innertube.SongItem::asMediaItem)
+                                                ?.onEach(Database::insert)
+                                                ?.mapIndexed { position, mediaItem ->
+                                                    SongPlaylistMap(
+                                                        songId = mediaItem.mediaId,
+                                                        playlistId = playlistId,
+                                                        position = position
+                                                    )
+                                                }?.let(Database::insertSongPlaylistMaps)
                                         }
                                     }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Sync,
-                                        contentDescription = null
-                                    )
                                 }
                             }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Sync,
+                                contentDescription = null
+                            )
+                        }
+                    }
 
-                            IconButton(onClick = { isRenaming = true }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Edit,
-                                    contentDescription = null
-                                )
-                            }
-
-                            IconButton(onClick = { isDeleting = true }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Delete,
-                                    contentDescription = null
-                                )
-                            }
-                        },
-                        scrollBehavior = scrollBehavior
-                    )
-                }
-            ) { paddingValues ->
-                Surface(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                ) {
-                    LocalPlaylistSongs(
-                        playlistId = playlistId,
-                        playlistWithSongs = playlistWithSongs
-                    )
-
-                    if (isRenaming) {
-                        TextFieldDialog(
-                            title = stringResource(id = R.string.rename_playlist),
-                            hintText = stringResource(id = R.string.playlist_name_hint),
-                            initialTextInput = playlistWithSongs?.playlist?.name ?: "",
-                            onDismiss = { isRenaming = false },
-                            onDone = { text ->
-                                query {
-                                    playlistWithSongs?.playlist?.copy(name = text)
-                                        ?.let(Database::update)
-                                }
-                            }
+                    IconButton(onClick = { isRenaming = true }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Edit,
+                            contentDescription = null
                         )
                     }
 
-                    if (isDeleting) {
-                        ConfirmationDialog(
-                            title = stringResource(id = R.string.delete_playlist_dialog),
-                            onDismiss = { isDeleting = false },
-                            onConfirm = {
-                                query {
-                                    playlistWithSongs?.playlist?.let(Database::delete)
-                                }
-                                pop
-                            }
+                    IconButton(onClick = { isDeleting = true }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Delete,
+                            contentDescription = null
                         )
                     }
-                }
+                },
+                scrollBehavior = scrollBehavior
+            )
+        }
+    ) { paddingValues ->
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            LocalPlaylistSongs(
+                playlistId = playlistId,
+                playlistWithSongs = playlistWithSongs,
+                onGoToAlbum = onGoToAlbum,
+                onGoToArtist = onGoToArtist
+            )
+
+            if (isRenaming) {
+                TextFieldDialog(
+                    title = stringResource(id = R.string.rename_playlist),
+                    hintText = stringResource(id = R.string.playlist_name_hint),
+                    initialTextInput = playlistWithSongs?.playlist?.name ?: "",
+                    onDismiss = { isRenaming = false },
+                    onDone = { text ->
+                        query {
+                            playlistWithSongs?.playlist?.copy(name = text)
+                                ?.let(Database::update)
+                        }
+                    }
+                )
+            }
+
+            if (isDeleting) {
+                ConfirmationDialog(
+                    title = stringResource(id = R.string.delete_playlist_dialog),
+                    onDismiss = { isDeleting = false },
+                    onConfirm = {
+                        query {
+                            playlistWithSongs?.playlist?.let(Database::delete)
+                        }
+                        pop()
+                    }
+                )
             }
         }
     }

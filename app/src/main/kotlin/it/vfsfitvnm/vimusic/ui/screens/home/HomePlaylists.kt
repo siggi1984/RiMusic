@@ -58,11 +58,21 @@ import it.vfsfitvnm.vimusic.utils.rememberPreference
 @ExperimentalFoundationApi
 @Composable
 fun HomePlaylists(
-    onBuiltInPlaylist: (BuiltInPlaylist) -> Unit,
+    onBuiltInPlaylist: (Int) -> Unit,
     onPlaylistClick: (Playlist) -> Unit
 ) {
-    var isCreatingANewPlaylist by rememberSaveable {
-        mutableStateOf(false)
+    var isCreatingANewPlaylist by rememberSaveable { mutableStateOf(false) }
+    var sortBy by rememberPreference(playlistSortByKey, PlaylistSortBy.Name)
+    var sortOrder by rememberPreference(playlistSortOrderKey, SortOrder.Ascending)
+    var items by persistList<PlaylistPreview>("home/playlists")
+    var isSorting by rememberSaveable { mutableStateOf(false) }
+    val sortOrderIconRotation by animateFloatAsState(
+        targetValue = if (sortOrder == SortOrder.Ascending) 0F else 180F,
+        label = "rotation"
+    )
+
+    LaunchedEffect(sortBy, sortOrder) {
+        Database.playlistPreviews(sortBy, sortOrder).collect { items = it }
     }
 
     if (isCreatingANewPlaylist) {
@@ -78,24 +88,6 @@ fun HomePlaylists(
                 }
             }
         )
-    }
-
-    var sortBy by rememberPreference(playlistSortByKey, PlaylistSortBy.Name)
-    var sortOrder by rememberPreference(playlistSortOrderKey, SortOrder.Ascending)
-
-    var items by persistList<PlaylistPreview>("home/playlists")
-
-    LaunchedEffect(sortBy, sortOrder) {
-        Database.playlistPreviews(sortBy, sortOrder).collect { items = it }
-    }
-
-    val sortOrderIconRotation by animateFloatAsState(
-        targetValue = if (sortOrder == SortOrder.Ascending) 0f else 180f,
-        label = "rotation"
-    )
-
-    var isSorting by rememberSaveable {
-        mutableStateOf(false)
     }
 
     LazyVerticalGrid(
@@ -186,7 +178,7 @@ fun HomePlaylists(
             BuiltInPlaylistItem(
                 icon = Icons.Default.Favorite,
                 name = stringResource(id = R.string.favorites),
-                onClick = { onBuiltInPlaylist(BuiltInPlaylist.Favorites) }
+                onClick = { onBuiltInPlaylist(BuiltInPlaylist.Favorites.ordinal) }
             )
         }
 
@@ -194,7 +186,7 @@ fun HomePlaylists(
             BuiltInPlaylistItem(
                 icon = Icons.Default.DownloadForOffline,
                 name = stringResource(id = R.string.offline),
-                onClick = { onBuiltInPlaylist(BuiltInPlaylist.Offline) }
+                onClick = { onBuiltInPlaylist(BuiltInPlaylist.Offline.ordinal) }
             )
         }
 

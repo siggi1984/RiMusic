@@ -47,7 +47,6 @@ import it.vfsfitvnm.innertube.models.NavigationEndpoint
 import it.vfsfitvnm.vimusic.LocalPlayerServiceBinder
 import it.vfsfitvnm.vimusic.R
 import it.vfsfitvnm.vimusic.models.LocalMenuState
-import it.vfsfitvnm.vimusic.service.PlayerService
 import it.vfsfitvnm.vimusic.ui.components.themed.BaseMediaItemMenu
 import it.vfsfitvnm.vimusic.utils.DisposableListener
 import it.vfsfitvnm.vimusic.utils.isLandscape
@@ -60,20 +59,21 @@ import it.vfsfitvnm.vimusic.utils.shouldBePlaying
     ExperimentalMaterial3Api::class
 )
 @Composable
-fun Player() {
+fun Player(
+    onGoToAlbum: (String) -> Unit,
+    onGoToArtist: (String) -> Unit
+) {
     val menuState = LocalMenuState.current
-
     val binder = LocalPlayerServiceBinder.current
-
     binder?.player ?: return
 
     var nullableMediaItem by remember {
-        mutableStateOf(binder.player.currentMediaItem, neverEqualPolicy())
+        mutableStateOf(
+            binder.player.currentMediaItem,
+            neverEqualPolicy()
+        )
     }
-
-    var shouldBePlaying by remember {
-        mutableStateOf(binder.player.shouldBePlaying)
-    }
+    var shouldBePlaying by remember { mutableStateOf(binder.player.shouldBePlaying) }
 
     binder.player.DisposableListener {
         object : Player.Listener {
@@ -92,30 +92,18 @@ fun Player() {
     }
 
     val mediaItem = nullableMediaItem ?: return
-
     val positionAndDuration by binder.player.positionAndDurationState()
-
     val nextSongIndex = binder.player.nextMediaItemIndex
     val nextSongTitle =
         if (nextSongIndex > -1) binder.player.getMediaItemAt(nextSongIndex).mediaMetadata.title.toString()
         else stringResource(id = R.string.open_queue)
 
-    var isShowingLyrics by rememberSaveable {
-        mutableStateOf(false)
-    }
-
-    var isShowingStatsForNerds by rememberSaveable {
-        mutableStateOf(false)
-    }
-
-    var isQueueOpen by rememberSaveable {
-        mutableStateOf(false)
-    }
+    var isShowingLyrics by rememberSaveable { mutableStateOf(false) }
+    var isShowingStatsForNerds by rememberSaveable { mutableStateOf(false) }
+    var isQueueOpen by rememberSaveable { mutableStateOf(false) }
 
     val thumbnailContent: @Composable (modifier: Modifier) -> Unit = { modifier ->
-        var drag by remember {
-            mutableFloatStateOf(0F)
-        }
+        var drag by remember { mutableFloatStateOf(0F) }
 
         Thumbnail(
             isShowingLyrics = isShowingLyrics,
@@ -148,10 +136,7 @@ fun Player() {
         )
     }
 
-    Box(
-        modifier = Modifier.navigationBarsPadding()
-    ) {
-
+    Box(modifier = Modifier.navigationBarsPadding()) {
         Surface {
             if (isLandscape) {
                 Row(
@@ -237,10 +222,17 @@ fun Player() {
             IconButton(
                 onClick = {
                     menuState.display {
-                        PlayerMenu(
+                        BaseMediaItemMenu(
                             onDismiss = menuState::hide,
                             mediaItem = mediaItem,
-                            binder = binder
+                            onShowSleepTimer = {},
+                            onStartRadio = {
+                                binder.stopRadio()
+                                binder.player.seamlessPlay(mediaItem)
+                                binder.setupRadio(NavigationEndpoint.Endpoint.Watch(videoId = mediaItem.mediaId))
+                            },
+                            onGoToAlbum = onGoToAlbum,
+                            onGoToArtist = onGoToArtist
                         )
                     }
                 }
@@ -263,37 +255,15 @@ fun Player() {
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         shape = MaterialTheme.shapes.extraLarge
                     ) {
-                        Box(
-                            Modifier.size(
-                                width = 32.dp,
-                                height = 4.dp
-                            )
-                        )
+                        Box(modifier = Modifier.size(width = 32.dp, height = 4.dp))
                     }
                 }
             ) {
-                Queue()
+                Queue(
+                    onGoToAlbum = onGoToAlbum,
+                    onGoToArtist = onGoToArtist
+                )
             }
         }
     }
-}
-
-@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
-@ExperimentalAnimationApi
-@Composable
-private fun PlayerMenu(
-    binder: PlayerService.Binder,
-    mediaItem: MediaItem,
-    onDismiss: () -> Unit
-) {
-    BaseMediaItemMenu(
-        onDismiss = onDismiss,
-        mediaItem = mediaItem,
-        onShowSleepTimer = {},
-        onStartRadio = {
-            binder.stopRadio()
-            binder.player.seamlessPlay(mediaItem)
-            binder.setupRadio(NavigationEndpoint.Endpoint.Watch(videoId = mediaItem.mediaId))
-        }
-    )
 }

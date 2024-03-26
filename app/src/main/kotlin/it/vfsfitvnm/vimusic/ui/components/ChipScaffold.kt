@@ -4,9 +4,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.VisibilityThreshold
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -27,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import it.vfsfitvnm.vimusic.models.Section
 
@@ -103,17 +99,12 @@ fun ChipScaffold(
                         false -> AnimatedContentTransitionScope.SlideDirection.Right
                     }
 
-                    val animationSpec = spring(
-                        dampingRatio = 0.9f,
-                        stiffness = Spring.StiffnessLow,
-                        visibilityThreshold = IntOffset.VisibilityThreshold
+                    slideIntoContainer(slideDirection) togetherWith slideOutOfContainer(
+                        slideDirection
                     )
-
-                    slideIntoContainer(slideDirection, animationSpec) togetherWith
-                            slideOutOfContainer(slideDirection, animationSpec)
                 },
                 content = content,
-                label = ""
+                label = "chips"
             )
         }
     }

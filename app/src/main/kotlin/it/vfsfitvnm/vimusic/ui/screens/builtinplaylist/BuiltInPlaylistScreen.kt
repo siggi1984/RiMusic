@@ -20,58 +20,59 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import it.vfsfitvnm.compose.persist.PersistMapCleanup
-import it.vfsfitvnm.compose.routing.RouteHandler
 import it.vfsfitvnm.vimusic.R
 import it.vfsfitvnm.vimusic.enums.BuiltInPlaylist
-import it.vfsfitvnm.vimusic.ui.screens.globalRoutes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @Composable
-fun BuiltInPlaylistScreen(builtInPlaylist: BuiltInPlaylist) {
+fun BuiltInPlaylistScreen(
+    builtInPlaylist: BuiltInPlaylist,
+    pop: () -> Unit,
+    onGoToAlbum: (String) -> Unit,
+    onGoToArtist: (String) -> Unit
+) {
     PersistMapCleanup(tagPrefix = "${builtInPlaylist.name}/")
 
-    RouteHandler(listenToGlobalEmitter = true) {
-        globalRoutes()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-        host {
-            val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
-            Scaffold(
-                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                topBar = {
-                    TopAppBar(
-                        title = {
-                            Text(
-                                text = when (builtInPlaylist) {
-                                    BuiltInPlaylist.Favorites -> stringResource(id = R.string.favorites)
-                                    BuiltInPlaylist.Offline -> stringResource(id = R.string.offline)
-                                },
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = when (builtInPlaylist) {
+                            BuiltInPlaylist.Favorites -> stringResource(id = R.string.favorites)
+                            BuiltInPlaylist.Offline -> stringResource(id = R.string.offline)
                         },
-                        navigationIcon = {
-                            IconButton(onClick = pop) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                                    contentDescription = null
-                                )
-                            }
-                        },
-                        scrollBehavior = scrollBehavior
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
-                }
-            ) { paddingValues ->
-                Surface(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                ) {
-                    BuiltInPlaylistSongs(builtInPlaylist = builtInPlaylist)
-                }
-            }
+                },
+                navigationIcon = {
+                    IconButton(onClick = pop) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                            contentDescription = null
+                        )
+                    }
+                },
+                scrollBehavior = scrollBehavior
+            )
+        }
+    ) { paddingValues ->
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            BuiltInPlaylistSongs(
+                builtInPlaylist = builtInPlaylist,
+                onGoToAlbum = onGoToAlbum,
+                onGoToArtist = onGoToArtist
+            )
         }
     }
 }

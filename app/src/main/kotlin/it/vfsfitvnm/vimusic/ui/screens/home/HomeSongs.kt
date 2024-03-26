@@ -59,26 +59,24 @@ import it.vfsfitvnm.vimusic.utils.songSortOrderKey
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @Composable
-fun HomeSongs() {
+fun HomeSongs(
+    onGoToAlbum: (String) -> Unit,
+    onGoToArtist: (String) -> Unit
+) {
     val binder = LocalPlayerServiceBinder.current
     val menuState = LocalMenuState.current
 
     var sortBy by rememberPreference(songSortByKey, SongSortBy.Title)
     var sortOrder by rememberPreference(songSortOrderKey, SortOrder.Ascending)
-
     var items by persistList<Song>("home/songs")
-
-    LaunchedEffect(sortBy, sortOrder) {
-        Database.songs(sortBy, sortOrder).collect { items = it }
-    }
-
+    var isSorting by rememberSaveable { mutableStateOf(false) }
     val sortOrderIconRotation by animateFloatAsState(
         targetValue = if (sortOrder == SortOrder.Ascending) 0f else 180f,
         label = "rotation"
     )
 
-    var isSorting by rememberSaveable {
-        mutableStateOf(false)
+    LaunchedEffect(sortBy, sortOrder) {
+        Database.songs(sortBy, sortOrder).collect { items = it }
     }
 
     LazyColumn(
@@ -178,7 +176,9 @@ fun HomeSongs() {
                     menuState.display {
                         InHistoryMediaItemMenu(
                             song = song,
-                            onDismiss = menuState::hide
+                            onDismiss = menuState::hide,
+                            onGoToAlbum = onGoToAlbum,
+                            onGoToArtist = onGoToArtist
                         )
                     }
                 },
