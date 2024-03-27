@@ -188,7 +188,7 @@ fun Navigation(
             PlayerScaffold {
                 SearchResultScreen(
                     query = query,
-                    onSearchAgain = { navController.navigate(route = "search?text={$query}") },
+                    pop = popDestination,
                     onAlbumClick = navigateToAlbum,
                     onArtistClick = navigateToArtist,
                     onPlaylistClick = { browseId -> navController.navigate("playlist/$browseId") }

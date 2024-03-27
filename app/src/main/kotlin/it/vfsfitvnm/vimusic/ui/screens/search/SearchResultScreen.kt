@@ -12,11 +12,9 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import it.vfsfitvnm.compose.persist.PersistMapCleanup
-import it.vfsfitvnm.compose.persist.persistMap
 import it.vfsfitvnm.innertube.Innertube
 import it.vfsfitvnm.innertube.models.bodies.ContinuationBody
 import it.vfsfitvnm.innertube.models.bodies.SearchBody
@@ -45,7 +43,7 @@ import it.vfsfitvnm.vimusic.utils.searchResultScreenTabIndexKey
 @Composable
 fun SearchResultScreen(
     query: String,
-    onSearchAgain: () -> Unit,
+    pop: () -> Unit,
     onAlbumClick: (String) -> Unit,
     onArtistClick: (String) -> Unit,
     onPlaylistClick: (String) -> Unit
@@ -53,35 +51,24 @@ fun SearchResultScreen(
     PersistMapCleanup(tagPrefix = "searchResults/$query/")
 
     val saveableStateHolder = rememberSaveableStateHolder()
-    val context = LocalContext.current
     val emptyItemsText = stringResource(id = R.string.no_results_found)
     val (tabIndex, onTabIndexChanges) = rememberPreference(searchResultScreenTabIndexKey, 0)
+    val sections = listOf(
+        Section(stringResource(id = R.string.songs), Icons.Outlined.MusicNote),
+        Section(stringResource(id = R.string.albums), Icons.Outlined.Album),
+        Section(stringResource(id = R.string.artists), Icons.Outlined.Person),
+        Section(stringResource(id = R.string.videos), Icons.Outlined.Movie),
+        Section(stringResource(id = R.string.playlists), Icons.AutoMirrored.Outlined.QueueMusic),
+        Section(stringResource(id = R.string.featured), Icons.AutoMirrored.Outlined.QueueMusic)
+    )
 
     ChipScaffold(
         topIconButtonId = Icons.Outlined.Search,
-        onTopIconButtonClick = {
-            context.persistMap?.keys?.removeAll {
-                it.startsWith("searchResults/$query/")
-            }
-            onSearchAgain()
-        },
+        onTopIconButtonClick = pop,
         sectionTitle = query,
         tabIndex = tabIndex,
         onTabChanged = onTabIndexChanges,
-        tabColumnContent = listOf(
-            Section(stringResource(id = R.string.songs), Icons.Outlined.MusicNote),
-            Section(stringResource(id = R.string.albums), Icons.Outlined.Album),
-            Section(stringResource(id = R.string.artists), Icons.Outlined.Person),
-            Section(stringResource(id = R.string.videos), Icons.Outlined.Movie),
-            Section(
-                stringResource(id = R.string.playlists),
-                Icons.AutoMirrored.Outlined.QueueMusic
-            ),
-            Section(
-                stringResource(id = R.string.featured),
-                Icons.AutoMirrored.Outlined.QueueMusic
-            )
-        )
+        tabColumnContent = sections
     ) { index ->
         saveableStateHolder.SaveableStateProvider(index) {
             when (index) {
