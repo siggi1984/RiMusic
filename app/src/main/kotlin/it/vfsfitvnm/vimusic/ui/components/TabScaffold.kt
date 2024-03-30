@@ -11,10 +11,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -36,7 +37,7 @@ fun TabScaffold(
     tabColumnContent: List<Section>,
     content: @Composable (AnimatedVisibilityScope.(Int) -> Unit)
 ) {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     Scaffold(
         modifier = Modifier
@@ -44,7 +45,7 @@ fun TabScaffold(
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             Column {
-                TopAppBar(
+                MediumTopAppBar(
                     title = {
                         Text(
                             text = sectionTitle ?: tabColumnContent[tabIndex].title,
@@ -61,6 +62,7 @@ fun TabScaffold(
                         }
                     },
                     actions = { appBarActions?.invoke() },
+                    colors = TopAppBarDefaults.mediumTopAppBarColors(scrolledContainerColor = MaterialTheme.colorScheme.surface),
                     scrollBehavior = scrollBehavior
                 )
 
