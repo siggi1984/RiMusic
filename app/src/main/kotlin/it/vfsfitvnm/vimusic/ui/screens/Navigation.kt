@@ -28,7 +28,9 @@ import it.vfsfitvnm.vimusic.ui.screens.localplaylist.LocalPlaylistScreen
 import it.vfsfitvnm.vimusic.ui.screens.playlist.PlaylistScreen
 import it.vfsfitvnm.vimusic.ui.screens.search.SearchResultScreen
 import it.vfsfitvnm.vimusic.ui.screens.search.SearchScreen
+import it.vfsfitvnm.vimusic.ui.screens.settings.SettingsPage
 import it.vfsfitvnm.vimusic.ui.screens.settings.SettingsScreen
+import it.vfsfitvnm.vimusic.ui.screens.settings.SettingsSection
 import it.vfsfitvnm.vimusic.utils.pauseSearchHistoryKey
 import it.vfsfitvnm.vimusic.utils.preferences
 
@@ -137,6 +139,26 @@ fun Navigation(
         composable(route = "settings") {
             PlayerScaffold {
                 SettingsScreen(
+                    pop = popDestination,
+                    onGoToSettingsPage = { index -> navController.navigate("settingsPage/$index") }
+                )
+            }
+        }
+
+        composable(
+            route = "settingsPage/{index}",
+            arguments = listOf(
+                navArgument(
+                    name = "index",
+                    builder = { type = NavType.IntType }
+                )
+            )
+        ) { navBackStackEntry ->
+            val index = navBackStackEntry.arguments?.getInt("index") ?: 0
+
+            PlayerScaffold {
+                SettingsPage(
+                    section = SettingsSection.entries[index],
                     pop = popDestination
                 )
             }

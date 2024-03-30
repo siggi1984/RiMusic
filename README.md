@@ -20,7 +20,7 @@
 - [x] Material You
 - [x] Multilingual support
 - [x] Quick picks selection customization
-- [ ] Settings redesign
+- [x] Settings redesign
 - [ ] Download songs for offline play
 - [ ] New built-in playlists
 

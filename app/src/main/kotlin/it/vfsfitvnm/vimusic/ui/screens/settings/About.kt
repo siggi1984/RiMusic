@@ -1,16 +1,19 @@
 package it.vfsfitvnm.vimusic.ui.screens.settings
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import it.vfsfitvnm.vimusic.R
 import it.vfsfitvnm.vimusic.ui.styling.Dimensions
@@ -36,56 +40,43 @@ fun About() {
             .verticalScroll(rememberScrollState())
             .padding(vertical = 16.dp)
     ) {
-        Row(
+        val packageManager = context.packageManager
+        val packageName = context.packageName
+        val packageInfo = packageManager.getPackageInfo(packageName, 0)
+
+        Icon(
+            painter = painterResource(id = R.drawable.app_icon),
+            contentDescription = stringResource(id = R.string.app_name),
             modifier = Modifier
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            val packageManager = context.packageManager
-            val packageName = context.packageName
-            val packageInfo = packageManager.getPackageInfo(packageName, 0)
+                .align(Alignment.CenterHorizontally)
+                .width(150.dp)
+                .aspectRatio(1F),
+            tint = MaterialTheme.colorScheme.onPrimaryContainer
+        )
 
-            Icon(
-                painter = painterResource(id = R.drawable.app_icon),
-                contentDescription = stringResource(id = R.string.app_name)
-            )
-
-            Text(
-                text = "${stringResource(id = R.string.app_name)} v${packageInfo.versionName}",
-                style = MaterialTheme.typography.bodyLarge
-            )
-        }
+        Text(
+            text = "${stringResource(id = R.string.app_name)} v${packageInfo.versionName}",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            textAlign = TextAlign.Center
+        )
 
         Spacer(modifier = Modifier.height(Dimensions.spacer + 8.dp))
 
-        Text(
-            text = stringResource(id = R.string.social),
-            modifier = Modifier.padding(horizontal = 16.dp),
-            style = MaterialTheme.typography.titleMedium
-        )
-
-        SettingsEntry(
-            title = stringResource(id = R.string.github),
-            text = stringResource(id = R.string.view_source_code),
-            onClick = {
+        ListItem(
+            headlineContent = {
+                Text(text = stringResource(id = R.string.github))
+            },
+            leadingContent = {
+                Icon(
+                    painter = painterResource(id = R.drawable.github),
+                    contentDescription = stringResource(id = R.string.github)
+                )
+            },
+            modifier = Modifier.clickable {
                 uriHandler.openUri("https://github.com/DanielSevillano/music-you")
-            }
-        )
-
-        Spacer(modifier = Modifier.height(Dimensions.spacer))
-
-        Text(
-            text = stringResource(id = R.string.troubleshooting),
-            modifier = Modifier.padding(horizontal = 16.dp),
-            style = MaterialTheme.typography.titleMedium
-        )
-
-        SettingsEntry(
-            title = stringResource(id = R.string.create_issue),
-            text = stringResource(id = R.string.redirected_to_github),
-            onClick = {
-                uriHandler.openUri("https://github.com/DanielSevillano/music-you/issues/new/choose")
             }
         )
     }

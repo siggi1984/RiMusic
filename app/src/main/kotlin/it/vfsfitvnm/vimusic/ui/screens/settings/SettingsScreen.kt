@@ -5,71 +5,88 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.automirrored.outlined.More
-import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material.icons.outlined.Save
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import it.vfsfitvnm.vimusic.R
-import it.vfsfitvnm.vimusic.models.Section
-import it.vfsfitvnm.vimusic.ui.components.TabScaffold
 import it.vfsfitvnm.vimusic.ui.components.themed.ValueSelectorDialog
 import it.vfsfitvnm.vimusic.ui.styling.Dimensions
 
+@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @Composable
 fun SettingsScreen(
-    pop: () -> Unit
+    pop: () -> Unit,
+    onGoToSettingsPage: (Int) -> Unit
 ) {
-    val saveableStateHolder = rememberSaveableStateHolder()
-    val (tabIndex, onTabChanged) = rememberSaveable { mutableIntStateOf(0) }
-    val sections = listOf(
-        Section(stringResource(id = R.string.player), Icons.Outlined.PlayArrow),
-        Section(stringResource(id = R.string.cache), Icons.Outlined.History),
-        Section(stringResource(id = R.string.database), Icons.Outlined.Save),
-        Section(stringResource(id = R.string.other), Icons.AutoMirrored.Outlined.More),
-        Section(stringResource(id = R.string.about), Icons.Outlined.Info)
-    )
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    TabScaffold(
-        topIconButtonId = Icons.AutoMirrored.Outlined.ArrowBack,
-        onTopIconButtonClick = pop,
-        sectionTitle = stringResource(id = R.string.settings),
-        tabIndex = tabIndex,
-        onTabChanged = onTabChanged,
-        tabColumnContent = sections
-    ) { index ->
-        saveableStateHolder.SaveableStateProvider(index) {
-            when (index) {
-                0 -> PlayerSettings()
-                1 -> CacheSettings()
-                2 -> DatabaseSettings()
-                3 -> OtherSettings()
-                4 -> About()
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            LargeTopAppBar(
+                title = {
+                    Text(text = stringResource(id = R.string.settings))
+                },
+                navigationIcon = {
+                    IconButton(onClick = pop) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                            contentDescription = null
+                        )
+                    }
+                },
+                scrollBehavior = scrollBehavior
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(paddingValues)
+        ) {
+            SettingsSection.entries.forEachIndexed { index, section ->
+                ListItem(
+                    headlineContent = {
+                        Text(text = stringResource(id = section.resourceId))
+                    },
+                    modifier = Modifier.clickable { onGoToSettingsPage(index) },
+                    leadingContent = {
+                        Icon(
+                            imageVector = section.icon,
+                            contentDescription = stringResource(id = section.resourceId)
+                        )
+                    }
+                )
             }
         }
     }
@@ -105,9 +122,7 @@ inline fun <T> ValueSelectorSettingsEntry(
     crossinline valueText: (T) -> String = { it.toString() },
     noinline trailingContent: @Composable (() -> Unit)? = null
 ) {
-    var isShowingDialog by remember {
-        mutableStateOf(false)
-    }
+    var isShowingDialog by remember { mutableStateOf(false) }
 
     if (isShowingDialog) {
         ValueSelectorDialog(
@@ -209,5 +224,4 @@ fun SettingsProgress(text: String, progress: Float) {
             modifier = Modifier.clip(RoundedCornerShape(8.dp)),
         )
     }
-
 }
