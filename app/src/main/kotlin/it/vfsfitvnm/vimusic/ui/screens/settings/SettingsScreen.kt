@@ -5,8 +5,10 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -32,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -98,6 +101,7 @@ inline fun <reified T : Enum<T>> EnumValueSelectorSettingsEntry(
     title: String,
     selectedValue: T,
     crossinline onValueSelected: (T) -> Unit,
+    icon: ImageVector,
     isEnabled: Boolean = true,
     crossinline valueText: (T) -> String = Enum<T>::name,
     noinline trailingContent: @Composable (() -> Unit)? = null
@@ -107,6 +111,7 @@ inline fun <reified T : Enum<T>> EnumValueSelectorSettingsEntry(
         selectedValue = selectedValue,
         values = enumValues<T>().toList(),
         onValueSelected = onValueSelected,
+        icon = icon,
         isEnabled = isEnabled,
         valueText = valueText,
         trailingContent = trailingContent,
@@ -119,6 +124,7 @@ inline fun <T> ValueSelectorSettingsEntry(
     selectedValue: T,
     values: List<T>,
     crossinline onValueSelected: (T) -> Unit,
+    icon: ImageVector,
     isEnabled: Boolean = true,
     crossinline valueText: (T) -> String = { it.toString() },
     noinline trailingContent: @Composable (() -> Unit)? = null
@@ -139,6 +145,7 @@ inline fun <T> ValueSelectorSettingsEntry(
     SettingsEntry(
         title = title,
         text = valueText(selectedValue),
+        icon = icon,
         onClick = { isShowingDialog = true },
         isEnabled = isEnabled,
         trailingContent = trailingContent
@@ -149,6 +156,7 @@ inline fun <T> ValueSelectorSettingsEntry(
 fun SwitchSettingEntry(
     title: String,
     text: String,
+    icon: ImageVector,
     isChecked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     isEnabled: Boolean = true
@@ -156,6 +164,7 @@ fun SwitchSettingEntry(
     SettingsEntry(
         title = title,
         text = text,
+        icon = icon,
         onClick = { onCheckedChange(!isChecked) },
         isEnabled = isEnabled
     ) {
@@ -171,6 +180,7 @@ fun SwitchSettingEntry(
 fun SettingsEntry(
     title: String,
     text: String,
+    icon: ImageVector,
     onClick: () -> Unit,
     isEnabled: Boolean = true,
     trailingContent: @Composable (() -> Unit)? = null
@@ -181,7 +191,13 @@ fun SettingsEntry(
         },
         modifier = Modifier
             .clickable(enabled = isEnabled, onClick = onClick)
-            .alpha(if (isEnabled) 1f else Dimensions.lowOpacity),
+            .alpha(if (isEnabled) 1F else Dimensions.lowOpacity),
+        leadingContent = {
+            Icon(
+                imageVector = icon,
+                contentDescription = title
+            )
+        },
         supportingContent = {
             Text(text = text)
         },
@@ -215,10 +231,20 @@ fun SettingsProgress(text: String, progress: Float) {
         modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Text(
-            text = "$text (${(progress * 100).toInt()}%)",
-            style = MaterialTheme.typography.labelLarge
-        )
+        Row(
+            modifier = Modifier.width(240.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelLarge
+            )
+
+            Text(
+                text = "${(progress * 100).toInt()}%",
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
 
         LinearProgressIndicator(
             progress = { progress },

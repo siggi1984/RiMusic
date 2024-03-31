@@ -13,6 +13,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.QueueMusic
+import androidx.compose.material.icons.automirrored.outlined.VolumeUp
+import androidx.compose.material.icons.outlined.Equalizer
+import androidx.compose.material.icons.outlined.FastForward
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.Replay
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -61,11 +68,12 @@ fun PlayerSettings() {
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(vertical = 16.dp)
+            .padding(bottom = 16.dp)
     ) {
         SwitchSettingEntry(
             title = stringResource(id = R.string.persistent_queue),
             text = stringResource(id = R.string.persistent_queue_description),
+            icon = Icons.AutoMirrored.Outlined.QueueMusic,
             isChecked = persistentQueue,
             onCheckedChange = {
                 persistentQueue = it
@@ -76,6 +84,7 @@ fun PlayerSettings() {
             SwitchSettingEntry(
                 title = stringResource(id = R.string.resume_playback),
                 text = stringResource(id = R.string.resume_playback_description),
+                icon = Icons.Outlined.Replay,
                 isChecked = resumePlaybackWhenDeviceConnected,
                 onCheckedChange = {
                     resumePlaybackWhenDeviceConnected = it
@@ -95,6 +104,7 @@ fun PlayerSettings() {
             SwitchSettingEntry(
                 title = stringResource(id = R.string.show_song_cover),
                 text = stringResource(id = R.string.show_song_cover_description),
+                icon = Icons.Outlined.Image,
                 isChecked = isShowingThumbnailInLockscreen,
                 onCheckedChange = { isShowingThumbnailInLockscreen = it }
             )
@@ -111,6 +121,7 @@ fun PlayerSettings() {
         SwitchSettingEntry(
             title = stringResource(id = R.string.skip_silence),
             text = stringResource(id = R.string.skip_silence_description),
+            icon = Icons.Outlined.FastForward,
             isChecked = skipSilence,
             onCheckedChange = {
                 skipSilence = it
@@ -120,6 +131,7 @@ fun PlayerSettings() {
         SwitchSettingEntry(
             title = stringResource(id = R.string.loudness_normalization),
             text = stringResource(id = R.string.loudness_normalization_description),
+            icon = Icons.AutoMirrored.Outlined.VolumeUp,
             isChecked = volumeNormalization,
             onCheckedChange = {
                 volumeNormalization = it
@@ -129,6 +141,7 @@ fun PlayerSettings() {
         SettingsEntry(
             title = stringResource(id = R.string.equalizer),
             text = stringResource(id = R.string.equalizer_description),
+            icon = Icons.Outlined.Equalizer,
             onClick = {
                 val intent = Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL).apply {
                     putExtra(AudioEffect.EXTRA_AUDIO_SESSION, binder?.player?.audioSessionId)

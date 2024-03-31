@@ -38,7 +38,7 @@ fun About() {
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(vertical = 16.dp)
+            .padding(top = 8.dp, bottom = 16.dp)
     ) {
         val packageManager = context.packageManager
         val packageName = context.packageName
@@ -49,9 +49,9 @@ fun About() {
             contentDescription = stringResource(id = R.string.app_name),
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .width(150.dp)
+                .width(125.dp)
                 .aspectRatio(1F),
-            tint = MaterialTheme.colorScheme.onPrimaryContainer
+            tint = MaterialTheme.colorScheme.primary
         )
 
         Text(

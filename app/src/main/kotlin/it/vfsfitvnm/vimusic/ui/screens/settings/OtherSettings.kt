@@ -17,6 +17,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Battery0Bar
+import androidx.compose.material.icons.outlined.DirectionsCar
+import androidx.compose.material.icons.outlined.Stars
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -76,11 +80,12 @@ fun OtherSettings() {
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(vertical = 16.dp)
+            .padding(bottom = 16.dp)
     ) {
         SwitchSettingEntry(
             title = stringResource(id = R.string.android_auto),
             text = stringResource(id = R.string.android_auto_description),
+            icon = Icons.Outlined.DirectionsCar,
             isChecked = isAndroidAutoEnabled,
             onCheckedChange = { isAndroidAutoEnabled = it }
         )
@@ -102,6 +107,7 @@ fun OtherSettings() {
             } else {
                 stringResource(id = R.string.disable_background_restrictions)
             },
+            icon = Icons.Outlined.Battery0Bar,
             onClick = {
                 if (!isAtLeastAndroid6) return@SettingsEntry
 
@@ -127,6 +133,7 @@ fun OtherSettings() {
         SwitchSettingEntry(
             title = stringResource(id = R.string.service_lifetime),
             text = stringResource(id = R.string.service_lifetime_description),
+            icon = Icons.Outlined.Stars,
             isChecked = isInvincibilityEnabled,
             onCheckedChange = { isInvincibilityEnabled = it }
         )

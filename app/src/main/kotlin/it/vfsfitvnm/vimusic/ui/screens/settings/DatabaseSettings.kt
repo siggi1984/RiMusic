@@ -12,6 +12,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.DeleteSweep
+import androidx.compose.material.icons.outlined.HistoryToggleOff
+import androidx.compose.material.icons.outlined.RestartAlt
+import androidx.compose.material.icons.outlined.SaveAlt
+import androidx.compose.material.icons.outlined.SettingsBackupRestore
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -96,7 +102,7 @@ fun DatabaseSettings() {
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(vertical = 16.dp)
+            .padding(top = 8.dp, bottom = 16.dp)
     ) {
         Text(
             text = stringResource(id = R.string.history),
@@ -107,6 +113,7 @@ fun DatabaseSettings() {
         SwitchSettingEntry(
             title = stringResource(id = R.string.pause_search_history),
             text = stringResource(id = R.string.pause_search_history_description),
+            icon = Icons.Outlined.HistoryToggleOff,
             isChecked = pauseSearchHistory,
             onCheckedChange = { pauseSearchHistory = it }
         )
@@ -118,6 +125,7 @@ fun DatabaseSettings() {
             } else {
                 stringResource(id = R.string.history_is_empty)
             },
+            icon = Icons.Outlined.DeleteSweep,
             onClick = { query(Database::clearQueries) },
             isEnabled = queriesCount > 0
         )
@@ -129,6 +137,7 @@ fun DatabaseSettings() {
             } else {
                 stringResource(id = R.string.quick_picks_cleared)
             },
+            icon = Icons.Outlined.RestartAlt,
             onClick = { query(Database::clearEvents) },
             isEnabled = eventsCount > 0
         )
@@ -144,6 +153,7 @@ fun DatabaseSettings() {
         SettingsEntry(
             title = stringResource(id = R.string.backup),
             text = stringResource(id = R.string.backup_description),
+            icon = Icons.Outlined.SaveAlt,
             onClick = {
                 @SuppressLint("SimpleDateFormat")
                 val dateFormat = SimpleDateFormat("yyyyMMddHHmmss")
@@ -161,6 +171,7 @@ fun DatabaseSettings() {
         SettingsEntry(
             title = stringResource(id = R.string.restore),
             text = stringResource(id = R.string.restore_description),
+            icon = Icons.Outlined.SettingsBackupRestore,
             onClick = {
                 try {
                     restoreLauncher.launch(

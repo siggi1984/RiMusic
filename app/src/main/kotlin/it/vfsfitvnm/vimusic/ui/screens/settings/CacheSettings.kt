@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,7 +55,7 @@ fun CacheSettings() {
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(vertical = 16.dp)
+            .padding(top = 8.dp, bottom = 16.dp)
     ) {
         Coil.imageLoader(context).diskCache?.let { diskCache ->
             val diskCacheSize = remember(diskCache) {
@@ -78,7 +81,8 @@ fun CacheSettings() {
             EnumValueSelectorSettingsEntry(
                 title = stringResource(id = R.string.max_size),
                 selectedValue = coilDiskCacheMaxSize,
-                onValueSelected = { coilDiskCacheMaxSize = it }
+                onValueSelected = { coilDiskCacheMaxSize = it },
+                icon = Icons.Outlined.Image
             )
         }
 
@@ -111,7 +115,8 @@ fun CacheSettings() {
             EnumValueSelectorSettingsEntry(
                 title = stringResource(id = R.string.max_size),
                 selectedValue = exoPlayerDiskCacheMaxSize,
-                onValueSelected = { exoPlayerDiskCacheMaxSize = it }
+                onValueSelected = { exoPlayerDiskCacheMaxSize = it },
+                icon = Icons.Outlined.MusicNote
             )
         }
 

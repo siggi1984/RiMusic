@@ -9,6 +9,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.List
+import androidx.compose.material.icons.outlined.AddLink
+import androidx.compose.material.icons.outlined.Language
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -33,12 +37,13 @@ fun GeneralSettings() {
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(vertical = 16.dp)
+            .padding(bottom = 16.dp)
     ) {
         EnumValueSelectorSettingsEntry(
             title = stringResource(id = R.string.quick_picks_source),
             selectedValue = quickPicksSource,
             onValueSelected = { quickPicksSource = it },
+            icon = Icons.AutoMirrored.Outlined.List,
             valueText = { context.getString(it.resourceId) }
         )
 
@@ -51,6 +56,7 @@ fun GeneralSettings() {
             SettingsEntry(
                 title = stringResource(id = R.string.app_language),
                 text = stringResource(id = R.string.configure_app_language),
+                icon = Icons.Outlined.Language,
                 onClick = {
                     try {
                         context.startActivity(intent)
@@ -70,6 +76,7 @@ fun GeneralSettings() {
             SettingsEntry(
                 title = stringResource(id = R.string.open_supported_links_by_default),
                 text = stringResource(id = R.string.configure_supported_links),
+                icon = Icons.Outlined.AddLink,
                 onClick = {
                     try {
                         context.startActivity(intent)
