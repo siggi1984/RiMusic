@@ -3,7 +3,6 @@ package it.vfsfitvnm.vimusic.ui.screens.home
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,19 +23,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Tune
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -91,8 +82,7 @@ fun QuickPicks(
 
     var trending by persist<Song?>("home/trending")
     var relatedPageResult by persist<Result<Innertube.RelatedPage?>?>(tag = "home/relatedPageResult")
-    var quickPicksSource by rememberPreference(quickPicksSourceKey, QuickPicksSource.Trending)
-    var isQuickPicksSettingsOpen by remember { mutableStateOf(false) }
+    val quickPicksSource by rememberPreference(quickPicksSourceKey, QuickPicksSource.Trending)
 
     LaunchedEffect(quickPicksSource) {
         val flow = when (quickPicksSource) {
@@ -145,76 +135,11 @@ fun QuickPicks(
                 .padding(top = 4.dp, bottom = 16.dp)
         ) {
             relatedPageResult?.getOrNull()?.let { related ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, end = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.quick_picks),
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        style = MaterialTheme.typography.titleMedium
-                    )
-
-                    Spacer(modifier = Modifier.weight(1F))
-
-                    if (trending != null) {
-                        Box {
-                            IconButton(onClick = { isQuickPicksSettingsOpen = true }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Tune,
-                                    contentDescription = null
-                                )
-                            }
-
-                            DropdownMenu(
-                                expanded = isQuickPicksSettingsOpen,
-                                onDismissRequest = { isQuickPicksSettingsOpen = false }
-                            ) {
-                                Text(
-                                    text = stringResource(id = R.string.quick_picks_source),
-                                    modifier = Modifier.padding(
-                                        horizontal = 16.dp,
-                                        vertical = 8.dp
-                                    ),
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-
-                                QuickPicksSource.entries.forEach { entry ->
-                                    val onClick = {
-                                        isQuickPicksSettingsOpen = false
-                                        quickPicksSource = entry
-                                    }
-
-                                    DropdownMenuItem(
-                                        text = {
-                                            Text(
-                                                text = when (entry) {
-                                                    QuickPicksSource.Trending -> stringResource(id = R.string.most_played)
-                                                    QuickPicksSource.LastPlayed -> stringResource(id = R.string.last_played)
-                                                }
-                                            )
-                                        },
-                                        onClick = onClick,
-                                        leadingIcon = {
-                                            Icon(
-                                                imageVector = entry.icon,
-                                                contentDescription = entry.name
-                                            )
-                                        },
-                                        trailingIcon = {
-                                            RadioButton(
-                                                selected = quickPicksSource == entry,
-                                                onClick = onClick
-                                            )
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
+                Text(
+                    text = stringResource(id = R.string.quick_picks),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = sectionTextModifier
+                )
 
                 LazyHorizontalGrid(
                     state = quickPicksLazyGridState,

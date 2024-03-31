@@ -63,12 +63,6 @@ fun PlayerSettings() {
             .verticalScroll(rememberScrollState())
             .padding(vertical = 16.dp)
     ) {
-        Text(
-            text = stringResource(id = R.string.player),
-            modifier = Modifier.padding(horizontal = 16.dp),
-            style = MaterialTheme.typography.titleMedium
-        )
-
         SwitchSettingEntry(
             title = stringResource(id = R.string.persistent_queue),
             text = stringResource(id = R.string.persistent_queue_description),

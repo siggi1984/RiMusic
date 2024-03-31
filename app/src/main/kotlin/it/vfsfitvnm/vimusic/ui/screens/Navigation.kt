@@ -19,6 +19,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import it.vfsfitvnm.vimusic.Database
 import it.vfsfitvnm.vimusic.enums.BuiltInPlaylist
+import it.vfsfitvnm.vimusic.enums.SettingsSection
 import it.vfsfitvnm.vimusic.models.SearchQuery
 import it.vfsfitvnm.vimusic.ui.screens.album.AlbumScreen
 import it.vfsfitvnm.vimusic.ui.screens.artist.ArtistScreen
@@ -30,7 +31,6 @@ import it.vfsfitvnm.vimusic.ui.screens.search.SearchResultScreen
 import it.vfsfitvnm.vimusic.ui.screens.search.SearchScreen
 import it.vfsfitvnm.vimusic.ui.screens.settings.SettingsPage
 import it.vfsfitvnm.vimusic.ui.screens.settings.SettingsScreen
-import it.vfsfitvnm.vimusic.ui.screens.settings.SettingsSection
 import it.vfsfitvnm.vimusic.utils.pauseSearchHistoryKey
 import it.vfsfitvnm.vimusic.utils.preferences
 

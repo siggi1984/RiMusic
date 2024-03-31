@@ -48,7 +48,6 @@
     <string name="song_cache">Song cache</string>
     <string name="max_size">Max size</string>
     <string name="cache_information">When the cache runs out of space, the resources that haven\'t been accessed for the longest time are cleared.</string>
-    <string name="cleanup">Cleanup</string>
     <string name="backup">Backup</string>
     <string name="restore">Restore</string>
     <string name="reset_quick_picks">Reset quick picks</string>
@@ -57,7 +56,6 @@
     <string name="backup_description">Export the database to the external storage</string>
     <string name="restore_description">Import the database from the external storage</string>
     <string name="android_auto" translatable="false">Android Auto</string>
-    <string name="search_history">Search history</string>
     <string name="service_lifetime">Service lifetime</string>
     <string name="pause_search_history">Pause search history</string>
     <string name="pause_search_history_description">Neither save new searched queries nor show history</string>
@@ -69,8 +67,6 @@
     <string name="service_lifetime_information">If battery optimizations are applied, the playback notification can suddenly disappear when paused.</string>
     <string name="service_lifetime_information_plus">Since Android 12, disabling battery optimizations is required for the "Invincible service" option to take effect.</string>
     <string name="about">About</string>
-    <string name="social">Social</string>
-    <string name="troubleshooting">Troubleshooting</string>
     <string name="search">Search</string>
     <string name="featured">Featured</string>
     <string name="confirm">Confirm</string>
@@ -81,9 +77,6 @@
     <string name="remove_from_queue">Remove from queue</string>
     <string name="remove_from_playlist">Remove from playlist</string>
     <string name="github" translatable="false">GitHub</string>
-    <string name="view_source_code">View the source code</string>
-    <string name="create_issue">Create an issue</string>
-    <string name="redirected_to_github">You will be redirected to Github</string>
     <string name="shuffle">Shuffle</string>
     <string name="quick_picks">Quick picks</string>
     <string name="view_all">View all</string>
@@ -140,11 +133,12 @@
     <string name="no_singles_artist">This artist didn\'t release any single</string>
     <string name="open_supported_links_by_default">Open supported links by default</string>
     <string name="configure_supported_links">Configure supported links</string>
-    <string name="open_system_settings">Open the system settings</string>
     <string name="configure_supported_links_information">Music You can open by default YouTube and YouTube music links.</string>
     <string name="app_language">App language</string>
     <string name="configure_app_language">Configure app language</string>
-    <string name="quick_picks_source">Source</string>
     <string name="most_played">Most played</string>
     <string name="last_played">Last played</string>
+    <string name="general">General</string>
+    <string name="history">History</string>
+    <string name="quick_picks_source">Quick picks source</string>
 </resources>

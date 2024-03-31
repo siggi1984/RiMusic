@@ -36,6 +36,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import it.vfsfitvnm.vimusic.R
+import it.vfsfitvnm.vimusic.enums.SettingsSection
 import it.vfsfitvnm.vimusic.ui.components.themed.ValueSelectorDialog
 import it.vfsfitvnm.vimusic.ui.styling.Dimensions
 

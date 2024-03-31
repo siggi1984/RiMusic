@@ -47,15 +47,13 @@
     <string name="song_cache">Caché de canciones</string>
     <string name="max_size">Tamaño máximo</string>
     <string name="cache_information">Cuando la caché se queda sin espacio, los recursos a los que no se ha accedido durante más tiempo se borran.</string>
-    <string name="cleanup">Limpieza</string>
     <string name="backup">Copia de seguridad</string>
     <string name="restore">Restauración</string>
     <string name="reset_quick_picks">Restablecer las selecciones rápidas</string>
     <string name="backup_information">Se excluyen las preferencias personales y la caché.</string>
     <string name="restore_information">Los datos existentes se sobreescribirán. La aplicación se cerrará automáticamente tras restaurar la base de datos.</string>
-    <string name="backup_description">Exportar la base de datos al almacenamiento interno</string>
-    <string name="restore_description">Importar la base de datos desde el almacenamiento interno</string>
-    <string name="search_history">Historial de búsqueda</string>
+    <string name="backup_description">Exporta la base de datos al almacenamiento interno</string>
+    <string name="restore_description">Importa la base de datos desde el almacenamiento interno</string>
     <string name="service_lifetime">Servicio invencible</string>
     <string name="pause_search_history">Pausar el historial de búsqueda</string>
     <string name="pause_search_history_description">No guarda las nuevas búsquedas ni muestra el historial</string>
@@ -67,8 +65,6 @@
     <string name="service_lifetime_information">Si se aplican las optimizaciones de la batería, la notificación de reproducción puede desaparecer repentinamente cuando se detiene la aplicación.</string>
     <string name="service_lifetime_information_plus">A partir de Android 12, debes deshabilitar las optimizaciones de la batería para que el servicio invencible funcione.</string>
     <string name="about">Acerca de</string>
-    <string name="social">Social</string>
-    <string name="troubleshooting">Resolución de problemas</string>
     <string name="search">Buscar</string>
     <string name="featured">Destacado</string>
     <string name="confirm">Confirmar</string>
@@ -78,9 +74,6 @@
     <string name="hide">Ocultar</string>
     <string name="remove_from_queue">Eliminar de la cola</string>
     <string name="remove_from_playlist">Eliminar de la lista</string>
-    <string name="create_issue">Crear una propuesta</string>
-    <string name="redirected_to_github">Serás redirigido a GitHub</string>
-    <string name="view_source_code">Ver el código fuente</string>
     <string name="shuffle">Reproducir aleatoriamente</string>
     <string name="quick_picks">Selecciones rápidas</string>
     <string name="view_all">Ver todos</string>
@@ -136,12 +129,13 @@
     <string name="no_singles_artist">Este artista no ha publicado ningún sencillo</string>
     <string name="no_albums_artist">Este artista no ha publicado ningún álbum</string>
     <string name="open_supported_links_by_default">Abrir enlaces compatibles por defecto</string>
-    <string name="configure_supported_links">Configurar los enlaces compatibles</string>
-    <string name="open_system_settings">Abre los ajustes del sistema</string>
+    <string name="configure_supported_links">Configura los enlaces compatibles</string>
     <string name="configure_supported_links_information">Music You puede abrir por defecto enlaces de YouTube y YouTube Music.</string>
     <string name="app_language">Idioma de la aplicación</string>
-    <string name="configure_app_language">Configurar el idioma de la aplicación</string>
+    <string name="configure_app_language">Configura el idioma de la aplicación</string>
     <string name="most_played">Más reproducido</string>
     <string name="last_played">Más reciente</string>
-    <string name="quick_picks_source">Fuente</string>
+    <string name="general">General</string>
+    <string name="history">Historial</string>
+    <string name="quick_picks_source">Fuente de las selecciones rápidas</string>
 </resources>

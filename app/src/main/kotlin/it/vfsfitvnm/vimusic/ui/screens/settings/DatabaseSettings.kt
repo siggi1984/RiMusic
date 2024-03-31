@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -30,6 +31,8 @@ import it.vfsfitvnm.vimusic.query
 import it.vfsfitvnm.vimusic.service.PlayerService
 import it.vfsfitvnm.vimusic.ui.styling.Dimensions
 import it.vfsfitvnm.vimusic.utils.intent
+import it.vfsfitvnm.vimusic.utils.pauseSearchHistoryKey
+import it.vfsfitvnm.vimusic.utils.rememberPreference
 import it.vfsfitvnm.vimusic.utils.toast
 import kotlinx.coroutines.flow.distinctUntilChanged
 import java.io.FileInputStream
@@ -42,6 +45,12 @@ import kotlin.system.exitProcess
 @Composable
 fun DatabaseSettings() {
     val context = LocalContext.current
+
+    var pauseSearchHistory by rememberPreference(pauseSearchHistoryKey, false)
+
+    val queriesCount by remember {
+        Database.queriesCount().distinctUntilChanged()
+    }.collectAsState(initial = 0)
 
     val eventsCount by remember {
         Database.eventsCount().distinctUntilChanged()
@@ -90,9 +99,27 @@ fun DatabaseSettings() {
             .padding(vertical = 16.dp)
     ) {
         Text(
-            text = stringResource(id = R.string.cleanup),
+            text = stringResource(id = R.string.history),
             modifier = Modifier.padding(horizontal = 16.dp),
             style = MaterialTheme.typography.titleMedium
+        )
+
+        SwitchSettingEntry(
+            title = stringResource(id = R.string.pause_search_history),
+            text = stringResource(id = R.string.pause_search_history_description),
+            isChecked = pauseSearchHistory,
+            onCheckedChange = { pauseSearchHistory = it }
+        )
+
+        SettingsEntry(
+            title = stringResource(id = R.string.clear_search_history),
+            text = if (queriesCount > 0) {
+                stringResource(id = R.string.delete_search_queries, queriesCount)
+            } else {
+                stringResource(id = R.string.history_is_empty)
+            },
+            onClick = { query(Database::clearQueries) },
+            isEnabled = queriesCount > 0
         )
 
         SettingsEntry(
@@ -130,14 +157,6 @@ fun DatabaseSettings() {
         )
 
         SettingsInformation(text = stringResource(id = R.string.backup_information))
-
-        Spacer(modifier = Modifier.height(Dimensions.spacer))
-
-        Text(
-            text = stringResource(id = R.string.restore),
-            modifier = Modifier.padding(horizontal = 16.dp),
-            style = MaterialTheme.typography.titleMedium
-        )
 
         SettingsEntry(
             title = stringResource(id = R.string.restore),

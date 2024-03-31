@@ -21,7 +21,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SnapshotMutationPolicy
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,20 +29,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import it.vfsfitvnm.vimusic.Database
 import it.vfsfitvnm.vimusic.R
-import it.vfsfitvnm.vimusic.query
 import it.vfsfitvnm.vimusic.service.PlayerMediaBrowserService
 import it.vfsfitvnm.vimusic.ui.styling.Dimensions
 import it.vfsfitvnm.vimusic.utils.isAtLeastAndroid12
-import it.vfsfitvnm.vimusic.utils.isAtLeastAndroid13
 import it.vfsfitvnm.vimusic.utils.isAtLeastAndroid6
 import it.vfsfitvnm.vimusic.utils.isIgnoringBatteryOptimizations
 import it.vfsfitvnm.vimusic.utils.isInvincibilityEnabledKey
-import it.vfsfitvnm.vimusic.utils.pauseSearchHistoryKey
 import it.vfsfitvnm.vimusic.utils.rememberPreference
 import it.vfsfitvnm.vimusic.utils.toast
-import kotlinx.coroutines.flow.distinctUntilChanged
 
 @SuppressLint("BatteryLife")
 @ExperimentalAnimationApi
@@ -72,21 +66,11 @@ fun OtherSettings() {
     }
 
     var isInvincibilityEnabled by rememberPreference(isInvincibilityEnabledKey, false)
-
-    var isIgnoringBatteryOptimizations by remember {
-        mutableStateOf(context.isIgnoringBatteryOptimizations)
-    }
-
+    var isIgnoringBatteryOptimizations by remember { mutableStateOf(context.isIgnoringBatteryOptimizations) }
     val activityResultLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             isIgnoringBatteryOptimizations = context.isIgnoringBatteryOptimizations
         }
-
-    var pauseSearchHistory by rememberPreference(pauseSearchHistoryKey, false)
-
-    val queriesCount by remember {
-        Database.queriesCount().distinctUntilChanged()
-    }.collectAsState(initial = 0)
 
     Column(
         modifier = Modifier
@@ -94,12 +78,6 @@ fun OtherSettings() {
             .verticalScroll(rememberScrollState())
             .padding(vertical = 16.dp)
     ) {
-        Text(
-            text = stringResource(id = R.string.android_auto),
-            modifier = Modifier.padding(horizontal = 16.dp),
-            style = MaterialTheme.typography.titleMedium
-        )
-
         SwitchSettingEntry(
             title = stringResource(id = R.string.android_auto),
             text = stringResource(id = R.string.android_auto_description),
@@ -108,82 +86,6 @@ fun OtherSettings() {
         )
 
         SettingsInformation(text = stringResource(id = R.string.android_auto_information))
-
-        Spacer(modifier = Modifier.height(Dimensions.spacer))
-
-        Text(
-            text = stringResource(id = R.string.search_history),
-            modifier = Modifier.padding(horizontal = 16.dp),
-            style = MaterialTheme.typography.titleMedium
-        )
-
-        SwitchSettingEntry(
-            title = stringResource(id = R.string.pause_search_history),
-            text = stringResource(id = R.string.pause_search_history_description),
-            isChecked = pauseSearchHistory,
-            onCheckedChange = { pauseSearchHistory = it }
-        )
-
-        SettingsEntry(
-            title = stringResource(id = R.string.clear_search_history),
-            text = if (queriesCount > 0) {
-                stringResource(id = R.string.delete_search_queries, queriesCount)
-            } else {
-                stringResource(id = R.string.history_is_empty)
-            },
-            onClick = { query(Database::clearQueries) },
-            isEnabled = queriesCount > 0
-        )
-
-        if (isAtLeastAndroid12) {
-            val intent = Intent(
-                Settings.ACTION_APP_OPEN_BY_DEFAULT_SETTINGS,
-                Uri.parse("package:${context.packageName}")
-            )
-
-            Spacer(modifier = Modifier.height(Dimensions.spacer))
-
-            Text(
-                text = stringResource(id = R.string.open_supported_links_by_default),
-                modifier = Modifier.padding(horizontal = 16.dp),
-                style = MaterialTheme.typography.titleMedium
-            )
-
-            SettingsEntry(
-                title = stringResource(id = R.string.configure_supported_links),
-                text = stringResource(id = R.string.open_system_settings),
-                onClick = {
-                    try {
-                        context.startActivity(intent)
-                    } catch (e: ActivityNotFoundException) {
-                        context.toast("Couldn't find supported links settings, please configure them manually")
-                    }
-                }
-            )
-
-            SettingsInformation(text = stringResource(id = R.string.configure_supported_links_information))
-        }
-
-        if (isAtLeastAndroid13) {
-            val intent = Intent(
-                Settings.ACTION_APP_LOCALE_SETTINGS,
-                Uri.parse("package:${context.packageName}")
-            )
-
-            Spacer(modifier = Modifier.height(Dimensions.spacer))
-
-            Text(
-                text = stringResource(id = R.string.app_language),
-                modifier = Modifier.padding(horizontal = 16.dp),
-                style = MaterialTheme.typography.titleMedium
-            )
-
-            SettingsEntry(
-                title = stringResource(id = R.string.configure_app_language),
-                text = stringResource(id = R.string.open_system_settings),
-                onClick = { context.startActivity(intent) }
-            )
-        }
 
         Spacer(modifier = Modifier.height(Dimensions.spacer))
 

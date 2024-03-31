@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
+import it.vfsfitvnm.vimusic.enums.SettingsSection
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
@@ -46,6 +47,7 @@ fun SettingsPage(
     ) { paddingValues ->
         Surface(modifier = Modifier.padding(paddingValues)) {
             when (section) {
+                SettingsSection.General -> GeneralSettings()
                 SettingsSection.Player -> PlayerSettings()
                 SettingsSection.Cache -> CacheSettings()
                 SettingsSection.Database -> DatabaseSettings()
