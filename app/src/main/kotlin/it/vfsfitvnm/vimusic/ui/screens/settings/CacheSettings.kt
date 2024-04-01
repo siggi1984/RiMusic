@@ -64,7 +64,9 @@ fun CacheSettings() {
 
             Text(
                 text = stringResource(id = R.string.image_cache),
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 4.dp),
                 style = MaterialTheme.typography.titleMedium
             )
 
@@ -97,7 +99,9 @@ fun CacheSettings() {
 
             Text(
                 text = stringResource(id = R.string.song_cache),
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 4.dp),
                 style = MaterialTheme.typography.titleMedium
             )
 

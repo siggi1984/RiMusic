@@ -12,6 +12,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.AddLink
+import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,6 +25,7 @@ import it.vfsfitvnm.vimusic.R
 import it.vfsfitvnm.vimusic.enums.QuickPicksSource
 import it.vfsfitvnm.vimusic.utils.isAtLeastAndroid12
 import it.vfsfitvnm.vimusic.utils.isAtLeastAndroid13
+import it.vfsfitvnm.vimusic.utils.isShowingThumbnailInLockscreenKey
 import it.vfsfitvnm.vimusic.utils.quickPicksSourceKey
 import it.vfsfitvnm.vimusic.utils.rememberPreference
 import it.vfsfitvnm.vimusic.utils.toast
@@ -32,6 +34,10 @@ import it.vfsfitvnm.vimusic.utils.toast
 fun GeneralSettings() {
     val context = LocalContext.current
     var quickPicksSource by rememberPreference(quickPicksSourceKey, QuickPicksSource.Trending)
+    var isShowingThumbnailInLockscreen by rememberPreference(
+        isShowingThumbnailInLockscreenKey,
+        false
+    )
 
     Column(
         modifier = Modifier
@@ -85,8 +91,16 @@ fun GeneralSettings() {
                     }
                 }
             )
+        }
 
-            SettingsInformation(text = stringResource(id = R.string.configure_supported_links_information))
+        if (!isAtLeastAndroid13) {
+            SwitchSettingEntry(
+                title = stringResource(id = R.string.show_song_cover),
+                text = stringResource(id = R.string.show_song_cover_description),
+                icon = Icons.Outlined.Image,
+                isChecked = isShowingThumbnailInLockscreen,
+                onCheckedChange = { isShowingThumbnailInLockscreen = it }
+            )
         }
     }
 }

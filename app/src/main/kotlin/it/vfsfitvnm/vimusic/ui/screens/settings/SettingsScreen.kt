@@ -228,7 +228,7 @@ fun SettingsInformation(
 @Composable
 fun SettingsProgress(text: String, progress: Float) {
     Column(
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp),
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Row(

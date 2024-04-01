@@ -32,14 +32,12 @@
     <string name="persistent_queue_description">Guarda y restaura la reproducción de canciones</string>
     <string name="resume_playback">Reanudar la reproducción</string>
     <string name="resume_playback_description">Cuando se conecta un dispositivo cableado o Bluetooth</string>
-    <string name="audio">Audio</string>
     <string name="skip_silence">Saltar los silencios</string>
     <string name="skip_silence_description">Omite las partes silenciosas durante la reproducción</string>
     <string name="loudness_normalization">Normalización del volumen</string>
     <string name="loudness_normalization_description">Ajusta el volumen a un nivel fijo</string>
     <string name="equalizer">Ecualizador</string>
     <string name="equalizer_description">Interactúa con el ecualizador del sistema</string>
-    <string name="lockscreen">Pantalla de bloqueo</string>
     <string name="show_song_cover">Mostrar la carátura de la canción</string>
     <string name="show_song_cover_description">Usa la carátula de la canción en reproducción como fondo de la pantalla de bloqueo</string>
     <string name="settings">Ajustes</string>
@@ -50,8 +48,7 @@
     <string name="backup">Copia de seguridad</string>
     <string name="restore">Restauración</string>
     <string name="reset_quick_picks">Restablecer las selecciones rápidas</string>
-    <string name="backup_information">Se excluyen las preferencias personales y la caché.</string>
-    <string name="restore_information">Los datos existentes se sobreescribirán. La aplicación se cerrará automáticamente tras restaurar la base de datos.</string>
+    <string name="restore_information">La aplicación se cerrará automáticamente tras restaurar la base de datos y los datos existentes se sobreescribirán.</string>
     <string name="backup_description">Exporta la base de datos al almacenamiento interno</string>
     <string name="restore_description">Importa la base de datos desde el almacenamiento interno</string>
     <string name="service_lifetime">Servicio invencible</string>
@@ -130,7 +127,6 @@
     <string name="no_albums_artist">Este artista no ha publicado ningún álbum</string>
     <string name="open_supported_links_by_default">Abrir enlaces compatibles por defecto</string>
     <string name="configure_supported_links">Configura los enlaces compatibles</string>
-    <string name="configure_supported_links_information">Music You puede abrir por defecto enlaces de YouTube y YouTube Music.</string>
     <string name="app_language">Idioma de la aplicación</string>
     <string name="configure_app_language">Configura el idioma de la aplicación</string>
     <string name="most_played">Más reproducido</string>

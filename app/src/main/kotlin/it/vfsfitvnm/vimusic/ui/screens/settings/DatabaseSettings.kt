@@ -106,7 +106,9 @@ fun DatabaseSettings() {
     ) {
         Text(
             text = stringResource(id = R.string.history),
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 4.dp),
             style = MaterialTheme.typography.titleMedium
         )
 
@@ -146,7 +148,9 @@ fun DatabaseSettings() {
 
         Text(
             text = stringResource(id = R.string.backup),
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 4.dp),
             style = MaterialTheme.typography.titleMedium
         )
 
@@ -165,8 +169,6 @@ fun DatabaseSettings() {
                 }
             }
         )
-
-        SettingsInformation(text = stringResource(id = R.string.backup_information))
 
         SettingsEntry(
             title = stringResource(id = R.string.restore),

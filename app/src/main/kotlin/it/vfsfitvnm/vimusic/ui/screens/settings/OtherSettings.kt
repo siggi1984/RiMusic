@@ -96,7 +96,9 @@ fun OtherSettings() {
 
         Text(
             text = stringResource(id = R.string.service_lifetime),
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 4.dp),
             style = MaterialTheme.typography.titleMedium
         )
 
