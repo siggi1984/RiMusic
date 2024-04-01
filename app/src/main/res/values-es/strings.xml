@@ -134,4 +134,5 @@
     <string name="general">General</string>
     <string name="history">Historial</string>
     <string name="quick_picks_source">Fuente de las selecciones rápidas</string>
+    <string name="stop">Detener</string>
 </resources>

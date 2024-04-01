@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,19 +17,28 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.PlaylistPlay
+import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.MoreHoriz
+import androidx.compose.material.icons.outlined.Remove
+import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.neverEqualPolicy
 import androidx.compose.runtime.remember
@@ -39,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
@@ -49,10 +60,12 @@ import it.vfsfitvnm.vimusic.R
 import it.vfsfitvnm.vimusic.models.LocalMenuState
 import it.vfsfitvnm.vimusic.ui.components.themed.BaseMediaItemMenu
 import it.vfsfitvnm.vimusic.utils.DisposableListener
+import it.vfsfitvnm.vimusic.utils.formatAsDuration
 import it.vfsfitvnm.vimusic.utils.isLandscape
 import it.vfsfitvnm.vimusic.utils.positionAndDurationState
 import it.vfsfitvnm.vimusic.utils.seamlessPlay
 import it.vfsfitvnm.vimusic.utils.shouldBePlaying
+import kotlinx.coroutines.flow.flowOf
 
 @OptIn(
     ExperimentalAnimationApi::class,
@@ -93,14 +106,17 @@ fun Player(
 
     val mediaItem = nullableMediaItem ?: return
     val positionAndDuration by binder.player.positionAndDurationState()
-    val nextSongIndex = binder.player.nextMediaItemIndex
     val nextSongTitle =
-        if (nextSongIndex > -1) binder.player.getMediaItemAt(nextSongIndex).mediaMetadata.title.toString()
+        if (binder.player.hasNextMediaItem()) binder.player.getMediaItemAt(binder.player.nextMediaItemIndex).mediaMetadata.title.toString()
         else stringResource(id = R.string.open_queue)
 
     var isShowingLyrics by rememberSaveable { mutableStateOf(false) }
     var isShowingStatsForNerds by rememberSaveable { mutableStateOf(false) }
     var isQueueOpen by rememberSaveable { mutableStateOf(false) }
+    var isShowingSleepTimerDialog by rememberSaveable { mutableStateOf(false) }
+    val sleepTimerMillisLeft by (binder.sleepTimerMillisLeft
+        ?: flowOf(null))
+        .collectAsState(initial = null)
 
     val thumbnailContent: @Composable (modifier: Modifier) -> Unit = { modifier ->
         var drag by remember { mutableFloatStateOf(0F) }
@@ -219,13 +235,19 @@ fun Player(
                 maxLines = 1
             )
 
+            IconButton(onClick = { isShowingSleepTimerDialog = true }) {
+                Icon(
+                    imageVector = if (sleepTimerMillisLeft == null) Icons.Outlined.Timer else Icons.Filled.Timer,
+                    contentDescription = stringResource(id = R.string.sleep_timer)
+                )
+            }
+
             IconButton(
                 onClick = {
                     menuState.display {
                         BaseMediaItemMenu(
                             onDismiss = menuState::hide,
                             mediaItem = mediaItem,
-                            onShowSleepTimer = {},
                             onStartRadio = {
                                 binder.stopRadio()
                                 binder.player.seamlessPlay(mediaItem)
@@ -240,6 +262,112 @@ fun Player(
                 Icon(
                     imageVector = Icons.Outlined.MoreHoriz,
                     contentDescription = null,
+                )
+            }
+        }
+
+        if (isShowingSleepTimerDialog) {
+            if (sleepTimerMillisLeft != null) {
+                AlertDialog(
+                    onDismissRequest = { isShowingSleepTimerDialog = false },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                binder.cancelSleepTimer()
+                                isShowingSleepTimerDialog = false
+                            }
+                        ) {
+                            Text(text = stringResource(id = R.string.stop))
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = { isShowingSleepTimerDialog = false }
+                        ) {
+                            Text(text = stringResource(id = R.string.cancel))
+                        }
+                    },
+                    title = {
+                        Text(text = stringResource(id = R.string.stop_sleep_timer_dialog))
+                    },
+                    text = {
+                        sleepTimerMillisLeft?.let {
+                            Text(
+                                text = formatAsDuration(it),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 16.dp),
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
+                    }
+                )
+            } else {
+                var amount by remember { mutableIntStateOf(1) }
+
+                AlertDialog(
+                    onDismissRequest = { isShowingSleepTimerDialog = false },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                binder.startSleepTimer(amount * 10 * 60 * 1000L)
+                                isShowingSleepTimerDialog = false
+                            },
+                            enabled = amount > 0
+                        ) {
+                            Text(text = stringResource(id = R.string.set))
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = { isShowingSleepTimerDialog = false }
+                        ) {
+                            Text(text = stringResource(id = R.string.cancel))
+                        }
+                    },
+                    title = {
+                        Text(text = stringResource(id = R.string.set_sleep_timer))
+                    },
+                    text = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(
+                                space = 16.dp,
+                                alignment = Alignment.CenterHorizontally
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 16.dp)
+                        ) {
+                            FilledTonalIconButton(
+                                onClick = { amount-- },
+                                enabled = amount > 1
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Remove,
+                                    contentDescription = null
+                                )
+                            }
+
+                            Box(contentAlignment = Alignment.Center) {
+                                Text(
+                                    text = "${amount / 6}h ${(amount % 6) * 10}m",
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+
+                            FilledTonalIconButton(
+                                onClick = { amount++ },
+                                enabled = amount < 60
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Add,
+                                    contentDescription = null
+                                )
+                            }
+                        }
+                    }
                 )
             }
         }

@@ -5,11 +5,9 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,8 +18,6 @@ import androidx.compose.material.icons.automirrored.outlined.PlaylistAdd
 import androidx.compose.material.icons.automirrored.outlined.PlaylistPlay
 import androidx.compose.material.icons.automirrored.outlined.QueueMusic
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Alarm
 import androidx.compose.material.icons.outlined.Album
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Delete
@@ -29,22 +25,17 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.PlaylistRemove
 import androidx.compose.material.icons.outlined.Podcasts
-import androidx.compose.material.icons.outlined.Remove
 import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -75,12 +66,10 @@ import it.vfsfitvnm.vimusic.utils.addNext
 import it.vfsfitvnm.vimusic.utils.asMediaItem
 import it.vfsfitvnm.vimusic.utils.enqueue
 import it.vfsfitvnm.vimusic.utils.forcePlay
-import it.vfsfitvnm.vimusic.utils.formatAsDuration
 import it.vfsfitvnm.vimusic.utils.playlistSortByKey
 import it.vfsfitvnm.vimusic.utils.playlistSortOrderKey
 import it.vfsfitvnm.vimusic.utils.rememberPreference
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.withContext
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
@@ -216,7 +205,6 @@ fun BaseMediaItemMenu(
     onDismiss: () -> Unit,
     mediaItem: MediaItem,
     modifier: Modifier = Modifier,
-    onShowSleepTimer: (() -> Unit)? = null,
     onStartRadio: (() -> Unit)? = null,
     onPlayNext: (() -> Unit)? = null,
     onEnqueue: (() -> Unit)? = null,
@@ -233,7 +221,6 @@ fun BaseMediaItemMenu(
         onDismiss = onDismiss,
         mediaItem = mediaItem,
         modifier = modifier,
-        onShowSleepTimer = onShowSleepTimer,
         onStartRadio = onStartRadio,
         onPlayNext = onPlayNext,
         onEnqueue = onEnqueue,
@@ -275,7 +262,6 @@ fun MediaItemMenu(
     onDismiss: () -> Unit,
     mediaItem: MediaItem,
     modifier: Modifier = Modifier,
-    onShowSleepTimer: (() -> Unit)? = null,
     onStartRadio: (() -> Unit)? = null,
     onPlayNext: (() -> Unit)? = null,
     onEnqueue: (() -> Unit)? = null,
@@ -489,112 +475,6 @@ fun MediaItemMenu(
                         onClick = {
                             onDismiss()
                             onEnqueue()
-                        }
-                    )
-                }
-
-                // TODO: find solution to this
-                onShowSleepTimer?.let {
-                    val binder = LocalPlayerServiceBinder.current
-                    var isShowingSleepTimerDialog by remember { mutableStateOf(false) }
-                    val sleepTimerMillisLeft by (binder?.sleepTimerMillisLeft
-                        ?: flowOf(null))
-                        .collectAsState(initial = null)
-
-                    if (isShowingSleepTimerDialog) {
-                        if (sleepTimerMillisLeft != null) {
-                            ConfirmationDialog(
-                                title = stringResource(id = R.string.stop_sleep_timer_dialog),
-                                onDismiss = { isShowingSleepTimerDialog = false },
-                                onConfirm = {
-                                    binder?.cancelSleepTimer()
-                                    onDismiss()
-                                },
-                                cancelText = stringResource(id = R.string.no),
-                                confirmText = stringResource(id = R.string.yes)
-                            )
-                        } else {
-                            var amount by remember { mutableIntStateOf(1) }
-
-                            AlertDialog(
-                                onDismissRequest = { isShowingSleepTimerDialog = false },
-                                confirmButton = {
-                                    TextButton(
-                                        onClick = {
-                                            binder?.startSleepTimer(amount * 10 * 60 * 1000L)
-                                            isShowingSleepTimerDialog = false
-                                        },
-                                        enabled = amount > 0
-                                    ) {
-                                        Text(text = stringResource(id = R.string.set))
-                                    }
-                                },
-                                dismissButton = {
-                                    TextButton(
-                                        onClick = { isShowingSleepTimerDialog = false }
-                                    ) {
-                                        Text(text = stringResource(id = R.string.cancel))
-                                    }
-                                },
-                                title = {
-                                    Text(text = stringResource(id = R.string.set_sleep_timer))
-                                },
-                                text = {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(
-                                            space = 16.dp,
-                                            alignment = Alignment.CenterHorizontally
-                                        ),
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 16.dp)
-                                    ) {
-                                        FilledTonalIconButton(
-                                            onClick = { amount-- },
-                                            enabled = amount > 1
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Outlined.Remove,
-                                                contentDescription = null
-                                            )
-                                        }
-
-                                        Box(contentAlignment = Alignment.Center) {
-                                            Text(
-                                                text = "${amount / 6}h ${(amount % 6) * 10}m",
-                                            )
-                                        }
-
-                                        FilledTonalIconButton(
-                                            onClick = { amount++ },
-                                            enabled = amount < 60
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Outlined.Add,
-                                                contentDescription = null
-                                            )
-                                        }
-                                    }
-                                }
-                            )
-                        }
-                    }
-
-                    MenuEntry(
-                        icon = Icons.Outlined.Alarm,
-                        text = stringResource(id = R.string.sleep_timer),
-                        onClick = { isShowingSleepTimerDialog = true },
-                        trailingContent = sleepTimerMillisLeft?.let {
-                            {
-                                Text(
-                                    text = "${formatAsDuration(it)} left",
-                                    style = MaterialTheme.typography.labelMedium,
-                                    modifier = modifier
-                                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                                        .animateContentSize()
-                                )
-                            }
                         }
                     )
                 }
