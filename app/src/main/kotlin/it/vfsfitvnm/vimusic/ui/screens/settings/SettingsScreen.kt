@@ -51,7 +51,7 @@ fun SettingsScreen(
     pop: () -> Unit,
     onGoToSettingsPage: (Int) -> Unit
 ) {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),

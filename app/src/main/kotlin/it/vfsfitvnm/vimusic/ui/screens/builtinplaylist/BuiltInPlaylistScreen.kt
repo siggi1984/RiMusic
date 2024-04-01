@@ -35,7 +35,7 @@ fun BuiltInPlaylistScreen(
 ) {
     PersistMapCleanup(tagPrefix = "${builtInPlaylist.name}/")
 
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
