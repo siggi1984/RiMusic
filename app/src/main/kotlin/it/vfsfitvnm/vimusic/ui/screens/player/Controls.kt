@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -61,37 +62,30 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @Composable
 fun Controls(
     mediaId: String,
-    title: String?,
-    artist: String?,
+    title: String,
+    artist: String,
     shouldBePlaying: Boolean,
     position: Long,
     duration: Long,
+    onGoToArtist: (() -> Unit)?,
     modifier: Modifier = Modifier
 ) {
     val binder = LocalPlayerServiceBinder.current
     binder?.player ?: return
 
     var trackLoopEnabled by rememberPreference(trackLoopEnabledKey, defaultValue = false)
-
-    var scrubbingPosition by remember(mediaId) {
-        mutableStateOf<Long?>(null)
-    }
-
-    var likedAt by rememberSaveable {
-        mutableStateOf<Long?>(null)
-    }
-
-    LaunchedEffect(mediaId) {
-        Database.likedAt(mediaId).distinctUntilChanged().collect { likedAt = it }
-    }
-
+    var scrubbingPosition by remember(mediaId) { mutableStateOf<Long?>(null) }
+    var likedAt by rememberSaveable { mutableStateOf<Long?>(null) }
     val shouldBePlayingTransition = updateTransition(shouldBePlaying, label = "shouldBePlaying")
-
     val playPauseRoundness by shouldBePlayingTransition.animateDp(
         transitionSpec = { tween(durationMillis = 100, easing = LinearEasing) },
         label = "playPauseRoundness",
         targetValueByState = { if (it) 16.dp else 32.dp }
     )
+
+    LaunchedEffect(mediaId) {
+        Database.likedAt(mediaId).distinctUntilChanged().collect { likedAt = it }
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -104,7 +98,7 @@ fun Controls(
         )
 
         Text(
-            text = title ?: "",
+            text = title,
             modifier = Modifier.basicMarquee(),
             style = MaterialTheme.typography.titleMedium,
             maxLines = 1
@@ -113,7 +107,11 @@ fun Controls(
         Spacer(modifier = Modifier.height(4.dp))
 
         Text(
-            text = artist ?: "",
+            text = artist,
+            modifier = Modifier.clickable(
+                enabled = onGoToArtist != null,
+                onClick = onGoToArtist ?: {}
+            ),
             style = MaterialTheme.typography.bodyLarge,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis

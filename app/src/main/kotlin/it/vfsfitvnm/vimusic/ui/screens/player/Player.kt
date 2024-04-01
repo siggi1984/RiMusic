@@ -80,13 +80,13 @@ fun Player(
     val binder = LocalPlayerServiceBinder.current
     binder?.player ?: return
 
+    var shouldBePlaying by remember { mutableStateOf(binder.player.shouldBePlaying) }
     var nullableMediaItem by remember {
         mutableStateOf(
             binder.player.currentMediaItem,
             neverEqualPolicy()
         )
     }
-    var shouldBePlaying by remember { mutableStateOf(binder.player.shouldBePlaying) }
 
     binder.player.DisposableListener {
         object : Player.Listener {
@@ -109,6 +109,15 @@ fun Player(
     val nextSongTitle =
         if (binder.player.hasNextMediaItem()) binder.player.getMediaItemAt(binder.player.nextMediaItemIndex).mediaMetadata.title.toString()
         else stringResource(id = R.string.open_queue)
+
+    val artistId: String? by remember(mediaItem) {
+        mutableStateOf(
+            mediaItem.mediaMetadata.extras?.getStringArrayList("artistIds")?.let { artists ->
+                if (artists.size == 1) artists.first()
+                else null
+            }
+        )
+    }
 
     var isShowingLyrics by rememberSaveable { mutableStateOf(false) }
     var isShowingStatsForNerds by rememberSaveable { mutableStateOf(false) }
@@ -143,11 +152,14 @@ fun Player(
     val controlsContent: @Composable (modifier: Modifier) -> Unit = { modifier ->
         Controls(
             mediaId = mediaItem.mediaId,
-            title = mediaItem.mediaMetadata.title?.toString(),
-            artist = mediaItem.mediaMetadata.artist?.toString(),
+            title = mediaItem.mediaMetadata.title?.toString().orEmpty(),
+            artist = mediaItem.mediaMetadata.artist?.toString().orEmpty(),
             shouldBePlaying = shouldBePlaying,
             position = positionAndDuration.first,
             duration = positionAndDuration.second,
+            onGoToArtist = artistId?.let {
+                { onGoToArtist(it) }
+            },
             modifier = modifier
         )
     }
