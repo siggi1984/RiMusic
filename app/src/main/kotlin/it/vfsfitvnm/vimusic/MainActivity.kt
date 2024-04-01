@@ -24,6 +24,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -95,7 +96,16 @@ class MainActivity : ComponentActivity(), PersistMapOwner {
             AppTheme {
                 Box(modifier = Modifier.fillMaxSize()) {
                     CompositionLocalProvider(value = LocalPlayerServiceBinder provides binder) {
-                        val sheetState = LocalMenuState.current
+                        val menuState = LocalMenuState.current
+                        val playerState =
+                            rememberModalBottomSheetState(skipPartiallyExpanded = true)
+                        val scope = rememberCoroutineScope()
+
+                        fun closePlayer() {
+                            scope.launch { playerState.hide() }.invokeOnCompletion {
+                                if (!playerState.isVisible) isPlayerOpen = false
+                            }
+                        }
 
                         Surface(color = MaterialTheme.colorScheme.background) {
                             Navigation(
@@ -108,9 +118,9 @@ class MainActivity : ComponentActivity(), PersistMapOwner {
 
                         if (isPlayerOpen) {
                             ModalBottomSheet(
-                                onDismissRequest = { isPlayerOpen = false },
+                                onDismissRequest = { closePlayer() },
                                 modifier = Modifier.fillMaxWidth(),
-                                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+                                sheetState = playerState,
                                 dragHandle = {
                                     Surface(
                                         modifier = Modifier.padding(vertical = 12.dp),
@@ -123,20 +133,20 @@ class MainActivity : ComponentActivity(), PersistMapOwner {
                             ) {
                                 Player(
                                     onGoToAlbum = { browseId ->
-                                        isPlayerOpen = false
+                                        closePlayer()
                                         navController.navigate(route = "album/$browseId")
                                     },
                                     onGoToArtist = { browseId ->
-                                        isPlayerOpen = false
+                                        closePlayer()
                                         navController.navigate(route = "artist/$browseId")
                                     }
                                 )
                             }
                         }
 
-                        if (sheetState.isDisplayed) {
+                        if (menuState.isDisplayed) {
                             ModalBottomSheet(
-                                onDismissRequest = sheetState::hide,
+                                onDismissRequest = menuState::hide,
                                 sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
                                 dragHandle = {
                                     Surface(
@@ -148,7 +158,7 @@ class MainActivity : ComponentActivity(), PersistMapOwner {
                                     }
                                 }
                             ) {
-                                sheetState.content()
+                                menuState.content()
                             }
                         }
                     }
