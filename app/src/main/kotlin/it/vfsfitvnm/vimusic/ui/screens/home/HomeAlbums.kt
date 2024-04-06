@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -35,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import it.vfsfitvnm.compose.persist.persist
 import it.vfsfitvnm.vimusic.Database
 import it.vfsfitvnm.vimusic.R
 import it.vfsfitvnm.vimusic.enums.AlbumSortBy
@@ -52,10 +52,9 @@ import it.vfsfitvnm.vimusic.utils.rememberPreference
 fun HomeAlbums(
     onAlbumClick: (Album) -> Unit
 ) {
+    var items: List<Album> by remember { mutableStateOf(emptyList()) }
     var sortBy by rememberPreference(albumSortByKey, AlbumSortBy.Title)
     var sortOrder by rememberPreference(albumSortOrderKey, SortOrder.Ascending)
-
-    var items by persist<List<Album>>(tag = "home/albums", emptyList())
 
     LaunchedEffect(sortBy, sortOrder) {
         Database.albums(sortBy, sortOrder).collect { items = it }

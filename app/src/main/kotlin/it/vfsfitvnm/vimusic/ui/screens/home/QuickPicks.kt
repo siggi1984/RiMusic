@@ -29,7 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -38,17 +37,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
-import it.vfsfitvnm.compose.persist.persist
+import androidx.lifecycle.viewmodel.compose.viewModel
 import it.vfsfitvnm.innertube.Innertube
 import it.vfsfitvnm.innertube.models.NavigationEndpoint
-import it.vfsfitvnm.innertube.models.bodies.NextBody
-import it.vfsfitvnm.innertube.requests.relatedPage
 import it.vfsfitvnm.vimusic.Database
 import it.vfsfitvnm.vimusic.LocalPlayerServiceBinder
 import it.vfsfitvnm.vimusic.R
 import it.vfsfitvnm.vimusic.enums.QuickPicksSource
 import it.vfsfitvnm.vimusic.models.LocalMenuState
-import it.vfsfitvnm.vimusic.models.Song
+import it.vfsfitvnm.vimusic.models.QuickPicksViewModel
 import it.vfsfitvnm.vimusic.query
 import it.vfsfitvnm.vimusic.ui.components.ShimmerHost
 import it.vfsfitvnm.vimusic.ui.components.themed.NonQueuedMediaItemMenu
@@ -67,7 +64,6 @@ import it.vfsfitvnm.vimusic.utils.forcePlay
 import it.vfsfitvnm.vimusic.utils.isLandscape
 import it.vfsfitvnm.vimusic.utils.quickPicksSourceKey
 import it.vfsfitvnm.vimusic.utils.rememberPreference
-import kotlinx.coroutines.flow.distinctUntilChanged
 
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
@@ -80,34 +76,19 @@ fun QuickPicks(
     val binder = LocalPlayerServiceBinder.current
     val menuState = LocalMenuState.current
 
-    var trending by persist<Song?>("home/trending")
-    var relatedPageResult by persist<Result<Innertube.RelatedPage?>?>(tag = "home/relatedPageResult")
+    val viewModel: QuickPicksViewModel = viewModel()
     val quickPicksSource by rememberPreference(quickPicksSourceKey, QuickPicksSource.Trending)
 
-    LaunchedEffect(quickPicksSource) {
-        val flow = when (quickPicksSource) {
-            QuickPicksSource.Trending -> Database.trending()
-            QuickPicksSource.LastPlayed -> Database.lastPlayed()
-        }
-
-        flow.distinctUntilChanged().collect { song ->
-            if ((song == null && relatedPageResult == null) || trending?.id != song?.id) {
-                relatedPageResult =
-                    Innertube.relatedPage(NextBody(videoId = (song?.id ?: "fJ9rUzIMcZQ")))
-            }
-            trending = song
-        }
-    }
-
     val songThumbnailSizeDp = Dimensions.thumbnails.song
-
     val itemSize = 108.dp + 2 * 8.dp
-
     val quickPicksLazyGridState = rememberLazyGridState()
-
     val sectionTextModifier = Modifier
         .padding(horizontal = 16.dp)
         .padding(bottom = 8.dp)
+
+    LaunchedEffect(quickPicksSource) {
+        viewModel.loadQuickPicks(quickPicksSource)
+    }
 
     BoxWithConstraints {
         val quickPicksLazyGridItemWidthFactor =
@@ -134,7 +115,7 @@ fun QuickPicks(
                 .verticalScroll(rememberScrollState())
                 .padding(top = 4.dp, bottom = 16.dp)
         ) {
-            relatedPageResult?.getOrNull()?.let { related ->
+            viewModel.relatedPageResult?.getOrNull()?.let { related ->
                 Text(
                     text = stringResource(id = R.string.quick_picks),
                     style = MaterialTheme.typography.titleMedium,
@@ -149,7 +130,7 @@ fun QuickPicks(
                         .fillMaxWidth()
                         .height((songThumbnailSizeDp + Dimensions.itemsVerticalPadding * 2) * 4)
                 ) {
-                    trending?.let { song ->
+                    viewModel.trending?.let { song ->
                         item {
                             LocalSongItem(
                                 modifier = Modifier
@@ -184,7 +165,7 @@ fun QuickPicks(
                     }
 
                     items(
-                        items = related.songs?.dropLast(if (trending == null) 0 else 1)
+                        items = related.songs?.dropLast(if (viewModel.trending == null) 0 else 1)
                             ?: emptyList(),
                         key = Innertube.SongItem::key
                     ) { song ->
@@ -291,7 +272,7 @@ fun QuickPicks(
                 }
 
                 Unit
-            } ?: relatedPageResult?.exceptionOrNull()?.let {
+            } ?: viewModel.relatedPageResult?.exceptionOrNull()?.let {
                 Text(
                     text = stringResource(id = R.string.home_error),
                     style = MaterialTheme.typography.bodyLarge,

@@ -63,7 +63,6 @@ ksp {
 }
 
 dependencies {
-    implementation(projects.composePersist)
     implementation(projects.composeReordering)
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.activity)
@@ -76,6 +75,7 @@ dependencies {
     implementation(libs.compose.ui.util)
     implementation(libs.core.splashscreen)
     implementation(libs.exoplayer)
+    implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.room)
     ksp(libs.room.compiler)
     implementation(projects.innertube)

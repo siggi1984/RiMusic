@@ -3,8 +3,10 @@ package it.vfsfitvnm.vimusic.ui.screens.search
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -16,23 +18,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import it.vfsfitvnm.compose.persist.persist
+import androidx.lifecycle.viewmodel.compose.viewModel
 import it.vfsfitvnm.innertube.Innertube
 import it.vfsfitvnm.innertube.utils.plus
 import it.vfsfitvnm.vimusic.R
+import it.vfsfitvnm.vimusic.models.ItemsPageViewModel
 import it.vfsfitvnm.vimusic.ui.components.ShimmerHost
 import it.vfsfitvnm.vimusic.ui.styling.Dimensions
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @ExperimentalAnimationApi
@@ -49,8 +50,12 @@ inline fun <T : Innertube.Item> ItemsPage(
 ) {
     val updatedItemsPageProvider by rememberUpdatedState(itemsPageProvider)
     val lazyGridState = rememberLazyGridState()
-    val coroutineScope = rememberCoroutineScope()
-    var itemsPage by persist<Innertube.ItemsPage<T>?>(tag)
+    val viewModel: ItemsPageViewModel<T> = viewModel()
+    val itemsPage: Innertube.ItemsPage<T>? =
+        viewModel.itemsMap.getOrDefault(key = tag, defaultValue = null)
+
+    val listLayout = tag.contains("songs") || tag.contains("videos")
+    val artistsLayout = tag.contains("artists")
 
     LaunchedEffect(lazyGridState, updatedItemsPageProvider) {
         val currentItemsPageProvider = updatedItemsPageProvider ?: return@LaunchedEffect
@@ -64,20 +69,20 @@ inline fun <T : Innertube.Item> ItemsPage(
                 }?.onSuccess {
                     if (it == null) {
                         if (itemsPage == null) {
-                            itemsPage = Innertube.ItemsPage(items = null, continuation = null)
+                            viewModel.setItems(
+                                tag = tag,
+                                items = Innertube.ItemsPage(items = null, continuation = null)
+                            )
                         }
                     } else {
-                        itemsPage += it
-                        if (itemsPage == it) coroutineScope.launch {
-                            lazyGridState.scrollToItem(index = 0)
-                        }
+                        viewModel.setItems(
+                            tag = tag,
+                            items = itemsPage + it
+                        )
                     }
                 }
             }
     }
-
-    val listLayout = tag.contains("songs") || tag.contains("videos")
-    val artistsLayout = tag.contains("artists")
 
     LazyVerticalGrid(
         state = lazyGridState,
@@ -93,13 +98,20 @@ inline fun <T : Innertube.Item> ItemsPage(
         verticalArrangement = Arrangement.spacedBy(if (listLayout) 0.dp else 4.dp),
         modifier = modifier.fillMaxSize()
     ) {
+        item(
+            key = "anchor",
+            span = { GridItemSpan(maxCurrentLineSpan) }
+        ) {
+            Spacer(modifier = Modifier.height(Dp.Hairline))
+        }
+
         items(
             items = itemsPage?.items ?: emptyList(),
             key = Innertube.Item::key,
             itemContent = itemContent
         )
 
-        if (itemsPage != null && itemsPage?.items.isNullOrEmpty()) {
+        if (itemsPage != null && itemsPage.items.isNullOrEmpty()) {
             item(
                 key = "empty",
                 span = { GridItemSpan(maxCurrentLineSpan) }
@@ -115,7 +127,7 @@ inline fun <T : Innertube.Item> ItemsPage(
             }
         }
 
-        if (itemsPage == null || itemsPage?.continuation != null) {
+        if (itemsPage == null || itemsPage.continuation != null) {
             val isFirstLoad = itemsPage?.items.isNullOrEmpty()
 
             items(

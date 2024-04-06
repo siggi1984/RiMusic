@@ -20,13 +20,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavController
-import it.vfsfitvnm.compose.persist.PersistMapCleanup
 import it.vfsfitvnm.vimusic.R
 import it.vfsfitvnm.vimusic.models.Screen
 import it.vfsfitvnm.vimusic.utils.homeScreenTabIndexKey
@@ -42,9 +40,6 @@ fun HomeScreen(
     navController: NavController,
     player: @Composable () -> Unit = {}
 ) {
-    PersistMapCleanup("home/")
-
-    val saveableStateHolder = rememberSaveableStateHolder()
     val (screenIndex, onScreenChanged) = rememberPreference(homeScreenTabIndexKey, defaultValue = 0)
     val screens = listOf(
         Screen.Home,
@@ -119,32 +114,30 @@ fun HomeScreen(
                 targetState = screenIndex,
                 label = "home"
             ) { index ->
-                saveableStateHolder.SaveableStateProvider(key = index) {
-                    when (index) {
-                        0 -> QuickPicks(
-                            onAlbumClick = { browseId -> navController.navigate(route = "album/$browseId") },
-                            onArtistClick = { browseId -> navController.navigate(route = "artist/$browseId") },
-                            onPlaylistClick = { browseId -> navController.navigate(route = "playlist/$browseId") }
-                        )
+                when (index) {
+                    0 -> QuickPicks(
+                        onAlbumClick = { browseId -> navController.navigate(route = "album/$browseId") },
+                        onArtistClick = { browseId -> navController.navigate(route = "artist/$browseId") },
+                        onPlaylistClick = { browseId -> navController.navigate(route = "playlist/$browseId") }
+                    )
 
-                        1 -> HomeSongs(
-                            onGoToAlbum = { browseId -> navController.navigate(route = "album/$browseId") },
-                            onGoToArtist = { browseId -> navController.navigate(route = "artist/$browseId") }
-                        )
+                    1 -> HomeSongs(
+                        onGoToAlbum = { browseId -> navController.navigate(route = "album/$browseId") },
+                        onGoToArtist = { browseId -> navController.navigate(route = "artist/$browseId") }
+                    )
 
-                        2 -> HomeArtistList(
-                            onArtistClick = { artist -> navController.navigate(route = "artist/${artist.id}") }
-                        )
+                    2 -> HomeArtistList(
+                        onArtistClick = { artist -> navController.navigate(route = "artist/${artist.id}") }
+                    )
 
-                        3 -> HomeAlbums(
-                            onAlbumClick = { album -> navController.navigate(route = "album/${album.id}") }
-                        )
+                    3 -> HomeAlbums(
+                        onAlbumClick = { album -> navController.navigate(route = "album/${album.id}") }
+                    )
 
-                        4 -> HomePlaylists(
-                            onBuiltInPlaylist = { playlistIndex -> navController.navigate(route = "builtInPlaylist/$playlistIndex") },
-                            onPlaylistClick = { playlist -> navController.navigate(route = "localPlaylist/${playlist.id}") }
-                        )
-                    }
+                    4 -> HomePlaylists(
+                        onBuiltInPlaylist = { playlistIndex -> navController.navigate(route = "builtInPlaylist/$playlistIndex") },
+                        onPlaylistClick = { playlist -> navController.navigate(route = "localPlaylist/${playlist.id}") }
+                    )
                 }
             }
         }

@@ -17,23 +17,19 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import it.vfsfitvnm.compose.persist.PersistMapCleanup
-import it.vfsfitvnm.compose.persist.persist
+import androidx.lifecycle.viewmodel.compose.viewModel
 import it.vfsfitvnm.innertube.Innertube
 import it.vfsfitvnm.innertube.models.bodies.BrowseBody
 import it.vfsfitvnm.innertube.models.bodies.ContinuationBody
-import it.vfsfitvnm.innertube.requests.artistPage
 import it.vfsfitvnm.innertube.requests.itemsPage
 import it.vfsfitvnm.innertube.utils.from
 import it.vfsfitvnm.vimusic.Database
 import it.vfsfitvnm.vimusic.LocalPlayerServiceBinder
 import it.vfsfitvnm.vimusic.R
-import it.vfsfitvnm.vimusic.models.Artist
+import it.vfsfitvnm.vimusic.models.ArtistViewModel
 import it.vfsfitvnm.vimusic.models.LocalMenuState
 import it.vfsfitvnm.vimusic.models.Section
 import it.vfsfitvnm.vimusic.query
@@ -49,11 +45,6 @@ import it.vfsfitvnm.vimusic.utils.artistScreenTabIndexKey
 import it.vfsfitvnm.vimusic.utils.asMediaItem
 import it.vfsfitvnm.vimusic.utils.forcePlay
 import it.vfsfitvnm.vimusic.utils.rememberPreference
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
@@ -63,68 +54,42 @@ fun ArtistScreen(
     pop: () -> Unit,
     onAlbumClick: (String) -> Unit
 ) {
-    PersistMapCleanup(tagPrefix = "artist/$browseId/")
-
-    val saveableStateHolder = rememberSaveableStateHolder()
-    var artist by persist<Artist?>("artist/$browseId/artist")
-    var artistPage by persist<Innertube.ArtistPage?>("artist/$browseId/artistPage")
     var tabIndex by rememberPreference(artistScreenTabIndexKey, defaultValue = 0)
+    val viewModel: ArtistViewModel = viewModel()
 
     LaunchedEffect(Unit) {
-        Database
-            .artist(browseId)
-            .combine(snapshotFlow { tabIndex }.map { it != 4 }) { artist, mustFetch -> artist to mustFetch }
-            .distinctUntilChanged()
-            .collect { (currentArtist, mustFetch) ->
-                artist = currentArtist
-
-                if (artistPage == null && (currentArtist?.timestamp == null || mustFetch)) {
-                    withContext(Dispatchers.IO) {
-                        Innertube.artistPage(BrowseBody(browseId = browseId))
-                            ?.onSuccess { currentArtistPage ->
-                                artistPage = currentArtistPage
-
-                                Database.upsert(
-                                    Artist(
-                                        id = browseId,
-                                        name = currentArtistPage.name,
-                                        thumbnailUrl = currentArtistPage.thumbnail?.url,
-                                        timestamp = System.currentTimeMillis(),
-                                        bookmarkedAt = currentArtist?.bookmarkedAt
-                                    )
-                                )
-                            }
-                    }
-                }
-            }
+        viewModel.loadArtist(
+            browseId = browseId,
+            tabIndex = tabIndex
+        )
     }
 
     val thumbnailContent = adaptiveThumbnailContent(
-        isLoading = artist?.timestamp == null,
-        url = artist?.thumbnailUrl
+        isLoading = viewModel.artist?.timestamp == null,
+        url = viewModel.artist?.thumbnailUrl
     )
 
     TabScaffold(
         topIconButtonId = Icons.AutoMirrored.Outlined.ArrowBack,
         onTopIconButtonClick = pop,
-        sectionTitle = artist?.name ?: "",
+        sectionTitle = viewModel.artist?.name ?: "",
         appBarActions = {
             val context = LocalContext.current
 
             IconButton(
                 onClick = {
                     val bookmarkedAt =
-                        if (artist?.bookmarkedAt == null) System.currentTimeMillis() else null
+                        if (viewModel.artist?.bookmarkedAt == null) System.currentTimeMillis() else null
 
                     query {
-                        artist
+                        viewModel.artist
                             ?.copy(bookmarkedAt = bookmarkedAt)
                             ?.let(Database::update)
                     }
                 }
             ) {
                 Icon(
-                    imageVector = if (artist?.bookmarkedAt == null) Icons.Outlined.BookmarkAdd else Icons.Filled.Bookmark,
+                    imageVector = if (viewModel.artist?.bookmarkedAt == null) Icons.Outlined.BookmarkAdd else Icons.Filled.Bookmark,
                     contentDescription = null
                 )
             }
@@ -159,167 +124,165 @@ fun ArtistScreen(
             Section(stringResource(id = R.string.library), Icons.Outlined.LibraryMusic)
         )
     ) { index ->
-        saveableStateHolder.SaveableStateProvider(index) {
-            when (index) {
-                0 -> ArtistOverview(
-                    youtubeArtistPage = artistPage,
-                    thumbnailContent = thumbnailContent,
-                    onAlbumClick = { id -> onAlbumClick(id) },
-                    onViewAllSongsClick = { tabIndex = 1 },
-                    onViewAllAlbumsClick = { tabIndex = 2 },
-                    onViewAllSinglesClick = { tabIndex = 3 },
-                )
+        when (index) {
+            0 -> ArtistOverview(
+                youtubeArtistPage = viewModel.artistPage,
+                thumbnailContent = thumbnailContent,
+                onAlbumClick = { id -> onAlbumClick(id) },
+                onViewAllSongsClick = { tabIndex = 1 },
+                onViewAllAlbumsClick = { tabIndex = 2 },
+                onViewAllSinglesClick = { tabIndex = 3 },
+            )
 
-                1 -> {
-                    val binder = LocalPlayerServiceBinder.current
-                    val menuState = LocalMenuState.current
+            1 -> {
+                val binder = LocalPlayerServiceBinder.current
+                val menuState = LocalMenuState.current
 
-                    ItemsPage(
-                        tag = "artist/$browseId/songs",
-                        itemsPageProvider = artistPage?.let {
-                            ({ continuation ->
-                                continuation?.let {
+                ItemsPage(
+                    tag = "artist/$browseId/songs",
+                    itemsPageProvider = viewModel.artistPage?.let {
+                        ({ continuation ->
+                            continuation?.let {
+                                Innertube.itemsPage(
+                                    body = ContinuationBody(continuation = continuation),
+                                    fromMusicResponsiveListItemRenderer = Innertube.SongItem::from,
+                                )
+                            } ?: viewModel.artistPage
+                                ?.songsEndpoint
+                                ?.takeIf { it.browseId != null }
+                                ?.let { endpoint ->
                                     Innertube.itemsPage(
-                                        body = ContinuationBody(continuation = continuation),
+                                        body = BrowseBody(
+                                            browseId = endpoint.browseId!!,
+                                            params = endpoint.params,
+                                        ),
                                         fromMusicResponsiveListItemRenderer = Innertube.SongItem::from,
                                     )
-                                } ?: artistPage
-                                    ?.songsEndpoint
-                                    ?.takeIf { it.browseId != null }
-                                    ?.let { endpoint ->
-                                        Innertube.itemsPage(
-                                            body = BrowseBody(
-                                                browseId = endpoint.browseId!!,
-                                                params = endpoint.params,
-                                            ),
-                                            fromMusicResponsiveListItemRenderer = Innertube.SongItem::from,
-                                        )
-                                    }
-                                ?: Result.success(
-                                    Innertube.ItemsPage(
-                                        items = artistPage?.songs,
-                                        continuation = null
-                                    )
-                                )
-                            })
-                        },
-                        itemContent = { song ->
-                            SongItem(
-                                song = song,
-                                onClick = {
-                                    binder?.stopRadio()
-                                    binder?.player?.forcePlay(song.asMediaItem)
-                                    binder?.setupRadio(song.info?.endpoint)
-                                },
-                                onLongClick = {
-                                    menuState.display {
-                                        NonQueuedMediaItemMenu(
-                                            onDismiss = menuState::hide,
-                                            mediaItem = song.asMediaItem,
-                                            onGoToAlbum = onAlbumClick
-                                        )
-                                    }
                                 }
-                            )
-                        },
-                        itemPlaceholderContent = {
-                            ListItemPlaceholder()
-                        }
-                    )
-                }
-
-                2 -> {
-                    ItemsPage(
-                        tag = "artist/$browseId/albums",
-                        emptyItemsText = stringResource(id = R.string.no_albums_artist),
-                        itemsPageProvider = artistPage?.let {
-                            ({ continuation ->
-                                continuation?.let {
-                                    Innertube.itemsPage(
-                                        body = ContinuationBody(continuation = continuation),
-                                        fromMusicTwoRowItemRenderer = Innertube.AlbumItem::from,
-                                    )
-                                } ?: artistPage
-                                    ?.albumsEndpoint
-                                    ?.takeIf { it.browseId != null }
-                                    ?.let { endpoint ->
-                                        Innertube.itemsPage(
-                                            body = BrowseBody(
-                                                browseId = endpoint.browseId!!,
-                                                params = endpoint.params,
-                                            ),
-                                            fromMusicTwoRowItemRenderer = Innertube.AlbumItem::from,
-                                        )
-                                    }
-                                ?: Result.success(
-                                    Innertube.ItemsPage(
-                                        items = artistPage?.albums,
-                                        continuation = null
-                                    )
+                            ?: Result.success(
+                                Innertube.ItemsPage(
+                                    items = viewModel.artistPage?.songs,
+                                    continuation = null
                                 )
-                            })
-                        },
-                        itemContent = { album ->
-                            AlbumItem(
-                                album = album,
-                                onClick = { onAlbumClick(album.key) }
                             )
-                        },
-                        itemPlaceholderContent = {
-                            ItemPlaceholder()
-                        }
-                    )
-                }
-
-                3 -> {
-                    ItemsPage(
-                        tag = "artist/$browseId/singles",
-                        emptyItemsText = stringResource(id = R.string.no_singles_artist),
-                        itemsPageProvider = artistPage?.let {
-                            ({ continuation ->
-                                continuation?.let {
-                                    Innertube.itemsPage(
-                                        body = ContinuationBody(continuation = continuation),
-                                        fromMusicTwoRowItemRenderer = Innertube.AlbumItem::from,
+                        })
+                    },
+                    itemContent = { song ->
+                        SongItem(
+                            song = song,
+                            onClick = {
+                                binder?.stopRadio()
+                                binder?.player?.forcePlay(song.asMediaItem)
+                                binder?.setupRadio(song.info?.endpoint)
+                            },
+                            onLongClick = {
+                                menuState.display {
+                                    NonQueuedMediaItemMenu(
+                                        onDismiss = menuState::hide,
+                                        mediaItem = song.asMediaItem,
+                                        onGoToAlbum = onAlbumClick
                                     )
-                                } ?: artistPage
-                                    ?.singlesEndpoint
-                                    ?.takeIf { it.browseId != null }
-                                    ?.let { endpoint ->
-                                        Innertube.itemsPage(
-                                            body = BrowseBody(
-                                                browseId = endpoint.browseId!!,
-                                                params = endpoint.params,
-                                            ),
-                                            fromMusicTwoRowItemRenderer = Innertube.AlbumItem::from,
-                                        )
-                                    }
-                                ?: Result.success(
-                                    Innertube.ItemsPage(
-                                        items = artistPage?.singles,
-                                        continuation = null
-                                    )
-                                )
-                            })
-                        },
-                        itemContent = { album ->
-                            AlbumItem(
-                                album = album,
-                                onClick = { onAlbumClick(album.key) }
-                            )
-                        },
-                        itemPlaceholderContent = {
-                            ItemPlaceholder()
-                        }
-                    )
-                }
-
-                4 -> ArtistLocalSongs(
-                    browseId = browseId,
-                    thumbnailContent = thumbnailContent,
-                    onGoToAlbum = onAlbumClick
+                                }
+                            }
+                        )
+                    },
+                    itemPlaceholderContent = {
+                        ListItemPlaceholder()
+                    }
                 )
             }
+
+            2 -> {
+                ItemsPage(
+                    tag = "artist/$browseId/albums",
+                    emptyItemsText = stringResource(id = R.string.no_albums_artist),
+                    itemsPageProvider = viewModel.artistPage?.let {
+                        ({ continuation ->
+                            continuation?.let {
+                                Innertube.itemsPage(
+                                    body = ContinuationBody(continuation = continuation),
+                                    fromMusicTwoRowItemRenderer = Innertube.AlbumItem::from,
+                                )
+                            } ?: viewModel.artistPage
+                                ?.albumsEndpoint
+                                ?.takeIf { it.browseId != null }
+                                ?.let { endpoint ->
+                                    Innertube.itemsPage(
+                                        body = BrowseBody(
+                                            browseId = endpoint.browseId!!,
+                                            params = endpoint.params,
+                                        ),
+                                        fromMusicTwoRowItemRenderer = Innertube.AlbumItem::from,
+                                    )
+                                }
+                            ?: Result.success(
+                                Innertube.ItemsPage(
+                                    items = viewModel.artistPage?.albums,
+                                    continuation = null
+                                )
+                            )
+                        })
+                    },
+                    itemContent = { album ->
+                        AlbumItem(
+                            album = album,
+                            onClick = { onAlbumClick(album.key) }
+                        )
+                    },
+                    itemPlaceholderContent = {
+                        ItemPlaceholder()
+                    }
+                )
+            }
+
+            3 -> {
+                ItemsPage(
+                    tag = "artist/$browseId/singles",
+                    emptyItemsText = stringResource(id = R.string.no_singles_artist),
+                    itemsPageProvider = viewModel.artistPage?.let {
+                        ({ continuation ->
+                            continuation?.let {
+                                Innertube.itemsPage(
+                                    body = ContinuationBody(continuation = continuation),
+                                    fromMusicTwoRowItemRenderer = Innertube.AlbumItem::from,
+                                )
+                            } ?: viewModel.artistPage
+                                ?.singlesEndpoint
+                                ?.takeIf { it.browseId != null }
+                                ?.let { endpoint ->
+                                    Innertube.itemsPage(
+                                        body = BrowseBody(
+                                            browseId = endpoint.browseId!!,
+                                            params = endpoint.params,
+                                        ),
+                                        fromMusicTwoRowItemRenderer = Innertube.AlbumItem::from,
+                                    )
+                                }
+                            ?: Result.success(
+                                Innertube.ItemsPage(
+                                    items = viewModel.artistPage?.singles,
+                                    continuation = null
+                                )
+                            )
+                        })
+                    },
+                    itemContent = { album ->
+                        AlbumItem(
+                            album = album,
+                            onClick = { onAlbumClick(album.key) }
+                        )
+                    },
+                    itemPlaceholderContent = {
+                        ItemPlaceholder()
+                    }
+                )
+            }
+
+            4 -> ArtistLocalSongs(
+                browseId = browseId,
+                thumbnailContent = thumbnailContent,
+                onGoToAlbum = onAlbumClick
+            )
         }
     }
 }

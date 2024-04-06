@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -38,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import it.vfsfitvnm.compose.persist.persistList
 import it.vfsfitvnm.vimusic.Database
 import it.vfsfitvnm.vimusic.R
 import it.vfsfitvnm.vimusic.enums.BuiltInPlaylist
@@ -64,7 +64,7 @@ fun HomePlaylists(
     var isCreatingANewPlaylist by rememberSaveable { mutableStateOf(false) }
     var sortBy by rememberPreference(playlistSortByKey, PlaylistSortBy.Name)
     var sortOrder by rememberPreference(playlistSortOrderKey, SortOrder.Ascending)
-    var items by persistList<PlaylistPreview>("home/playlists")
+    var items: List<PlaylistPreview> by remember { mutableStateOf(emptyList()) }
     var isSorting by rememberSaveable { mutableStateOf(false) }
     val sortOrderIconRotation by animateFloatAsState(
         targetValue = if (sortOrder == SortOrder.Ascending) 0F else 180F,

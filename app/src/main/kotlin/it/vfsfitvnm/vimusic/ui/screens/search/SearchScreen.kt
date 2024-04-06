@@ -49,9 +49,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import it.vfsfitvnm.compose.persist.PersistMapCleanup
-import it.vfsfitvnm.compose.persist.persist
-import it.vfsfitvnm.compose.persist.persistList
 import it.vfsfitvnm.innertube.Innertube
 import it.vfsfitvnm.innertube.models.bodies.SearchSuggestionsBody
 import it.vfsfitvnm.innertube.requests.searchSuggestions
@@ -73,8 +70,6 @@ fun SearchScreen(
     pop: () -> Unit,
     onSearch: (String) -> Unit
 ) {
-    PersistMapCleanup(tagPrefix = "search/")
-
     val (textFieldValue, onTextFieldValueChanged) = rememberSaveable(
         initialTextInput,
         stateSaver = TextFieldValue.Saver
@@ -88,8 +83,8 @@ fun SearchScreen(
     }
 
     val context = LocalContext.current
-    var history by persistList<SearchQuery>("search/online/history")
-    var suggestionsResult by persist<Result<List<String>?>?>("search/online/suggestionsResult")
+    var history: List<SearchQuery> by remember { mutableStateOf(emptyList()) }
+    var suggestionsResult: Result<List<String>?>? by remember { mutableStateOf(null) }
     val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(textFieldValue.text) {

@@ -16,14 +16,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import it.vfsfitvnm.compose.persist.PersistMapCleanup
-import it.vfsfitvnm.compose.persist.persist
 import it.vfsfitvnm.innertube.Innertube
 import it.vfsfitvnm.innertube.models.bodies.BrowseBody
 import it.vfsfitvnm.innertube.requests.albumPage
@@ -52,11 +52,9 @@ fun AlbumScreen(
     onAlbumClick: (String) -> Unit,
     onGoToArtist: (String) -> Unit
 ) {
-    PersistMapCleanup(tagPrefix = "album/$browseId/")
-
     val saveableStateHolder = rememberSaveableStateHolder()
-    var album by persist<Album?>("album/$browseId/album")
-    var albumPage by persist<Innertube.PlaylistOrAlbumPage?>("album/$browseId/albumPage")
+    var album: Album? by remember { mutableStateOf(null) }
+    var albumPage: Innertube.PlaylistOrAlbumPage? by remember { mutableStateOf(null) }
     var tabIndex by rememberSaveable { mutableIntStateOf(0) }
 
     LaunchedEffect(Unit) {

@@ -37,8 +37,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.navigation.compose.rememberNavController
-import it.vfsfitvnm.compose.persist.PersistMap
-import it.vfsfitvnm.compose.persist.PersistMapOwner
 import it.vfsfitvnm.innertube.Innertube
 import it.vfsfitvnm.innertube.models.bodies.BrowseBody
 import it.vfsfitvnm.innertube.requests.playlistPage
@@ -58,7 +56,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainActivity : ComponentActivity(), PersistMapOwner {
+class MainActivity : ComponentActivity() {
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             if (service is PlayerService.Binder) this@MainActivity.binder = service
@@ -70,7 +68,6 @@ class MainActivity : ComponentActivity(), PersistMapOwner {
     }
 
     private var binder by mutableStateOf<PlayerService.Binder?>(null)
-    override lateinit var persistMap: PersistMap
     private var data by mutableStateOf<Uri?>(null)
 
     override fun onStart() {
@@ -82,9 +79,6 @@ class MainActivity : ComponentActivity(), PersistMapOwner {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
-
-        @Suppress("DEPRECATION", "UNCHECKED_CAST")
-        persistMap = lastCustomNonConfigurationInstance as? PersistMap ?: PersistMap()
 
         val launchedFromNotification = intent?.extras?.getBoolean("expandPlayerBottomSheet") == true
         data = intent?.data ?: intent?.getStringExtra(Intent.EXTRA_TEXT)?.toUri()
@@ -245,11 +239,6 @@ class MainActivity : ComponentActivity(), PersistMapOwner {
     override fun onStop() {
         unbindService(serviceConnection)
         super.onStop()
-    }
-
-    override fun onDestroy() {
-        if (!isChangingConfigurations) persistMap.clear()
-        super.onDestroy()
     }
 }
 

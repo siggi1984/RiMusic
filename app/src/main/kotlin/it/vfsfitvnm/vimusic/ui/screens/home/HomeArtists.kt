@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -35,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import it.vfsfitvnm.compose.persist.persistList
 import it.vfsfitvnm.vimusic.Database
 import it.vfsfitvnm.vimusic.R
 import it.vfsfitvnm.vimusic.enums.ArtistSortBy
@@ -55,19 +55,15 @@ fun HomeArtistList(
     var sortBy by rememberPreference(artistSortByKey, ArtistSortBy.Name)
     var sortOrder by rememberPreference(artistSortOrderKey, SortOrder.Ascending)
 
-    var items by persistList<Artist>("home/artists")
-
-    LaunchedEffect(sortBy, sortOrder) {
-        Database.artists(sortBy, sortOrder).collect { items = it }
-    }
-
+    var items: List<Artist> by remember { mutableStateOf(emptyList()) }
+    var isSorting by rememberSaveable { mutableStateOf(false) }
     val sortOrderIconRotation by animateFloatAsState(
         targetValue = if (sortOrder == SortOrder.Ascending) 0f else 180f,
         label = "rotation"
     )
 
-    var isSorting by rememberSaveable {
-        mutableStateOf(false)
+    LaunchedEffect(sortBy, sortOrder) {
+        Database.artists(sortBy, sortOrder).collect { items = it }
     }
 
     LazyVerticalGrid(
