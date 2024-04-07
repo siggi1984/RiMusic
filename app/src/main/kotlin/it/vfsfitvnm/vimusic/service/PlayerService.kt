@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startForegroundService
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
@@ -259,7 +260,12 @@ class PlayerService : InvincibleService(), Player.Listener, PlaybackStatsListene
             addAction(Action.previous.value)
         }
 
-        registerReceiver(notificationActionReceiver, filter)
+        ContextCompat.registerReceiver(
+            this,
+            notificationActionReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
 
         maybeResumePlaybackWhenDeviceConnected()
     }

@@ -9,6 +9,7 @@ import android.content.IntentFilter
 import android.os.Binder
 import android.os.Handler
 import android.os.Looper
+import androidx.core.content.ContextCompat
 
 // https://stackoverflow.com/q/53502244/16885569
 // I found four ways to make the system not kill the stopped foreground service: e.g. when
@@ -78,10 +79,18 @@ abstract class InvincibleService : Service() {
             if (!isStarted) {
                 isStarted = true
                 handler.postDelayed(this, intervalMs)
-                registerReceiver(this, IntentFilter().apply {
+
+                val filter = IntentFilter().apply {
                     addAction(Intent.ACTION_SCREEN_ON)
                     addAction(Intent.ACTION_SCREEN_OFF)
-                })
+                }
+
+                ContextCompat.registerReceiver(
+                    this@InvincibleService,
+                    this,
+                    filter,
+                    ContextCompat.RECEIVER_NOT_EXPORTED
+                )
             }
         }
 
