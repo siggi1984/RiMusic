@@ -48,10 +48,10 @@
     <string name="backup">Sichern</string>
     <string name="restore">Wiederherstellen</string>
     <string name="reset_quick_picks">Empfehlungen zurücksetzen</string>
-    <string name="restore_information">The app will automatically close itself after restoring the database and existing data will be overwritten.</string>
+    <string name="restore_information">Die APP schließt sich nach der Wiederherstellung der Musik-Datenbank automatisch und die vorhandenen Daten werden überschrieben.</string>
     <string name="backup_description">Exportieren Sie die Musik-Datenbank auf den externen Speicher.</string>
     <string name="restore_description">Importieren Sie die Musik-Datenbank vom externen Speicher.</string>
-    <string name="service_lifetime">Akku-Optimierung</string>
+    <string name="service_lifetime">Unbezwingbarer Dienst</string>
     <string name="pause_search_history">Suchverlauf anhalten</string>
     <string name="pause_search_history_description">Weder neue Suchanfragen speichern noch Verlauf anzeigen</string>
     <string name="clear_search_history">Suchverlauf löschen</string>
@@ -131,8 +131,8 @@
     <string name="configure_app_language">App-Sprache konfigurieren</string>
     <string name="most_played">Meist gespielter Song</string>
     <string name="last_played">Zuletzt gespielter Song</string>
-    <string name="general">General</string>
-    <string name="history">History</string>
-    <string name="quick_picks_source">Quick picks source</string>
+    <string name="general">Allgemein</string>
+    <string name="history">Verlauf</string>
+    <string name="quick_picks_source">Empfehlungen auf der Startseite</string>
     <string name="stop">Stop</string>
 </resources>
