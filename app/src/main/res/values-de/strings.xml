@@ -29,6 +29,7 @@
 
     <string name="favorites">Favoriten</string>
     <string name="offline">Offline</string>
+    <string name="history">Zuletzt gespielt</string>
     <string name="overview">Übersicht</string>
     <string name="library">Bibliothek</string>
     <string name="discover">Entdecken</string>
@@ -96,8 +97,8 @@
     <string name="hide_from_quick_picks">Auf Startseite verstecken</string>
     <string name="confirm_hide_song">Möchten Sie dieses Lied wirklich ausblenden? Die Wiedergabezeit und der Cache werden gelöscht. Diese Aktion ist nicht umkehrbar.</string>
     <string name="confirm_delete_playlist">Willst du diese Wiedergabeliste wirklich löschen?</string>
-
     <string name="confirm_delete_piped_session">Willst du diese Piped-Sitzung wirklich löschen?</string>
+    
     <string name="other_versions">Andere Versionen</string>
     <string name="no_alternative_version">Dieses Album hat keine anderen Versionen</string>
 
@@ -108,8 +109,8 @@
 
     <string name="moods_and_genres">Stimmungen und Genres</string>
     <string name="new_released_albums">Neu veröffentlichte Alben</string>
-
     <string name="more">Mehr</string>
+    
     <string name="artist_has_no_albums">Dieser Künstler hat noch kein Album veröffentlicht</string>
     <string name="artist_has_no_singles">Dieser Künstler hat noch keine Single veröffentlicht</string>
 
@@ -172,6 +173,7 @@
     <string name="size">Größe</string>
     <string name="cached">Im Cache</string>
     <string name="loudness">Lautstärke</string>
+    <string name="reload">Neu laden</string>
 
     <string name="view_album">Album ansehen</string>
     <string name="view_playlist">Wiedergabeliste ansehen</string>
@@ -231,9 +233,13 @@
     <string name="show_like_button_description">Anzeigen des Knopfes zum Favorisieren direkt im Player</string>
     <string name="swipe_to_remove_item">Wischen zum Entfernen eines Titels</string>
     <string name="swipe_to_remove_item_description">Wischen Sie nach links, um ein Element aus der Warteschlange zu entfernen</string>
-
     <string name="lyrics_keep_screen_awake">Bildschirm an lassen (Texte)</string>
     <string name="lyrics_keep_screen_awake_description">Lässt den Bildschirm eingeschaltet, wenn Liedtexte angezeigt werden</string>
+    <string name="lyrics_show_system_bars">Systemleisten anzeigen (Liedtext)</string>
+    <string name="lyrics_show_system_bars_description">Das Ausschalten dieser Funktion ermöglicht die systemweite Vollbilddarstellung</string>
+    <string name="pip">Bild-in-Bild</string>
+    <string name="pip_description">Wechselt beim Umschalten auf den Hintergrund automatisch in den Bild-in-Bild-Modus</string>
+    
     <string name="cache">Cache</string>
     <string name="cache_description">Wenn der Platz im Cache voll ist, werden die Ressourcen, auf die am längsten nicht mehr zugegriffen wurde, gelöscht.</string>
     <string name="image_cache">Bild-Cache</string>
@@ -241,6 +247,8 @@
     <string name="format_cache_space_used">%1$s verwendet</string>
     <string name="format_cache_space_used_percentage">%1$s verwendet (%2$s%%)</string>
     <string name="song_cache">Song-Cache</string>
+    <string name="pause_song_cache">Cache pausieren</string>
+    <string name="pause_song_cache_description">Pausiert vorübergehend das Hinzufügen neuer Songs zum Cache</string>
     <string name="database">Datenbank</string>
 
     <string name="cleanup">Bereinigen</string>
@@ -270,6 +278,8 @@
     <string name="format_clear_search_history_amount">%1$s Suchanfragen löschen</string>
     <string name="empty_history">Der Verlauf ist leer</string>
     <string name="built_in_playlists">Integrierte Wiedergabelisten</string>
+    <string name="auto_sync_playlists">Wiedergabelisten Automatisch synchronisieren</string>
+    <string name="auto_sync_playlists_description">Automatische Synchronisierung gespeicherter Wiedergabelisten von YouTube, wenn Sie diese öffnen</string>
     <string name="top_list_length">Top-Wiedergabelistenlänge</string>
     <string name="top_list_length_description">Begrenzt die Länge der Wiedergabeliste \'Mein Top x\'.</string>
 
@@ -289,6 +299,8 @@
     <string name="troubleshooting_warning">Achtung: Verwenden Sie diese Tasten als letzten Ausweg, wenn die Audiowiedergabe fehlschlägt</string>
     <string name="reload_app_internals">App-Dienste neu laden</string>
     <string name="kill_app">App beenden</string>
+    <string name="show_logs">Debug-Protokolle anzeigen</string>
+    <string name="logs">Protokolle</string>
     <string name="show_troubleshoot_section">Abschnitt zur Fehlerbehebung anzeigen</string>
 
     <string name="persistent_queue">Dauerhafte Warteschlange</string>
@@ -314,6 +326,11 @@
     <string name="bass_boost_description">Verstärkung der tiefen Frequenzen für ein besseres Hörerlebnis</string>
     <string name="bass_boost_level">Pegel der Bassverstärkung</string>
     <string name="bass_boost_level_description">Pegel (0–1000) der Anhebung der tiefen Frequenzen; Verwendung auf eigene Gefahr!</string>
+    <string name="sponsor_block">Sponsorblock</string>
+    <string name="sponsor_block_description">Blockiert gesponserte/offtopic Inhalte mit Daten aus der Sponsorblock API</string>
+    <string name="reverb">Nachhall</string>
+    <string name="audio_focus">Audio-Fokus</string>
+    <string name="audio_focus_description">Ob der Player den systemweiten Audio- (Medien-) Fokus anfordern soll</string>
     <string name="equalizer_description">Mit dem System-Equalizer interagieren</string>
 
     <string name="filter_placeholder">Suchen…</string>
@@ -342,8 +359,8 @@
     <string name="piped_sessions">Piped-Sitzungen</string>
     <string name="custom_instance">Benutzerdefinierte Instanz verwenden</string>
     <string name="base_api_url">Instanz-API-URL</string>
-
     <string name="piped_session_created_successfully">Piped Sitzung erfolgreich erstellt</string>
+   
     <string name="seek_bar_style">Fortschrittsbalkenstil</string>
     <string name="static_seek_bar_name">Statisch</string>
     <string name="wavy_seek_bar_name">Wellenförmig</string>
@@ -361,10 +378,13 @@
     <string name="blacklist_empty">Schwarze Liste ist leer</string>
 
     <string name="pre_cache">In den Cache laden</string>
+    
     <string name="swipe_to_hide_song">Wischen, um Lied zu löschen</string>
     <string name="swipe_to_hide_song_description">Wenn Sie einen Titel nach links wischen, wird er aus der Datenbank und dem Zwischenspeicher entfernt.</string>
     <string name="swipe_to_hide_song_confirm">Wischen zum Löschen bestätigen</string>
     <string name="swipe_to_hide_song_confirm_description">Wenn Sie zum Löschen wischen, müssen Sie zunächst bestätigen.</string>
+    <string name="hide_explicit">Explizite Lieder ausblenden</string>
+    <string name="hide_explicit_description">Blendet alle expliziten Lieder in der gesamten App aus. Der Player überspringt auch explizite Lieder, wenn er auf eines stößt und diese Einstellung aktiviert ist.</string>
     
     <string name="version">Version</string>
     <string name="check_new_version">Nach Updates suchen</string>
@@ -394,6 +414,8 @@
     <string name="reverb_large_hall">Large hall</string>
     <string name="reverb_plate">Plate</string>
 
+    <string name="tabs">Registerkarten</string>
+    
     <plurals name="format_reset_blacklist_description">
         <item quantity="one">Entferne %1$s Lied von der schwarzen Liste</item>
         <item quantity="other">Alle %1$s Songs von der Schwarzen Liste entfernen</item>
