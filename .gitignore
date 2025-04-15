@@ -1,10 +1,28 @@
-*.iml
-.gradle
-/local.properties
-.idea
-.DS_Store
-/build
 /captures
 .externalNativeBuild
 .cxx
-local.properties
+
+###      IDEA
+.idea
+.gradle
+
+###      BUILDS
+**build/
+
+###      BINS
+*/bin/
+
+###      ANDROID
+**APK keystore/
+.DS_Store
+
+###      PROPERTIES
+**local.properties
+**crowdin.properties
+**__crowdin.properties
+
+
+
+###     DEPENDENCIES
+/YT python/
+/.kotlin/
